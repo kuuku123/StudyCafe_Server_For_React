@@ -1,4 +1,4 @@
-package com.StudyCafe_R.StudyCafe_R.modules.main;
+package com.StudyCafe_R.modules.main;
 
 import com.StudyCafe_R.modules.account.AccountRepository;
 import com.StudyCafe_R.modules.account.CurrentAccount;
