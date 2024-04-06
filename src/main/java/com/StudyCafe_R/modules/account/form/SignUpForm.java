@@ -19,6 +19,6 @@ public class SignUpForm {
     private String email;
 
     @NotBlank
-    @Length(min = 8, max = 50)
+    @Length(min = 1, max = 50)
     private String password;
 }
