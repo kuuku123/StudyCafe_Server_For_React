@@ -33,9 +33,13 @@ public class AccountController {
         return "account/sign-up";
     }
 
+    @ResponseBody
     @PostMapping("/sign-up")
     public String signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {
         if (errors.hasErrors()) {
+            if(1 ==1 ){
+                throw new RuntimeException();
+            }
             return "account/sign-up";
         }
 

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Getter @Setter @EqualsAndHashCode(of = "id")
 public class Event {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_event_id")
     private Long id;
 

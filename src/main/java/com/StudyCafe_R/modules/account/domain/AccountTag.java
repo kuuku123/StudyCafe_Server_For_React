@@ -11,7 +11,7 @@ import lombok.*;
 @Getter @Setter
 public class AccountTag {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

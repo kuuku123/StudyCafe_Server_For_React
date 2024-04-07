@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"city","province"}))
 public class Zone {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "zone_id")
     private Long id;
 

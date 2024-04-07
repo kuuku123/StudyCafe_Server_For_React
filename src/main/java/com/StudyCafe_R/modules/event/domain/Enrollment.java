@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter @Setter @EqualsAndHashCode(of = "id")
 public class Enrollment {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_event_id")

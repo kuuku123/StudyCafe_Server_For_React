@@ -20,7 +20,7 @@ import java.util.Set;
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Study {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_id")
     private Long id;
 

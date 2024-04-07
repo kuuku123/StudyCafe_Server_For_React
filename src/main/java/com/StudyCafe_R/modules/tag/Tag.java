@@ -14,7 +14,7 @@ import java.util.Set;
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Tag {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
     private Long id;
 

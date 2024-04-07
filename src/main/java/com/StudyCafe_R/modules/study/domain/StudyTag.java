@@ -10,7 +10,7 @@ import lombok.*;
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class StudyTag {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "study_id")

@@ -66,7 +66,6 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    //TODO thymeleaf에서 만 동작하는 Context ,templateEngine의 존재
     public void sendSignupConfirmEmail(Account newAccount) {
 
         Context context = new Context();
