@@ -2,11 +2,16 @@ package com.StudyCafe_R.modules.account;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
+import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
+import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -35,18 +40,17 @@ public class AccountController {
 
     @ResponseBody
     @PostMapping("/sign-up")
-    public String signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {
         if (errors.hasErrors()) {
-            if(1 ==1 ){
-                throw new RuntimeException();
-            }
-            return "account/sign-up";
+            throw new IllegalArgumentException("duplicate nickname or email");
         }
 
         Account account = accountService.processNewAccount(signUpForm);
         accountService.login(account, request, response);
 
-        return "redirect:/";
+        ApiResponse<String> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, null);
+
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/check-email-token")
