@@ -36,7 +36,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
+//        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
+        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers(new SingUpRequestMatchers()));

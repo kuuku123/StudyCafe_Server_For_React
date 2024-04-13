@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AccountExceptionAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult accountServerIllegalArgumentExceptionHandle(IllegalArgumentException ex) {
         log.error(ex.getMessage(), ex);
-        return new ErrorResult(HttpStatus.BAD_REQUEST, ex.getMessage());
+            return new ErrorResult(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

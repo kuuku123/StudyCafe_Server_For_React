@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class MainController {
     private final AccountRepository accountRepository;
     private final StudyRepository studyRepository;
 
+    @ResponseBody
     @GetMapping("/")
     public String home(@CurrentAccount Account account, Model model, HttpServletRequest request, HttpServletResponse response) {
         if (account != null) {
