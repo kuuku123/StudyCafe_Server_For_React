@@ -193,10 +193,13 @@ public class AccountService {
                         .ifPresent(a -> a.removeAccountZone(zone));
     }
 
-    public Account getAccount(String nickname) {
-        Account account = accountRepository.findByNickname(nickname);
+    public Account getAccount(String nicknameOrEmail) {
+        Account account = accountRepository.findByNickname(nicknameOrEmail);
         if (account == null) {
-            throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
+            Account byEmail = accountRepository.findByEmail(nicknameOrEmail);
+            if (byEmail == null) {
+                throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
+            }
         }
         return account;
     }

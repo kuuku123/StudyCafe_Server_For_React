@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.account;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.form.LoginForm;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
@@ -30,6 +31,15 @@ public class AccountController {
     public void initBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(signUpFormValidator);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
+        Account account = accountService.getAccount(loginForm.getNicknameOrEmail());
+        accountService.login(account,request, response);
+        ApiResponse<String> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
 
 
     @GetMapping("/sign-up")

@@ -1,5 +1,6 @@
 package com.StudyCafe_R.infra.config;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -15,11 +16,13 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.web.util.WebUtils;
 
 import javax.sql.DataSource;
 import java.util.regex.Pattern;
@@ -35,11 +38,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-//        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
-        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
-        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+        CookieCsrfTokenRequestAttributeHandler cookeCsrfTokenRequestAttributeHandler = new CookieCsrfTokenRequestAttributeHandler();
+        cookeCsrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
+
+        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(new CookieCsrfTokenRepository())
+                .csrfTokenRequestHandler(cookeCsrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers(new SingUpRequestMatchers()));
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
@@ -53,8 +56,8 @@ public class SecurityConfig {
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/profile/*")).permitAll()
                                 .anyRequest().authenticated());
 
-        http.formLogin(httpSecurityFormLoginConfigurer ->
-                        httpSecurityFormLoginConfigurer.loginPage("/login").permitAll());
+//        http.formLogin(httpSecurityFormLoginConfigurer ->
+//                        httpSecurityFormLoginConfigurer.loginPage("/login").permitAll());
 
         http.logout(httpSecurityLogoutConfigurer ->
                         httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
@@ -96,6 +99,17 @@ public class SecurityConfig {
         @Override
         public boolean matches(HttpServletRequest request) {
             return allowedPath.matcher(request.getServletPath()).matches();
+        }
+    }
+
+    private static class CookieCsrfTokenRequestAttributeHandler extends CsrfTokenRequestAttributeHandler {
+        @Override
+        public String resolveCsrfTokenValue(HttpServletRequest request, CsrfToken csrfToken) {
+            Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
+            if (cookie == null) {
+                return null;
+            }
+            return cookie.getValue();
         }
     }
 }
