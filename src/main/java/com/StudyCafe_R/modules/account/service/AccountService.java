@@ -8,22 +8,26 @@ import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
 import com.StudyCafe_R.modules.account.domain.AccountZone;
+import com.StudyCafe_R.modules.account.form.LoginForm;
 import com.StudyCafe_R.modules.account.form.Notifications;
 import com.StudyCafe_R.modules.account.form.Profile;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.zone.Zone;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -46,11 +50,18 @@ public class AccountService {
     private final TagRepository tagRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    private final UserDetailsService userDetailsService;
     private final ModelMapper modelMapper;
     private final SecurityContextRepository securityContextRepository;
 
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
+
+    @PostConstruct
+    public void init() {
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     public Account processNewAccount(SignUpForm signUpForm) {
 
@@ -86,22 +97,34 @@ public class AccountService {
         emailService.sendEmail(emailMessage);
     }
 
-    //TODO password Authentication 이 정석적인 방법이 아니라 혼란을 야기할 수 있다.
-    //TODO saveContext를 하기위해서  request, response를 controller부터 쭈욱 받아오고 있다.
-    public void login(Account account, HttpServletRequest request, HttpServletResponse response) {
+    // Storing the Authentication manually
+    public void login(LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
+        String nicknameOrEmail = loginForm.getNicknameOrEmail();
+        Account account = getAccount(nicknameOrEmail);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                new UserAccount(account),account.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                new UserAccount(account), loginForm.getPassword());
+        authenticationProvider.authenticate(token);
+
+        saveAuthentication(request, response, account, loginForm.getPassword());
+    }
+
+    private void saveAuthentication(HttpServletRequest request, HttpServletResponse response, Account account, String password) {
+        UsernamePasswordAuthenticationToken authorizedToken = new UsernamePasswordAuthenticationToken(
+                new UserAccount(account), passwordEncoder.encode(password), List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
         SecurityContext context = securityContextHolderStrategy.createEmptyContext();
-        context.setAuthentication(token);
+        context.setAuthentication(authorizedToken);
         securityContextHolderStrategy.setContext(context);
         securityContextRepository.saveContext(context,request ,response);
+    }
 
+    public void signUp(Account account, HttpServletRequest request, HttpServletResponse response) {
+        saveAuthentication(request, response, account, account.getPassword());
     }
 
     public void completeSignUp(Account account, HttpServletRequest request, HttpServletResponse response) {
         account.completeSignUp();
-        login(account, request, response);
+        signUp(account, request, response);
     }
 
     public void updateProfile(Account account, Profile profile) {
@@ -122,7 +145,10 @@ public class AccountService {
     public void updateNickname(Account account, String nickname, HttpServletRequest request, HttpServletResponse response) {
         account.setNickname(nickname);
         accountRepository.save(account);
-        login(account, request, response);
+
+        //TODO just for compile
+        LoginForm loginForm = new LoginForm();
+        login(loginForm, request, response);
     }
 
     public void sendLoginLink(Account account) {
@@ -196,8 +222,8 @@ public class AccountService {
     public Account getAccount(String nicknameOrEmail) {
         Account account = accountRepository.findByNickname(nicknameOrEmail);
         if (account == null) {
-            Account byEmail = accountRepository.findByEmail(nicknameOrEmail);
-            if (byEmail == null) {
+            account = accountRepository.findByEmail(nicknameOrEmail);
+            if (account == null) {
                 throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
             }
         }

@@ -59,8 +59,8 @@ public class SecurityConfig {
 //        http.formLogin(httpSecurityFormLoginConfigurer ->
 //                        httpSecurityFormLoginConfigurer.loginPage("/login").permitAll());
 
-        http.logout(httpSecurityLogoutConfigurer ->
-                        httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
+//        http.logout(httpSecurityLogoutConfigurer ->
+//                        httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
 
         http.rememberMe(httpSecurityRememberMeConfigurer ->
                         httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)

@@ -33,23 +33,6 @@ public class MainController {
     private final AccountRepository accountRepository;
     private final StudyRepository studyRepository;
 
-    @ResponseBody
-    @GetMapping("/")
-    public ResponseEntity<String> home(@CurrentAccount Account account, Model model, HttpServletRequest request, HttpServletResponse response) {
-        if (account != null) {
-            // login again to remove email validation message
-            Account account1 = accountRepository.findById(account.getId()).get();
-
-            accountService.login(account1,request, response);
-            model.addAttribute(account1);
-        }
-        model.addAttribute("studyList", studyRepository.findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(true, false));
-
-        ApiResponse<String> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK, null);
-
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
-    }
-
 
     @GetMapping("/search/study")
     public String searchStudy(@PageableDefault(size = 9,sort = "publishedDateTime",direction = Sort.Direction.ASC) Pageable pageable,

@@ -34,8 +34,9 @@ public class AccountController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
-        Account account = accountService.getAccount(loginForm.getNicknameOrEmail());
-        accountService.login(account,request, response);
+//        Account account = accountService.getAccount(loginForm.getNicknameOrEmail());
+//        account.setPassword(loginForm.getPassword());
+        accountService.login(loginForm,request, response);
         ApiResponse<String> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
@@ -56,7 +57,7 @@ public class AccountController {
         }
 
         Account account = accountService.processNewAccount(signUpForm);
-        accountService.login(account, request, response);
+        accountService.signUp(account, request, response);
 
         ApiResponse<String> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, null);
 
@@ -78,7 +79,6 @@ public class AccountController {
         }
 
         accountService.completeSignUp(account, request, response);
-        accountService.login(account, request, response);
         model.addAttribute("numberOfUser",accountRepository.count());
         model.addAttribute("nickname",account.getNickname());
         return view;
@@ -142,7 +142,9 @@ public class AccountController {
             return view;
         }
 
-        accountService.login(account, request, response);
+        //TODO just for compile
+        LoginForm loginForm = new LoginForm();
+        accountService.login(loginForm, request, response);
         return view;
     }
 }
