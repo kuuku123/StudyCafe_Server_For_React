@@ -48,3 +48,8 @@ jasypt:
     bean: jasyptStringEncryptor
 server:
   port: 8081
+  servlet:
+    session:
+      cookie:
+        http-only: false
+        max-age:

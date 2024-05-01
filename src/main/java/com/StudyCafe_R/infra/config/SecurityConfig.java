@@ -56,11 +56,6 @@ public class SecurityConfig {
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/profile/*")).permitAll()
                                 .anyRequest().authenticated());
 
-//        http.formLogin(httpSecurityFormLoginConfigurer ->
-//                        httpSecurityFormLoginConfigurer.loginPage("/login").permitAll());
-
-//        http.logout(httpSecurityLogoutConfigurer ->
-//                        httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
 
         http.rememberMe(httpSecurityRememberMeConfigurer ->
                         httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)

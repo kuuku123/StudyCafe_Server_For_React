@@ -9,8 +9,10 @@ import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.manager.util.SessionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,10 +36,16 @@ public class AccountController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
-//        Account account = accountService.getAccount(loginForm.getNicknameOrEmail());
-//        account.setPassword(loginForm.getPassword());
         accountService.login(loginForm,request, response);
         ApiResponse<String> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+        ApiResponse<String> apiResponse = new ApiResponse<>("logout succeed", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
@@ -60,7 +68,6 @@ public class AccountController {
         accountService.signUp(account, request, response);
 
         ApiResponse<String> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, null);
-
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
