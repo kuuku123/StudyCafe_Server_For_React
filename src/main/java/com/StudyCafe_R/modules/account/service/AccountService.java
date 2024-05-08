@@ -35,6 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -74,7 +77,23 @@ public class AccountService {
         signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
         Account account = modelMapper.map(signUpForm, Account.class);
         account.generateEmailCheckToken();
+
+        byte[] anonymousProfileJpg = readFileToByteArray("src/main/resources/images/anonymous.JPG");
+        account.setProfileImage(anonymousProfileJpg);
         return accountRepository.save(account);
+    }
+
+    private byte[] readFileToByteArray(String filePath) {
+        File file = new File(filePath);
+        byte[] byteArray = new byte[(int) file.length()];
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(byteArray);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return byteArray;
     }
 
     public void sendSignupConfirmEmail(Account newAccount) {

@@ -49,14 +49,6 @@ public class AccountController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-
-
-    @GetMapping("/sign-up")
-    public String signUpForm(Model model) {
-        model.addAttribute(new SignUpForm());
-        return "account/sign-up";
-    }
-
     @ResponseBody
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {

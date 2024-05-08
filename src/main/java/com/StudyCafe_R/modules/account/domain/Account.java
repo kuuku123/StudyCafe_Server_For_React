@@ -46,8 +46,8 @@ public class Account {
 
     private String location; // varchar(255) above all info
 
-    @Lob @Basic(fetch = FetchType.EAGER)
-    private String profileImage;
+    @Lob @Column(columnDefinition = "LONGBLOB")
+    private byte[] profileImage;
 
     private boolean studyCreatedByEmail;
 
