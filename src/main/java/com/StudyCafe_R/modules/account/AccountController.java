@@ -13,8 +13,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.manager.util.SessionUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,11 +34,23 @@ public class AccountController {
         webDataBinder.addValidators(signUpFormValidator);
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login",produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<String> login(@RequestBody LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
-        accountService.login(loginForm,request, response);
-        ApiResponse<String> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK, null);
+        accountService.login(loginForm, request, response);
+        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK,null);
+
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
+    @GetMapping(value="/profile-image")
+    public ResponseEntity<ByteArrayResource> profileImage(@RequestParam("user") String user) {
+        Account account = accountService.getAccount(user);
+        byte[] profileImage = account.getProfileImage();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(profileImage);
+        ResponseEntity<ByteArrayResource> profile= ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(byteArrayResource);
+        return profile;
     }
 
     @GetMapping("/logout")
