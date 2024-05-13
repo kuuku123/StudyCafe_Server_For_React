@@ -12,6 +12,7 @@ import com.StudyCafe_R.modules.account.form.LoginForm;
 import com.StudyCafe_R.modules.account.form.Notifications;
 import com.StudyCafe_R.modules.account.form.Profile;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.zone.Zone;
@@ -247,5 +248,11 @@ public class AccountService {
             }
         }
         return account;
+    }
+
+    public AccountDto getAccountDto(Account account) {
+        AccountDto accountDto = new AccountDto();
+        modelMapper.map(account, accountDto);
+        return  accountDto;
     }
 }

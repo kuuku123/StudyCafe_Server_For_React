@@ -53,3 +53,4 @@ server:
       cookie:
         http-only: false
         max-age:
+        name: StudyCafe_Session_Cookie

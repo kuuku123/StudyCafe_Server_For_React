@@ -2,7 +2,9 @@ package com.StudyCafe_R.modules.account;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.LoginForm;
+import com.StudyCafe_R.modules.account.form.Profile;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
@@ -42,15 +44,24 @@ public class AccountController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
+    //TODO When sending an image as a bytearray from Javascript to JSON,
+    // need to find out how to render it without error in the browser so that it can be processed with one API call.
     @GetMapping(value="/profile-image")
     public ResponseEntity<ByteArrayResource> profileImage(@RequestParam("user") String user) {
         Account account = accountService.getAccount(user);
         byte[] profileImage = account.getProfileImage();
         ByteArrayResource byteArrayResource = new ByteArrayResource(profileImage);
-        ResponseEntity<ByteArrayResource> profile= ResponseEntity.ok()
+        return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(byteArrayResource);
-        return profile;
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<String> profile(@CurrentAccount Account account) {
+        AccountDto accountDto = accountService.getAccountDto(account);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("profile", HttpStatus.OK, accountDto);
+
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/logout")
