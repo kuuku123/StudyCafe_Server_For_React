@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class Profile {
 
-    @Length(max=35)
+    @Length(max=5)
     private String bio;
 
     @Length(max=50)

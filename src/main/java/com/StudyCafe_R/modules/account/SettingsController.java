@@ -8,6 +8,8 @@ import com.StudyCafe_R.modules.account.form.NicknameForm;
 import com.StudyCafe_R.modules.account.form.Notifications;
 import com.StudyCafe_R.modules.account.form.PasswordForm;
 import com.StudyCafe_R.modules.account.form.Profile;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
+import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.validator.NicknameValidator;
 import com.StudyCafe_R.modules.account.validator.PasswordFormValidator;
@@ -19,11 +21,14 @@ import com.StudyCafe_R.modules.zone.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,19 +89,10 @@ public class SettingsController {
         return SETTINGS + PROFILE;
     }
     @PostMapping(PROFILE)
-    public String updateProfile(@CurrentAccount Account account, @Valid @ModelAttribute Profile profile,
-                                BindingResult bindingResult,
-                                Model model,
-                                RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            // error에 대한 정보는 자동으로 들어가게 된다.
-            model.addAttribute(account);
-            return SETTINGS+PROFILE;
-        }
-
+    public ResponseEntity<String> updateProfile(@CurrentAccount Account account, @Valid @RequestBody Profile profile) {
         accountService.updateProfile(account,profile);
-        redirectAttributes.addFlashAttribute("message","프로필 수정 성공");
-        return "redirect:/" + SETTINGS + PROFILE;
+        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK,null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping(PASSWORD)
