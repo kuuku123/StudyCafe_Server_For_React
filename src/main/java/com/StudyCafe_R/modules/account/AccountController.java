@@ -89,7 +89,7 @@ public class AccountController {
     @GetMapping("/check-email-token")
     public String checkEmailToken(String token, String email , Model model, HttpServletRequest request, HttpServletResponse response) {
         Account account = accountRepository.findByEmail(email);
-        String view = "account/checked-email";
+        String view = "email/checked-email";
         if (account == null) {
             model.addAttribute("error","wrong.email");
             return view;

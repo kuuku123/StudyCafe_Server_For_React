@@ -106,6 +106,7 @@ public class AccountService {
         context.setVariable("linkName","이메일 인증하기");
         context.setVariable("message","스터디 카페 서비스를 사용하려면 링크를 클릭하세요.");
         context.setVariable("host",appProperties.getHost());
+        context.setVariable("port", 8080);
 
         String message = templateEngine.process("email/simple-link", context);
 
