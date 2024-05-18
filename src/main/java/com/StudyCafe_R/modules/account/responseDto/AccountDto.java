@@ -12,4 +12,6 @@ public class AccountDto {
     private String occupation;
     private String location;
     private String email;
+    private boolean emailVerified;
+
 }
