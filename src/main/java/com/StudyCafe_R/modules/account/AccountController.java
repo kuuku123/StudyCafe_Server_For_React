@@ -109,19 +109,19 @@ public class AccountController {
     @GetMapping("/check-email")
     public String checkEmail(@CurrentAccount Account account , Model model) {
         model.addAttribute("email",account.getEmail());
-        return "account/check-email";
+        return "email/check-email";
     }
 
     @GetMapping("/resend-confirm-email")
-    public String resendConfirmEmail(@CurrentAccount Account account , Model model) {
-        if (!account.canSendConfirmationEmail()) {
-            model.addAttribute("error", "인증 메일은 1시간에 1번만 전송할 수 있습니다.");
-            model.addAttribute("email",account.getEmail());
-            return "account/check-email";
+    public ResponseEntity<String> resendConfirmEmail(@CurrentAccount Account account , Model model) {
+        if (account.canSendConfirmationEmail()) {
+            ApiResponse<String> apiResponse = new ApiResponse<>("The retransmission cycle is 1 hour.", HttpStatus.BAD_REQUEST,null);
+            return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.BAD_REQUEST);
         }
         account.generateEmailCheckToken();
         accountService.sendSignupConfirmEmail(account);
-        return "redirect:/";
+        ApiResponse<String> apiResponse = new ApiResponse<>("resend succeed.", HttpStatus.OK,null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/profile/{nickname}")
