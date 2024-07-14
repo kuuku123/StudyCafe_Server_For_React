@@ -8,10 +8,7 @@ import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
 import com.StudyCafe_R.modules.account.domain.AccountZone;
-import com.StudyCafe_R.modules.account.form.LoginForm;
-import com.StudyCafe_R.modules.account.form.Notifications;
-import com.StudyCafe_R.modules.account.form.Profile;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.form.*;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
@@ -37,9 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -150,6 +147,14 @@ public class AccountService {
     }
 
     public void updateProfile(Account account, Profile profile) {
+        // Remove the data URL prefix if it exists
+        String base64Image = profile.getProfileImage();
+        if (base64Image.startsWith("data:image/jpeg;base64,")) {
+            base64Image = base64Image.substring("data:image/jpeg;base64,".length());
+        }
+
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        account.setProfileImage(imageBytes);
         modelMapper.map(profile,account);
         accountRepository.save(account); // merge detached entity
     }
