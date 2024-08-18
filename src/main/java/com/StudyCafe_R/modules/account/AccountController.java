@@ -20,9 +20,15 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -76,7 +82,12 @@ public class AccountController {
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {
         if (errors.hasErrors()) {
-            throw new IllegalArgumentException("duplicate nickname or email");
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError error : errors.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            ApiResponse<Map<String, String>> signupFailed = new ApiResponse<>("signup Failed", HttpStatus.BAD_REQUEST, errorMap);
+            return new ResponseEntity<>(new Gson().toJson(signupFailed), HttpStatus.BAD_REQUEST);
         }
 
         Account account = accountService.processNewAccount(signUpForm);

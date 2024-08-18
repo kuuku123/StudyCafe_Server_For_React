@@ -43,6 +43,9 @@ public class Study {
     private String fullDescription;
 
     @Lob @Basic(fetch = FetchType.EAGER)
+    private String fullDescriptionText;
+
+    @Lob @Basic(fetch = FetchType.EAGER)
     private String image;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "study",cascade = CascadeType.ALL)

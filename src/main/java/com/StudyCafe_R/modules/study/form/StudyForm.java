@@ -25,4 +25,7 @@ public class StudyForm {
 
     @NotBlank
     private String fullDescription;
+
+    @NotBlank
+    private String fullDescriptionText;
 }
