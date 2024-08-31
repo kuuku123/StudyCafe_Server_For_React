@@ -61,7 +61,7 @@ public class StudyController {
 
         Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm,Study.class),account);
 
-        ApiResponse<String> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, null);
+        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, studyForm);
 
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
