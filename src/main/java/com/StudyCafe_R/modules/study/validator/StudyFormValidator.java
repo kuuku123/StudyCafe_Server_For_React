@@ -1,7 +1,7 @@
-package com.StudyCafe_R.StudyCafe_R.modules.study.validator;
+package com.StudyCafe_R.modules.study.validator;
 
-import com.StudyCafe_R.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.StudyRepository;
+import com.StudyCafe_R.modules.study.form.StudyForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

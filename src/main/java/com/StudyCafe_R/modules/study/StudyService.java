@@ -1,7 +1,6 @@
 package com.StudyCafe_R.modules.study;
 
 import com.StudyCafe_R.StudyCafe_R.modules.study.form.StudyDescriptionForm;
-import com.StudyCafe_R.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
@@ -10,6 +9,7 @@ import com.StudyCafe_R.modules.study.domain.StudyTag;
 import com.StudyCafe_R.modules.study.domain.StudyZone;
 import com.StudyCafe_R.modules.study.event.StudyCreatedEvent;
 import com.StudyCafe_R.modules.study.event.StudyUpdateEvent;
+import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.zone.Zone;
