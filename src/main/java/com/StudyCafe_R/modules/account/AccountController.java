@@ -2,7 +2,6 @@ package com.StudyCafe_R.modules.account;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.LoginForm;
-import com.StudyCafe_R.modules.account.form.Profile;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -14,20 +13,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.manager.util.SessionUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -53,13 +50,12 @@ public class AccountController {
     //TODO When sending an image as a bytearray from Javascript to JSON,
     // need to find out how to render it without error in the browser so that it can be processed with one API call.
     @GetMapping(value="/profile-image")
-    public ResponseEntity<ByteArrayResource> profileImage(@RequestParam("user") String user) {
+    public ResponseEntity<String> profileImage(@RequestParam("user") String user) {
         Account account = accountService.getAccount(user);
         byte[] profileImage = account.getProfileImage();
-        ByteArrayResource byteArrayResource = new ByteArrayResource(profileImage);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(byteArrayResource);
+        String encodedImage = Base64.encodeBase64String(profileImage);
+        ApiResponse<String> apiResponse = new ApiResponse<>("profile-image", HttpStatus.OK, encodedImage);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/profile")
