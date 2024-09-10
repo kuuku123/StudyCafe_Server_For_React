@@ -5,7 +5,7 @@ import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.AccountPredicates;
-import com.StudyCafe_R.modules.account.AccountRepository;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;

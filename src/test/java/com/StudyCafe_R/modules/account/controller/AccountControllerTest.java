@@ -1,10 +1,11 @@
-package com.StudyCafe_R.modules.account;
+package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

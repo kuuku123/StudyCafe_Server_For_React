@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.account;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

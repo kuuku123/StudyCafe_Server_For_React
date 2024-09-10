@@ -1,10 +1,11 @@
-package com.StudyCafe_R.modules.account;
+package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
@@ -25,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static com.StudyCafe_R.modules.account.SettingsController.*;
+import static com.StudyCafe_R.modules.account.controller.SettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

@@ -1,11 +1,11 @@
-package com.StudyCafe_R.modules.account;
+package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
+import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
 import com.StudyCafe_R.modules.account.domain.AccountZone;
 import com.StudyCafe_R.modules.account.form.*;
-import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.validator.NicknameValidator;
@@ -29,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +39,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.StudyCafe_R.modules.account.SettingsController.ROOT;
-import static com.StudyCafe_R.modules.account.SettingsController.SETTINGS;
+import static com.StudyCafe_R.modules.account.controller.SettingsController.ROOT;
+import static com.StudyCafe_R.modules.account.controller.SettingsController.SETTINGS;
 
 
 @Controller

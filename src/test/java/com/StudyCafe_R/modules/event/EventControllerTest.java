@@ -4,7 +4,7 @@ import com.StudyCafe_R.StudyCafe_R.modules.event.domain.EventType;
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.modules.account.AccountFactory;
-import com.StudyCafe_R.modules.account.AccountRepository;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.service.AccountService;

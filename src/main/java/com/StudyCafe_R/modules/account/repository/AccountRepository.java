@@ -1,4 +1,4 @@
-package com.StudyCafe_R.modules.account;
+package com.StudyCafe_R.modules.account.repository;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
