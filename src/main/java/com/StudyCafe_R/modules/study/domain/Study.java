@@ -40,9 +40,11 @@ public class Study {
     private String shortDescription;
 
     @Lob @Basic(fetch = FetchType.EAGER)
+    @Column(columnDefinition = "TEXT")
     private String fullDescription;
 
     @Lob @Basic(fetch = FetchType.EAGER)
+    @Column(columnDefinition = "TEXT")
     private String fullDescriptionText;
 
     @Lob @Basic(fetch = FetchType.EAGER)
