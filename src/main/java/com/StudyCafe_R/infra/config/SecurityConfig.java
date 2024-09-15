@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .ignoringRequestMatchers(new SingUpRequestMatchers()));
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/index.html","/css/**", "/js/**", "/images/**", "/static/**", "/dist/**", "/*.css", "/*.js").permitAll()
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/login")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/sign-up")).permitAll()
