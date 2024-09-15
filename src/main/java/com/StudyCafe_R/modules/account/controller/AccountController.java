@@ -49,11 +49,10 @@ public class AccountController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    //TODO When sending an image as a bytearray from Javascript to JSON,
-    // need to find out how to render it without error in the browser so that it can be processed with one API call.
+    //TODO
+    // "user" doesn't have to be in query params, because we have session
     @GetMapping(value="/profile-image")
-    public ResponseEntity<String> profileImage(@RequestParam("user") String user) {
-        Account account = accountService.getAccount(user);
+    public ResponseEntity<String> profileImage(@CurrentAccount Account account) {
         byte[] profileImage = account.getProfileImage();
         String encodedImage = Base64.encodeBase64String(profileImage);
         ApiResponse<String> apiResponse = new ApiResponse<>("profile-image", HttpStatus.OK, encodedImage);

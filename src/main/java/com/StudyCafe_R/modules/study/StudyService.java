@@ -21,6 +21,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,6 +36,8 @@ public class StudyService {
     private final TagRepository tagRepository;
 
     public Study createNewStudy(Study study, Account account) {
+        byte[] anonymousProfileJpg = readFileToByteArray("src/main/resources/images/anonymous.JPG");
+        study.setStudyImage(anonymousProfileJpg);
         Study newStudy = studyRepository.save(study);
 
         AccountStudyManager accountStudyManager = AccountStudyManager.builder()
@@ -41,6 +47,19 @@ public class StudyService {
 
         newStudy.addManager(accountStudyManager);
         return newStudy;
+    }
+
+    private byte[] readFileToByteArray(String filePath) {
+        File file = new File(filePath);
+        byte[] byteArray = new byte[(int) file.length()];
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(byteArray);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return byteArray;
     }
 
     public Study getStudyToUpdate(Account account, String path) {

@@ -39,6 +39,9 @@ public class Study {
 
     private String shortDescription;
 
+    @Lob @Column(columnDefinition = "LONGBLOB")
+    private byte[] studyImage;
+
     @Lob @Basic(fetch = FetchType.EAGER)
     @Column(columnDefinition = "TEXT")
     private String fullDescription;
