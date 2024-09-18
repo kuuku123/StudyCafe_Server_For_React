@@ -149,6 +149,9 @@ public class AccountService {
         if (base64Image.startsWith("data:image/jpeg;base64,")) {
             base64Image = base64Image.substring("data:image/jpeg;base64,".length());
         }
+        if (base64Image.startsWith("data:image/png;base64,")) {
+            base64Image = base64Image.substring("data:image/png;base64,".length());
+        }
 
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
         account.setProfileImage(imageBytes);
