@@ -38,6 +38,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 @Slf4j @RequiredArgsConstructor
@@ -56,6 +59,7 @@ public class AccountService {
 
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @PostConstruct
     public void init() {
@@ -63,7 +67,6 @@ public class AccountService {
     }
 
     public Account processNewAccount(SignUpForm signUpForm) {
-
         Account newAccount = saveNewAccount(signUpForm);
         sendSignupConfirmEmail(newAccount);
         return newAccount;
@@ -102,15 +105,18 @@ public class AccountService {
         context.setVariable("host",appProperties.getHost());
         context.setVariable("port", 8080);
 
-        String message = templateEngine.process("email/simple-link", context);
+        executorService.submit(() -> {
+            String message = templateEngine.process("email/simple-link", context);
 
-        EmailMessage emailMessage = EmailMessage.builder()
-                .to(newAccount.getEmail())
-                .from("tonydevpc123@gmail.com")
-                .subject("스터디 카페 , 회원가입 인증")
-                .message(message)
-                .build();
-        emailService.sendEmail(emailMessage);
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(newAccount.getEmail())
+                    .from("tonydevpc123@gmail.com")
+                    .subject("스터디 카페 , 회원가입 인증")
+                    .message(message)
+                    .build();
+            emailService.sendEmail(emailMessage);
+        });
+
     }
 
     // Storing the Authentication manually
@@ -187,15 +193,15 @@ public class AccountService {
         context.setVariable("message","로그인 하려면 링크를 클릭하세요.");
         context.setVariable("host",appProperties.getHost());
 
-        String message = templateEngine.process("email/simple-link", context);
-
-
-        EmailMessage emailMessage = EmailMessage.builder()
-                .to(account.getEmail())
-                .subject("스터디 카페 , 로그인 링크")
-                .message(message)
-                .build();
-        emailService.sendEmail(emailMessage);
+        executorService.submit(() -> {
+            String message = templateEngine.process("email/simple-link", context);
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(account.getEmail())
+                    .subject("스터디 카페 , 로그인 링크")
+                    .message(message)
+                    .build();
+            emailService.sendEmail(emailMessage);
+        });
     }
 
     public void addTag(Account account, Tag tag) {
