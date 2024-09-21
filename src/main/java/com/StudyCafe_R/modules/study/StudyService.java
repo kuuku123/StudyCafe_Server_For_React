@@ -1,6 +1,6 @@
 package com.StudyCafe_R.modules.study;
 
-import com.StudyCafe_R.StudyCafe_R.modules.study.form.StudyDescriptionForm;
+import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
