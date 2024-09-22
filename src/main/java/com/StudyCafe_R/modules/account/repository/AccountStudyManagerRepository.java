@@ -13,4 +13,7 @@ public interface AccountStudyManagerRepository extends JpaRepository<AccountStud
 
     @Query("SELECT asm.study FROM AccountStudyManager asm WHERE asm.account.id = :accountId")
     List<Study> findStudiesByAccountId(@Param("accountId") Long accountId);
+
+    @Query("select asm.study from AccountStudyManager asm where asm.account.id = :accountId and asm.study.id = :studyId")
+    Study findStudyManager(@Param("accountId") Long accountId, @Param("studyId") Long studyId);
 }

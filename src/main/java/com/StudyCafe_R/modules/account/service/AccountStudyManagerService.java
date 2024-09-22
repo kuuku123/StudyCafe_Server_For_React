@@ -1,9 +1,10 @@
 package com.StudyCafe_R.modules.account.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.repository.AccountStudyManagerRepository;
-import com.StudyCafe_R.modules.account.responseDto.AccountStudyManagerDto;
+import com.StudyCafe_R.modules.account.repository.AccountStudyMembersRepository;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
+import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,22 +22,34 @@ import java.util.List;
 public class AccountStudyManagerService {
 
     private final AccountStudyManagerRepository accountStudyManagerRepository;
+    private final AccountStudyMembersRepository accountStudyMembersRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional(readOnly = true)
+    public List<AccountDto> getStudyMembers(Account account, Study study) {
+        List<Account> studyMembers = accountStudyMembersRepository.findStudyMembers(account.getId(), study.getId());
+        List<AccountDto> accountDtoList = new ArrayList<>();
+        for (Account studyMember : studyMembers) {
+            AccountDto accountDto = new AccountDto();
+            modelMapper.map(studyMember, accountDto);
+            accountDtoList.add(accountDto);
+        }
+        return accountDtoList;
+    }
 
     @Transactional(readOnly = true)
-    public List<AccountStudyManagerDto> getStudyList(Account account) {
+    public List<StudyDto> getStudyList(Account account) {
         List<Study> studiesByAccountId = accountStudyManagerRepository.findStudiesByAccountId(account.getId());
-        List<AccountStudyManagerDto> accountStudyManagerDtoList = new ArrayList<>();
+        List<StudyDto> accountStudyManagerDtoList = new ArrayList<>();
         for (Study study : studiesByAccountId) {
-            AccountStudyManagerDto accountStudyManagerDto = mapAccountStudyManagerDto(study);
+            StudyDto accountStudyManagerDto = mapAccountStudyManagerDto(study);
             accountStudyManagerDtoList.add(accountStudyManagerDto);
         }
         return accountStudyManagerDtoList;
     }
 
-    private AccountStudyManagerDto mapAccountStudyManagerDto(Study study) {
-        AccountStudyManagerDto accountStudyManagerDto = new AccountStudyManagerDto();
+    private StudyDto mapAccountStudyManagerDto(Study study) {
+        StudyDto accountStudyManagerDto = new StudyDto();
         accountStudyManagerDto.setTitle(study.getTitle());
         accountStudyManagerDto.setPath(study.getPath());
         accountStudyManagerDto.setShortDescription(study.getShortDescription());

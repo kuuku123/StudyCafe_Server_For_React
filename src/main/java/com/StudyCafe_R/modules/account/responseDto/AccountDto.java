@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class AccountDto {
 
+    private String nickname;
     private String bio;
     private String url;
     private String occupation;

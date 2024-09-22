@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,10 +17,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AccountExceptionAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> accountServerIllegalArgumentExceptionHandle(IllegalArgumentException ex) {
         log.error(ex.getMessage(), ex);
         ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>(ex.getMessage(), HttpStatus.BAD_REQUEST,null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> accountServerBadCredentialExceptionHandle(BadCredentialsException ex) {
+        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("username or password is not valid", HttpStatus.BAD_REQUEST,null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.BAD_REQUEST);
     }
 
