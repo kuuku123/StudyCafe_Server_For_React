@@ -71,7 +71,6 @@ public class StudyService {
 
     public Study getStudy(String path) {
         Study study = studyRepository.findByPath(path);
-        checkIfStudyExist(path,study);
         return study;
     }
 
@@ -131,21 +130,18 @@ public class StudyService {
 
     public Study getStudyToUpdateTag(Account account, String path) {
         Study study = studyRepository.findStudyWithTagsByPath(path);
-        checkIfStudyExist(path,study);
         checkIfManager(account,study);
         return study;
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
         Study study = studyRepository.findStudyWithZonesByPath(path);
-        checkIfStudyExist(path,study);
         checkIfManager(account,study);
         return study;
     }
 
     public Study getStudyToUpdateStatus(Account account, String path) {
         Study study = studyRepository.findStudyWithManagersByPath(path);
-        checkIfStudyExist(path, study);
         checkIfManager(account, study);
         return study;
     }
@@ -156,15 +152,10 @@ public class StudyService {
         }
     }
 
-    private void checkIfStudyExist(String path, Study study) {
-        if (study == null) {
-            throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
-        }
-    }
 
     public void publish(Study study) {
         study.publish();
-        eventPublisher.publishEvent(new StudyCreatedEvent(study));
+//        eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
 
     public void close(Study study) {
@@ -224,7 +215,6 @@ public class StudyService {
 
     public Study getStudyToEnroll(String path) {
         Study study = studyRepository.findStudyOnlyByPath(path);
-        checkIfStudyExist(path,study);
         return study;
     }
 

@@ -1,10 +1,12 @@
 package com.StudyCafe_R.modules.study;
 
+import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
+import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
@@ -13,9 +15,11 @@ import com.StudyCafe_R.modules.zone.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -186,12 +190,12 @@ public class StudySettingController {
         return "study/settings/study";
     }
 
-    @PostMapping("/study/publish")
-    public String publishStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
+    @PostMapping("/publish")
+    public ResponseEntity<String> publishStudy(@CurrentAccount Account account, @PathVariable String path ) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
-        redirectAttributes.addFlashAttribute("message","스터디를 공개했습니다.");
-        return "redirect:/study/" + study.getEncodedPath() + "/settings/study";
+        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/study/close")
