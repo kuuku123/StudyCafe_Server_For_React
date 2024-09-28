@@ -41,10 +41,16 @@ public class AccountController {
         webDataBinder.addValidators(signUpFormValidator);
     }
 
+    @GetMapping("xsrf-token")
+    public ResponseEntity<String> xsrfToken() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping(value = "/login",produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<String> login(@RequestBody LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
-        accountService.login(loginForm, request, response);
-        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK,null);
+        Account account = accountService.login(loginForm, request, response);
+        AccountDto accountDto = accountService.getAccountDto(account);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("login succeed", HttpStatus.OK,accountDto);
 
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
@@ -68,9 +74,8 @@ public class AccountController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        session.invalidate();
+    public ResponseEntity<String> logout(@CurrentAccount Account account,HttpServletRequest request, HttpServletResponse response) {
+        accountService.logout(account,request);
         ApiResponse<String> apiResponse = new ApiResponse<>("logout succeed", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }

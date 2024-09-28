@@ -57,6 +57,7 @@ public class SecurityConfig {
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/login-by-email")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/search/study")).permitAll()
                                 .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/profile/*")).permitAll()
+                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/xsrf-token")).permitAll()
                                 .anyRequest().authenticated());
 
 

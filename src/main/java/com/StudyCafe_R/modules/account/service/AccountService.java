@@ -16,6 +16,7 @@ import com.StudyCafe_R.modules.zone.Zone;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,9 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +59,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
     private final RememberMeServices rememberMeServices;
+    private final PersistentTokenRepository persistentTokenRepository;
     private final UserDetailsService userDetailsService;
     private final ModelMapper modelMapper;
     private final SecurityContextRepository securityContextRepository;
@@ -123,7 +127,7 @@ public class AccountService {
     }
 
     // Storing the Authentication manually
-    public void login(LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
+    public Account login(LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
         String nicknameOrEmail = loginForm.getNicknameOrEmail();
         Account account = getAccount(nicknameOrEmail);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
@@ -131,6 +135,15 @@ public class AccountService {
         authenticationProvider.authenticate(token);
 
         saveAuthentication(request, response, account, loginForm.getPassword());
+
+        return account;
+    }
+
+
+    public void logout(Account account, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+        persistentTokenRepository.removeUserTokens(account.getNickname());
     }
 
     private void saveAuthentication(HttpServletRequest request, HttpServletResponse response, Account account, String password) {
