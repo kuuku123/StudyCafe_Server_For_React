@@ -27,6 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +55,7 @@ public class AccountService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    private final RememberMeServices rememberMeServices;
     private final UserDetailsService userDetailsService;
     private final ModelMapper modelMapper;
     private final SecurityContextRepository securityContextRepository;
@@ -138,6 +141,7 @@ public class AccountService {
         context.setAuthentication(authorizedToken);
         securityContextHolderStrategy.setContext(context);
         securityContextRepository.saveContext(context,request ,response);
+        rememberMeServices.loginSuccess(request,response,authorizedToken);
     }
 
     public void signUp(Account account, HttpServletRequest request, HttpServletResponse response) {

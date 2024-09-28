@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -64,7 +66,18 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        PersistentTokenBasedRememberMeServices rememberMeServices =
+                new PersistentTokenBasedRememberMeServices(
+                        "remember-me-key-encryption",
+                        userDetailsService,
+                        tokenRepository()
+                );
+        rememberMeServices.setTokenValiditySeconds(1209600); // 14 days
+        rememberMeServices.setAlwaysRemember(true); // Set to true if you want to always remember
+        return rememberMeServices;
+    }
     @Bean
     public PersistentTokenRepository tokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
