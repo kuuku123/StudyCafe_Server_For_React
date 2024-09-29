@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class TagForm {
 
-    private String tagTitle;
+    private String value;
+    private String label;
 
 }

@@ -14,7 +14,7 @@ import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.zone.Zone;
-import com.StudyCafe_R.modules.zone.ZoneForm;
+import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -169,7 +169,7 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity addTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
 
-        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
+        Tag tag = tagService.findOrCreateNew(tagForm.getValue());
         accountService.addTag(account,tag);
         return ResponseEntity.ok().build();
     }
@@ -177,7 +177,7 @@ public class SettingsController {
     @PostMapping(TAGS+"/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
-        String title = tagForm.getTagTitle();
+        String title = tagForm.getValue();
         Optional<Tag> tag = tagRepository.findByTitle(title);
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -203,7 +203,7 @@ public class SettingsController {
     @PostMapping(ZONES + "/add")
     @ResponseBody
     public ResponseEntity addZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -215,7 +215,7 @@ public class SettingsController {
     @PostMapping(ZONES + "/remove")
     @ResponseBody
     public ResponseEntity removeZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }

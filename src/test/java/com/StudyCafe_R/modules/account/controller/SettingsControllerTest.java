@@ -10,7 +10,7 @@ import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.zone.Zone;
-import com.StudyCafe_R.modules.zone.ZoneForm;
+import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;

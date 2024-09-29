@@ -8,10 +8,9 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
-import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.zone.Zone;
-import com.StudyCafe_R.modules.zone.ZoneForm;
+import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,6 @@ public class StudySettingController {
     private final StudyService studyService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
-    private final TagRepository tagRepository;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
 
@@ -102,14 +102,7 @@ public class StudySettingController {
     @GetMapping("/tags")
     public String studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
         Study study = studyService.getStudyToUpdate(account, path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-
-        model.addAttribute("tags",study.getTags().stream()
-                .map(studyTag -> studyTag.getTag().getTitle())
-                .collect(Collectors.toList()));
-
-        List<String> allTagTitles = tagRepository.findAll().stream()
+        List<String> allTagTitles = tagService.findAll().stream()
                 .map(Tag::getTitle).collect(Collectors.toList());
 
 
@@ -118,22 +111,24 @@ public class StudySettingController {
         return "study/settings/tags";
     }
 
-    @PostMapping("/tags/add")
+    @PostMapping(value = "/tags/add")
     @ResponseBody
-    public ResponseEntity addTag(@CurrentAccount Account account, @PathVariable String path,
-                                 @RequestBody TagForm tagForm) {
+    public ResponseEntity<String> addTag(@CurrentAccount Account account, @PathVariable String path,
+                                 @RequestBody List<TagForm> tagFormList) {
         Study study = studyService.getStudyToUpdateTag(account, path);
-        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
-
-        studyService.addTag(study,tag);
-        return ResponseEntity.ok().build();
+            for (TagForm tagForm : tagFormList) {
+                Tag tag = tagService.findOrCreateNew(tagForm.getValue());
+                studyService.addTag(study,tag);
+        }
+        ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/tags/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
         Study study = studyService.getStudyToUpdateTag(account, path);
-        Optional<Tag> tag = tagRepository.findByTitle(tagForm.getTagTitle());
+        Optional<Tag> tag = tagService.findByTitle(tagForm.getValue());
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -156,16 +151,16 @@ public class StudySettingController {
 
     @PostMapping("/zones/add")
     @ResponseBody
-    public ResponseEntity addZone(@CurrentAccount Account account, @PathVariable String path,
+    public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
                                   @RequestBody ZoneForm zoneForm) {
         Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
-
         studyService.addZone(study, zone);
-        return ResponseEntity.ok().build();
+        ApiResponse<Object> apiResponse = new ApiResponse<>("zone added", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/zones/remove")
@@ -173,7 +168,7 @@ public class StudySettingController {
     public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
                                      @RequestBody ZoneForm zoneForm) {
         Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
