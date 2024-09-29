@@ -1,8 +1,11 @@
 package com.StudyCafe_R.modules.zone;
 
 
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +26,17 @@ import java.util.stream.Collectors;
 public class ZoneService {
 
     private final ZoneRepository zoneRepository;
+    private final ModelMapper mapper;
+
+    public List<ZoneDto> getAllZone() {
+        List<Zone> zones = zoneRepository.findAll();
+        ArrayList<ZoneDto> zoneDtos = new ArrayList<>();
+        for (Zone zone : zones) {
+            ZoneDto map = mapper.map(zone, ZoneDto.class);
+            zoneDtos.add(map);
+        }
+        return zoneDtos;
+    }
 
     public void initZoneData() throws IOException {
         if (zoneRepository.count() == 0) {
