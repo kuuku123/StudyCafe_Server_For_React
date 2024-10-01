@@ -52,5 +52,11 @@ server:
     session:
       cookie:
         http-only: false
-        max-age:
         name: StudyCafe_Session_Cookie
+      timeout: 30m
+  session:
+    store-type: redis
+
+  redis:
+    host: localhost
+    port: 6379

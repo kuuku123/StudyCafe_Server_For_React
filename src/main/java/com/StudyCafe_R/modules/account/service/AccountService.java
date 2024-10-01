@@ -110,7 +110,6 @@ public class AccountService {
         context.setVariable("linkName","이메일 인증하기");
         context.setVariable("message","스터디 카페 서비스를 사용하려면 링크를 클릭하세요.");
         context.setVariable("host",appProperties.getHost());
-        context.setVariable("port", 8080);
 
         executorService.submit(() -> {
             String message = templateEngine.process("email/simple-link", context);
@@ -281,8 +280,9 @@ public class AccountService {
     }
 
     public AccountDto getAccountDto(Account account) {
+        Account accountFromDb = getAccount(account.getEmail()); // due to session split because of email verfication is localhost:8081 , (2 session get created 3000, 8081 and security are saved in session differently
         AccountDto accountDto = new AccountDto();
-        modelMapper.map(account, accountDto);
+        modelMapper.map(accountFromDb, accountDto);
         return  accountDto;
     }
 }
