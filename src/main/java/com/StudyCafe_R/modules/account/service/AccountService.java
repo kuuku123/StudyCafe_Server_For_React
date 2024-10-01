@@ -107,8 +107,8 @@ public class AccountService {
         Context context = new Context();
         context.setVariable("link","/check-email-token?token=" + newAccount.getEmailCheckToken() + "&email=" + newAccount.getEmail());
         context.setVariable("nickname",newAccount.getNickname());
-        context.setVariable("linkName","이메일 인증하기");
-        context.setVariable("message","스터디 카페 서비스를 사용하려면 링크를 클릭하세요.");
+        context.setVariable("linkName","Email Verification");
+        context.setVariable("message","Click the link to use the Study Cafe service.");
         context.setVariable("host",appProperties.getHost());
 
         executorService.submit(() -> {
@@ -117,7 +117,7 @@ public class AccountService {
             EmailMessage emailMessage = EmailMessage.builder()
                     .to(newAccount.getEmail())
                     .from("tonydevpc123@gmail.com")
-                    .subject("스터디 카페 , 회원가입 인증")
+                    .subject("Study Cafe , SignUp Verification")
                     .message(message)
                     .build();
             emailService.sendEmail(emailMessage);
