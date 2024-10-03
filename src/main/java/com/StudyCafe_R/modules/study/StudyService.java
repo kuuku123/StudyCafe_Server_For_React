@@ -12,7 +12,9 @@ import com.StudyCafe_R.modules.study.event.StudyUpdateEvent;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
+import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +79,27 @@ public class StudyService {
         return study;
     }
 
+    public List<TagDto> getStudyTags(String path) {
+        Study study = getStudy(path);
+        List<Tag> tags = study.getTags().stream().map(StudyTag::getTag).collect(Collectors.toList());
+        ArrayList<TagDto> tagDtoList = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDtoList.add(tagDto);
+        }
+        return tagDtoList;
+    }
+
+    public List<ZoneDto> getStudyZones(String path) {
+        Study study = getStudy(path);
+        List<Zone> zones = study.getZones().stream().map(StudyZone::getZone).collect(Collectors.toList());
+        List<ZoneDto> zoneDtoList = new ArrayList<>();
+        for (Zone zone : zones) {
+            ZoneDto zoneDto = modelMapper.map(zone, ZoneDto.class);
+            zoneDtoList.add(zoneDto);
+        }
+        return zoneDtoList;
+    }
 
     public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
         modelMapper.map(studyDescriptionForm,study);

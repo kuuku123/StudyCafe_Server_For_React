@@ -1,4 +1,4 @@
-package com.StudyCafe_R.modules.zone;
+package com.StudyCafe_R.infra.config.converter;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

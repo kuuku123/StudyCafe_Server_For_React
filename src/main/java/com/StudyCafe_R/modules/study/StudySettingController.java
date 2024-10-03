@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.study;
 
+import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
@@ -9,17 +10,19 @@ import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagService;
+import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +30,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,12 +40,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudySettingController {
 
-    private final StudyRepository studyRepository;
     private final StudyService studyService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .create();
 
     @GetMapping("/description")
     public String viewStudySetting(@CurrentAccount Account account, @PathVariable String path, Model model) {
@@ -100,15 +105,10 @@ public class StudySettingController {
     }
 
     @GetMapping("/tags")
-    public String studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        Study study = studyService.getStudyToUpdate(account, path);
-        List<String> allTagTitles = tagService.findAll().stream()
-                .map(Tag::getTitle).collect(Collectors.toList());
-
-
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTagTitles));
-
-        return "study/settings/tags";
+    public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+        List<TagDto> studyTagDtoList = studyService.getStudyTags(path);
+        ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, studyTagDtoList);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping(value = "/tags/add")
@@ -121,7 +121,7 @@ public class StudySettingController {
                 studyService.addTag(study,tag);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/tags/remove")
@@ -137,30 +137,26 @@ public class StudySettingController {
     }
 
     @GetMapping("/zones")
-    public String studyZonesForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        Study study = studyService.getStudyToUpdate(account, path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-        model.addAttribute("zones",study.getZones().stream()
-                .map(studyZone -> studyZone.getZone().toString()).collect(Collectors.toList()));
-        List<String> allZones = zoneRepository.findAll().stream()
-                .map(Zone::toString).collect(Collectors.toList());
-        model.addAttribute("whitelist",objectMapper.writeValueAsString(allZones));
-        return "study/settings/zones";
+    public ResponseEntity<String> studyZonesForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+        List<ZoneDto> zoneDtoList = studyService.getStudyZones(path);
+        ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, zoneDtoList);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/zones/add")
     @ResponseBody
     public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
-                                  @RequestBody ZoneForm zoneForm) {
+                                  @RequestBody List<ZoneForm> zoneFormList) {
         Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
-        if (zone == null) {
-            return ResponseEntity.badRequest().build();
+        for (ZoneForm zoneForm : zoneFormList) {
+            Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
+            if (zone == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            studyService.addZone(study, zone);
         }
-        studyService.addZone(study, zone);
         ApiResponse<Object> apiResponse = new ApiResponse<>("zone added", HttpStatus.OK, null);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/zones/remove")
@@ -190,7 +186,7 @@ public class StudySettingController {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
         ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, null);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/study/close")

@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.zone;
 
+import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import com.google.gson.Gson;
@@ -23,7 +24,7 @@ public class ZoneController {
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
 
-    @GetMapping("/getZones")
+    @GetMapping("/get-all-zones")
     public ResponseEntity<String> getZones() {
         List<ZoneDto> zones = zoneService.getAllZone();
         ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("zones", HttpStatus.OK, zones);
