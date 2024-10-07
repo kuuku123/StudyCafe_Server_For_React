@@ -59,4 +59,4 @@ server:
 
   redis:
     host: localhost
-    port: 6379
+    port: 16379
