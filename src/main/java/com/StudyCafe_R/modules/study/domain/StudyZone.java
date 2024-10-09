@@ -13,11 +13,11 @@ public class StudyZone {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_id")
+    @JoinColumn(name = "study_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Study study;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zone_id")
+    @JoinColumn(name = "zone_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Zone zone;
 
 }

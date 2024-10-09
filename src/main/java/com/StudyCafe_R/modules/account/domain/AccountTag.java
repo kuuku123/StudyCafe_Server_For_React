@@ -15,11 +15,11 @@ public class AccountTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="account_id")
+    @JoinColumn(name="account_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tag_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Tag tag;
 
 }

@@ -30,11 +30,11 @@ public class Event {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_id")
+    @JoinColumn(name = "study_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Study study;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account createdBy;
 
     @Column(nullable = false)

@@ -13,11 +13,11 @@ public class StudyTag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "study_id")
+    @JoinColumn(name = "study_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Study study;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tag_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Tag tag;
 
 }

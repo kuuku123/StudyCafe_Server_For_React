@@ -15,11 +15,11 @@ public class Enrollment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_event_id")
+    @JoinColumn(name = "study_event_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     private LocalDateTime enrolledAt;

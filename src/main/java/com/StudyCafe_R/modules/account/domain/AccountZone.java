@@ -16,10 +16,10 @@ public class AccountZone {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ACCOUNT_ID")
+    @JoinColumn(name="ACCOUNT_ID",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ZONE_ID")
+    @JoinColumn(name = "ZONE_ID",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Zone zone;
 }
