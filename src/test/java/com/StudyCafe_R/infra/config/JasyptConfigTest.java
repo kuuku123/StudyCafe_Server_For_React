@@ -2,13 +2,11 @@ package com.StudyCafe_R.infra.config;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-@SpringBootTest
 class JasyptConfigTest {
 
     @Test
     void jasycrpt() {
-        String url = "jdbc:mysql://localhost:3316/test?serverTimezone=UTC&characterEncoding=UTF-8";
+        String url = "jdbc:mysql://mysql-test:3306/test?serverTimezone=UTC&characterEncoding=UTF-8";
         String username = "root";
         String password = "1234";
         String mail = "tonydevpc123@gmail.com";
