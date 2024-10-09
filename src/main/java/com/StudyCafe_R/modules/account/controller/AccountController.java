@@ -12,11 +12,8 @@ import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,8 +56,7 @@ public class AccountController {
     // "user" doesn't have to be in query params, because we have session
     @GetMapping(value="/profile-image")
     public ResponseEntity<String> profileImage(@CurrentAccount Account account) {
-        byte[] profileImage = account.getProfileImage();
-        String encodedImage = Base64.encodeBase64String(profileImage);
+        String encodedImage = accountService.getProfileImage(account);
         ApiResponse<String> apiResponse = new ApiResponse<>("profile-image", HttpStatus.OK, encodedImage);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }

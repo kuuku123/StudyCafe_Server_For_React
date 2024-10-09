@@ -3,12 +3,12 @@ package com.StudyCafe_R.modules.study;
 import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
-import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
+import com.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
@@ -33,7 +33,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/study/{path}/settings")
@@ -117,7 +116,7 @@ public class StudySettingController {
                                  @RequestBody List<TagForm> tagFormList) {
         Study study = studyService.getStudyToUpdateTag(account, path);
             for (TagForm tagForm : tagFormList) {
-                Tag tag = tagService.findOrCreateNew(tagForm.getValue());
+                Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
                 studyService.addTag(study,tag);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
@@ -128,7 +127,7 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
         Study study = studyService.getStudyToUpdateTag(account, path);
-        Optional<Tag> tag = tagService.findByTitle(tagForm.getValue());
+        Optional<Tag> tag = tagService.findByTitle(tagForm.getTitle());
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -149,7 +148,7 @@ public class StudySettingController {
                                   @RequestBody List<ZoneForm> zoneFormList) {
         Study study = studyService.getStudyToUpdateZone(account, path);
         for (ZoneForm zoneForm : zoneFormList) {
-            Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
+            Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
             if (zone == null) {
                 return ResponseEntity.badRequest().build();
             }
@@ -164,7 +163,7 @@ public class StudySettingController {
     public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
                                      @RequestBody ZoneForm zoneForm) {
         Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }

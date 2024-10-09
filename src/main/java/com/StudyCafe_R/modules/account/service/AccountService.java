@@ -29,8 +29,6 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -43,7 +41,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -164,6 +161,14 @@ public class AccountService {
         account.completeSignUp();
         signUp(account, request, response);
     }
+
+    public String getProfileImage(Account account) {
+        Account byNickname = accountRepository.findByNickname(account.getNickname());
+        byte[] profileImage = byNickname.getProfileImage();
+        String encodedImage = org.apache.tomcat.util.codec.binary.Base64.encodeBase64String(profileImage);
+        return encodedImage;
+    }
+
 
     public void updateProfile(Account account, Profile profile) {
         // Remove the data URL prefix if it exists

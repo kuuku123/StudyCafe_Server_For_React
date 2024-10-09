@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.account.controller;
 
-import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -8,6 +7,7 @@ import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.tag.Tag;
+import com.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
@@ -89,7 +89,7 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     void addTag() throws Exception {
 
         TagForm tagForm = new TagForm();
-        tagForm.setTagTitle("newTag");
+        tagForm.setTitle("newTag");
 
         mockMvc.perform(post(ROOT + SETTINGS + TAGS +"/add")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         assertTrue(tony.getAccountTagSet().stream().anyMatch(ac -> ac.getTag() == newTag));
 
         TagForm tagForm = new TagForm();
-        tagForm.setTagTitle("newTag");
+        tagForm.setTitle("newTag");
 
         mockMvc.perform(post(ROOT + SETTINGS + TAGS +"/remove")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -269,7 +269,8 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     @Test
     void addZone() throws Exception {
         ZoneForm zoneForm = new ZoneForm();
-        zoneForm.setZoneName(testZone.toString());
+        zoneForm.setCity(testZone.getCity());
+        zoneForm.setProvince(testZone.getProvince());
 
         mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/add")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -293,7 +294,8 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         accountService.addZone(tony, zone);
 
         ZoneForm zoneForm = new ZoneForm();
-        zoneForm.setZoneName(testZone.toString());
+        zoneForm.setCity(testZone.getCity());
+        zoneForm.setProvince(testZone.getProvince());
 
         mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/remove")
                         .contentType(MediaType.APPLICATION_JSON)

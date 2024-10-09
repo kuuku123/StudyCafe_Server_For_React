@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.account.controller;
 
-import com.StudyCafe_R.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
@@ -11,6 +10,7 @@ import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.validator.NicknameValidator;
 import com.StudyCafe_R.modules.account.validator.PasswordFormValidator;
 import com.StudyCafe_R.modules.tag.Tag;
+import com.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.zone.Zone;
@@ -169,7 +169,7 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity addTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
 
-        Tag tag = tagService.findOrCreateNew(tagForm.getValue());
+        Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
         accountService.addTag(account,tag);
         return ResponseEntity.ok().build();
     }
@@ -177,7 +177,7 @@ public class SettingsController {
     @PostMapping(TAGS+"/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
-        String title = tagForm.getValue();
+        String title = tagForm.getTitle();
         Optional<Tag> tag = tagRepository.findByTitle(title);
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -203,7 +203,7 @@ public class SettingsController {
     @PostMapping(ZONES + "/add")
     @ResponseBody
     public ResponseEntity addZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -215,7 +215,7 @@ public class SettingsController {
     @PostMapping(ZONES + "/remove")
     @ResponseBody
     public ResponseEntity removeZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getValue().getCity(), zoneForm.getValue().getProvince());
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }

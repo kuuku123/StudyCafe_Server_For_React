@@ -1,11 +1,23 @@
-package com.StudyCafe_R.StudyCafe_R.modules.tag;
+package com.StudyCafe_R.modules.tag;
 
-import lombok.Data;
-
-@Data
 public class TagForm {
 
-    private String value;
-    private String label;
+    private String id;
+    private String title;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
