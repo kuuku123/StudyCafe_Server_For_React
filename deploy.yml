@@ -1,0 +1,60 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-test 
+    ports:
+      - "3316:3306"
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_ROOT_PASSWORD=1234
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ~/data/mysql-test:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test_network
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis-test 
+    ports:
+      - "16379:6379"
+    volumes:
+      - ~/data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test_network
+
+  spring-app:
+    image: studycafe_server_for_react:latest
+    container_name: spring-app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    entrypoint: ["java", "-jar", "-Djasypt.encryptor.password=my_jasypt_key", "-Dspring.profiles.active=prod", "/app/StudyCafe_Server_For_React-1.0.jar"]
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
+    networks:
+      - test_network
+
+networks:
+  test_network:
