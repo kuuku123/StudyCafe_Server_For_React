@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,10 +43,14 @@ public class StudyService {
     private final TagRepository tagRepository;
 
     public Study createNewStudy(Study study, Account account) {
-        byte[] anonymousProfileJpg = readFileToByteArray("src/main/resources/images/anonymous.JPG");
-        study.setStudyImage(anonymousProfileJpg);
+        ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
+        try(InputStream inputStream = imgFile.getInputStream()){
+            byte[] anonymousProfileJpg = inputStream.readAllBytes();
+            study.setStudyImage(anonymousProfileJpg);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Study newStudy = studyRepository.save(study);
-
         AccountStudyManager accountStudyManager = AccountStudyManager.builder()
                 .account(account)
                 .study(study)

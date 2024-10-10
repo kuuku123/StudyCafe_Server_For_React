@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,6 +38,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -81,8 +83,13 @@ public class AccountService {
         Account account = modelMapper.map(signUpForm, Account.class);
         account.generateEmailCheckToken();
 
-        byte[] anonymousProfileJpg = readFileToByteArray("src/main/resources/images/anonymous.JPG");
-        account.setProfileImage(anonymousProfileJpg);
+        ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
+        try(InputStream inputStream = imgFile.getInputStream()){
+            byte[] anonymousProfileJpg = inputStream.readAllBytes();
+            account.setProfileImage(anonymousProfileJpg);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return accountRepository.save(account);
     }
 
