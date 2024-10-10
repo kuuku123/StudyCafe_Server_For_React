@@ -19,19 +19,9 @@ it is a website that is used for creating study , and let other people join stud
 
 currently no deployment pipe line
 - **manual way**
-    - build react app with webpack
-    - put static output to src/main/resources/static
-  ```bash
-  maven clean package -DSkipTests
-  
-  java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=\*:5005 
-  -Djasypt.encryptor.password=my_jasypt_key 
-  -Dspring.profiles.active=dev 
-  -jar StudyCafe_Server_For_React-1.0-SNAPSHOT.jar
-  
-  ```
-
-
+    - docker need to be installed
+    - deploy https://github.com/kuuku123/StudyCafe_React 
+    - run ./deploy.sh
 
 
 ## Usage
