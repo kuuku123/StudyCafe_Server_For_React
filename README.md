@@ -7,7 +7,6 @@ it is a website that is used for creating study , and let other people join stud
 - **Login and Logout with Email Verification**
     - Emails are sent asynchronously
     - once you verify email , then you can create your own study
-    - using browser session storage to manage login status
 - **Create Study**
     - you can own multiple study and join multiple study
     - once you create your study you will be a manager of study and have authority to publish one
