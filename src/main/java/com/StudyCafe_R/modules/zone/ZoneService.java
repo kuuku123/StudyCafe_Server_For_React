@@ -38,6 +38,11 @@ public class ZoneService {
         return zoneDtos;
     }
 
+    public Zone findByCityAndProvince (String city, String province) {
+        Zone byCityAndProvince = zoneRepository.findByCityAndProvince(city, province);
+        return byCityAndProvince;
+    }
+
     public void initZoneData() throws IOException {
         if (zoneRepository.count() == 0) {
             Resource resource = new ClassPathResource("zones_kr.csv");

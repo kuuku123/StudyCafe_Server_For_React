@@ -2,14 +2,17 @@ package com.StudyCafe_R.modules.study.dto;
 
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.tag.Tag;
+import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
+
+import java.util.List;
 
 public class StudyJoinDto {
 
     private Long id;
-    private Tag tag;
-    private Zone zone;
-
+    private List<TagDto> tagDtoList;
+    private List<ZoneDto> zoneDtoList;
 
     public Long getId() {
         return id;
@@ -19,19 +22,19 @@ public class StudyJoinDto {
         this.id = id;
     }
 
-    public Tag getTag() {
-        return tag;
+    public List<TagDto> getTagDtoList() {
+        return tagDtoList;
     }
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
+    public void setTagDtoList(List<TagDto> tagDtoList) {
+        this.tagDtoList = tagDtoList;
     }
 
-    public Zone getZone() {
-        return zone;
+    public List<ZoneDto> getZoneDtoList() {
+        return zoneDtoList;
     }
 
-    public void setZone(Zone zone) {
-        this.zone = zone;
+    public void setZoneDtoList(List<ZoneDto> zoneDtoList) {
+        this.zoneDtoList = zoneDtoList;
     }
 }
