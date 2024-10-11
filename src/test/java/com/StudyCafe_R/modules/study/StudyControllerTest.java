@@ -8,6 +8,8 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.study.domain.Study;
+import com.StudyCafe_R.modules.study.repository.StudyRepository;
+import com.StudyCafe_R.modules.study.service.StudyService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockMvcTest
 public class StudyControllerTest extends AbstractContainerBaseTest {
 
-    @Autowired MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
     @Autowired
     StudyService studyService;
     @Autowired
@@ -49,13 +52,14 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
         accountService.processNewAccount(signUpForm);
 
     }
+
     @AfterEach
     void afterEach() {
         accountRepository.deleteAll();
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 폼 조회")
     void createStudyForm() throws Exception {
         mockMvc.perform(get("/new-study"))
@@ -66,7 +70,7 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 - 완료")
     void createStudy_success() throws Exception {
         mockMvc.perform(post("/new-study")
@@ -86,7 +90,7 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 - 실패")
     void createStudy_fail() throws Exception {
         mockMvc.perform(post("/new-study")
@@ -106,7 +110,7 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 조회")
     void viewStudy() throws Exception {
         Study study = new Study();
@@ -125,7 +129,7 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 가입")
     void joinStudy() throws Exception {
         Account tony = accountFactory.createAccount("tony-test");
@@ -141,14 +145,14 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 탈퇴")
     void leaveStudy() throws Exception {
         Account tony = accountFactory.createAccount("tony-test");
         Study study = studyFactory.createStudy("test-study", tony);
 
         Account repoTony = accountRepository.findByNickname("tony");
-        studyService.addMember(study,repoTony);
+        studyService.addMember(study, repoTony);
 
         mockMvc.perform(get("/study/" + study.getEncodedPath() + "/leave"))
                 .andExpect(status().is3xxRedirection())

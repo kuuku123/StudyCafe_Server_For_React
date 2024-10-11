@@ -1,4 +1,4 @@
-package com.StudyCafe_R.modules.study;
+package com.StudyCafe_R.modules.study.repository;
 
 import com.StudyCafe_R.modules.study.domain.Study;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(readOnly = true)
-public interface StudyRepository extends JpaRepository<Study,Long>, StudyRepositoryExtension {
+public interface StudyRepository extends JpaRepository<Study, Long>, StudyRepositoryExtension {
     boolean existsByPath(String path);
 
-    @EntityGraph(attributePaths = {"tags","zones","managers","members"})
+    @EntityGraph(attributePaths = {"tags", "zones", "managers", "members"})
     Study findByPath(String path);
 
-    @EntityGraph(attributePaths = {"tags","managers"})
+    @EntityGraph(attributePaths = {"tags", "managers"})
     Study findStudyWithTagsByPath(String path);
 
-    @EntityGraph(attributePaths = {"zones","managers"})
+    @EntityGraph(attributePaths = {"zones", "managers"})
     Study findStudyWithZonesByPath(String path);
 
     @EntityGraph(attributePaths = "managers")
@@ -28,10 +28,10 @@ public interface StudyRepository extends JpaRepository<Study,Long>, StudyReposit
 
     Study findStudyOnlyByPath(String path);
 
-    @EntityGraph(attributePaths = {"zones","tags"})
+    @EntityGraph(attributePaths = {"zones", "tags"})
     Study findStudyWithTagsAndZoneById(Long id);
 
-    @EntityGraph(attributePaths = {"members","managers"})
+    @EntityGraph(attributePaths = {"members", "managers"})
     Study findStudyWithManagersAndMembersById(Long id);
 
     List<Study> findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);

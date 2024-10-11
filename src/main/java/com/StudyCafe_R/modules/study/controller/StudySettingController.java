@@ -1,12 +1,14 @@
-package com.StudyCafe_R.modules.study;
+package com.StudyCafe_R.modules.study.controller;
 
 import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
+import com.StudyCafe_R.modules.study.service.StudyConfigService;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.tag.TagService;
@@ -16,7 +18,6 @@ import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.validation.Valid;
@@ -40,8 +41,8 @@ import java.util.Optional;
 public class StudySettingController {
 
     private final StudyService studyService;
+    private final StudyConfigService studySettingService;
     private final ModelMapper modelMapper;
-    private final ObjectMapper objectMapper;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
     private final Gson gson = new GsonBuilder()
@@ -105,7 +106,7 @@ public class StudySettingController {
 
     @GetMapping("/tags")
     public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        List<TagDto> studyTagDtoList = studyService.getStudyTags(path);
+        List<TagDto> studyTagDtoList = studySettingService.getStudyTags(path);
         ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, studyTagDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
@@ -114,10 +115,10 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity<String> addTag(@CurrentAccount Account account, @PathVariable String path,
                                  @RequestBody List<TagForm> tagFormList) {
-        Study study = studyService.getStudyToUpdateTag(account, path);
+        Study study = studySettingService.getStudyToUpdateTag(account, path);
             for (TagForm tagForm : tagFormList) {
                 Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
-                studyService.addTag(study,tag);
+                studySettingService.addTag(study,tag);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -126,18 +127,18 @@ public class StudySettingController {
     @PostMapping("/tags/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
-        Study study = studyService.getStudyToUpdateTag(account, path);
+        Study study = studySettingService.getStudyToUpdateTag(account, path);
         Optional<Tag> tag = tagService.findByTitle(tagForm.getTitle());
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        studyService.removeTag(study,tag.get());
+        studySettingService.removeTag(study,tag.get());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/zones")
     public ResponseEntity<String> studyZonesForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        List<ZoneDto> zoneDtoList = studyService.getStudyZones(path);
+        List<ZoneDto> zoneDtoList = studySettingService.getStudyZones(path);
         ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, zoneDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
@@ -146,13 +147,13 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
                                   @RequestBody List<ZoneForm> zoneFormList) {
-        Study study = studyService.getStudyToUpdateZone(account, path);
+        Study study = studySettingService.getStudyToUpdateZone(account, path);
         for (ZoneForm zoneForm : zoneFormList) {
             Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
             if (zone == null) {
                 return ResponseEntity.badRequest().build();
             }
-            studyService.addZone(study, zone);
+            studySettingService.addZone(study, zone);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("zone added", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -162,13 +163,13 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
                                      @RequestBody ZoneForm zoneForm) {
-        Study study = studyService.getStudyToUpdateZone(account, path);
+        Study study = studySettingService.getStudyToUpdateZone(account, path);
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        studyService.removeZone(study, zone);
+        studySettingService.removeZone(study, zone);
         return ResponseEntity.ok().build();
     }
 
@@ -199,7 +200,7 @@ public class StudySettingController {
     @PostMapping("/recruit/start")
     public String startRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
                                RedirectAttributes attributes) {
-        Study study = studyService.getStudyToUpdateStatus(account, path);
+        Study study = studyService  .getStudyToUpdateStatus(account, path);
         if (!study.canUpdateRecruiting()) {
             attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
             return "redirect:/study/" + study.getEncodedPath() + "/settings/study";

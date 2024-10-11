@@ -1,9 +1,10 @@
-package com.StudyCafe_R.modules.study;
+package com.StudyCafe_R.modules.study.controller;
 
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.study.repository.StudyRepository;
+import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.validator.StudyFormValidator;
@@ -21,8 +22,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class StudyController {
 
 
     @GetMapping("/new-study")
-    public String newStudyForm(@CurrentAccount Account account , Model model) {
+    public String newStudyForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
         model.addAttribute(new StudyForm());
         return "study/form";
@@ -60,14 +59,14 @@ public class StudyController {
             return new ResponseEntity<>(new Gson().toJson(createStudyFailed), HttpStatus.BAD_REQUEST);
         }
 
-        Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm,Study.class),account);
+        Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm, Study.class), account);
 
         ApiResponse<StudyForm> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, studyForm);
 
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping(value="/study/{path}/study-image")
+    @GetMapping(value = "/study/{path}/study-image")
     public ResponseEntity<String> studyImage(@PathVariable String path) {
         Study study = studyService.getStudy(path);
         byte[] studyImage = study.getStudyImage();
@@ -75,6 +74,7 @@ public class StudyController {
         ApiResponse<String> apiResponse = new ApiResponse<>("study-image", HttpStatus.OK, encodedImage);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
+
     @GetMapping("/study/{path}")
     public String viewStudy(@CurrentAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
@@ -95,7 +95,7 @@ public class StudyController {
     @GetMapping("/study/{path}/join")
     public String joinStudy(@CurrentAccount Account account, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
-        studyService.addMember(study,account);
+        studyService.addMember(study, account);
         return "redirect:/study/" + study.getEncodedPath() + "/members";
     }
 

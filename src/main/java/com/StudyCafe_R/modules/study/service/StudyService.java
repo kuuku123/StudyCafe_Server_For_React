@@ -1,20 +1,17 @@
-package com.StudyCafe_R.modules.study;
+package com.StudyCafe_R.modules.study.service;
 
+import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.domain.StudyTag;
-import com.StudyCafe_R.modules.study.domain.StudyZone;
 import com.StudyCafe_R.modules.study.event.StudyCreatedEvent;
 import com.StudyCafe_R.modules.study.event.StudyUpdateEvent;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
-import com.StudyCafe_R.modules.tag.dto.TagDto;
-import com.StudyCafe_R.modules.zone.Zone;
-import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
@@ -24,13 +21,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +36,7 @@ public class StudyService {
 
     public Study createNewStudy(Study study, Account account) {
         ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
-        try(InputStream inputStream = imgFile.getInputStream()){
+        try (InputStream inputStream = imgFile.getInputStream()) {
             byte[] anonymousProfileJpg = inputStream.readAllBytes();
             study.setStudyImage(anonymousProfileJpg);
         } catch (IOException e) {
@@ -60,56 +52,32 @@ public class StudyService {
         return newStudy;
     }
 
-    private byte[] readFileToByteArray(String filePath) {
-        File file = new File(filePath);
-        byte[] byteArray = new byte[(int) file.length()];
-
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(byteArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return byteArray;
-    }
-
     public Study getStudyToUpdate(Account account, String path) {
         Study study = getStudy(path);
-        checkIfManager(account,study);
+        checkIfManager(account, study);
         return study;
     }
 
+    public Study getStudyToUpdateStatus(Account account, String path) {
+        Study study = studyRepository.findStudyWithManagersByPath(path);
+        checkIfManager(account, study);
+        return study;
+    }
+
+    private void checkIfManager(Account account, Study study) {
+        if (!study.isManagedby(account)) {
+            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
+        }
+    }
 
     public Study getStudy(String path) {
         Study study = studyRepository.findByPath(path);
         return study;
     }
 
-    public List<TagDto> getStudyTags(String path) {
-        Study study = getStudy(path);
-        List<Tag> tags = study.getTags().stream().map(StudyTag::getTag).collect(Collectors.toList());
-        ArrayList<TagDto> tagDtoList = new ArrayList<>();
-        for (Tag tag : tags) {
-            TagDto tagDto = modelMapper.map(tag, TagDto.class);
-            tagDtoList.add(tagDto);
-        }
-        return tagDtoList;
-    }
-
-    public List<ZoneDto> getStudyZones(String path) {
-        Study study = getStudy(path);
-        List<Zone> zones = study.getZones().stream().map(StudyZone::getZone).collect(Collectors.toList());
-        List<ZoneDto> zoneDtoList = new ArrayList<>();
-        for (Zone zone : zones) {
-            ZoneDto zoneDto = modelMapper.map(zone, ZoneDto.class);
-            zoneDtoList.add(zoneDto);
-        }
-        return zoneDtoList;
-    }
-
     public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
-        modelMapper.map(studyDescriptionForm,study);
-        eventPublisher.publishEvent(new StudyUpdateEvent(study,"스터디 소개를 수정했습니다."));
+        modelMapper.map(studyDescriptionForm, study);
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디 소개를 수정했습니다."));
     }
 
     public void updateStudyImage(Study study, String image) {
@@ -124,66 +92,6 @@ public class StudyService {
         study.setUseBanner(false);
     }
 
-    public void addTag(Study study, Tag tag) {
-        StudyTag studyTag = StudyTag.builder()
-                .study(study)
-                .tag(tag).build();
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        boolean exist = repoStudy.getTags().stream()
-                .anyMatch(st -> st.getTag() == tag);
-        if(!exist) {
-            repoStudy.addStudyTag(studyTag);
-        }
-    }
-
-    public void removeTag(Study study, Tag tag) {
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        repoStudy.removeStudyTag(tag);
-    }
-
-    public void addZone(Study study, Zone zone) {
-        StudyZone studyZone = StudyZone.builder()
-                .zone(zone)
-                .study(study)
-                .build();
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        boolean exist = repoStudy.getZones().stream()
-                .anyMatch(sz -> sz.getZone() == zone);
-        if(!exist) {
-            repoStudy.addStudyZone(studyZone);
-        }
-    }
-
-    public void removeZone(Study study,Zone zone) {
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        repoStudy.removeStudyZone(zone);
-        studyRepository.save(study);
-    }
-
-    public Study getStudyToUpdateTag(Account account, String path) {
-        Study study = studyRepository.findStudyWithTagsByPath(path);
-        checkIfManager(account,study);
-        return study;
-    }
-
-    public Study getStudyToUpdateZone(Account account, String path) {
-        Study study = studyRepository.findStudyWithZonesByPath(path);
-        checkIfManager(account,study);
-        return study;
-    }
-
-    public Study getStudyToUpdateStatus(Account account, String path) {
-        Study study = studyRepository.findStudyWithManagersByPath(path);
-        checkIfManager(account, study);
-        return study;
-    }
-
-    private void checkIfManager(Account account, Study study) {
-        if (!study.isManagedby(account)){
-            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
-        }
-    }
-
 
     public void publish(Study study) {
         study.publish();
@@ -192,17 +100,17 @@ public class StudyService {
 
     public void close(Study study) {
         study.close();
-        eventPublisher.publishEvent(new StudyUpdateEvent(study,"스터디를 종료했습니다.."));
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디를 종료했습니다.."));
     }
 
     public void startRecruit(Study study) {
         study.startRecruit();
-        eventPublisher.publishEvent(new StudyUpdateEvent(study,"팀원 모집을 시작합니다."));
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "팀원 모집을 시작합니다."));
     }
 
     public void stopRecruit(Study study) {
         study.stopRecruit();
-        eventPublisher.publishEvent(new StudyUpdateEvent(study,"팀원 모집을 중단합니다."));
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "팀원 모집을 중단합니다."));
     }
 
     public boolean isValidPath(String newPath) {
@@ -251,7 +159,7 @@ public class StudyService {
     }
 
     public void generateTestStudies(Account account) {
-        for (int i = 0; i< 30; i++) {
+        for (int i = 0; i < 30; i++) {
             String randomValue = RandomString.make(5);
             Study study = Study.builder()
                     .title("테스트 스터디" + randomValue)

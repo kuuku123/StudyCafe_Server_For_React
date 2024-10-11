@@ -6,7 +6,7 @@ import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountStudyManagerService;
-import com.StudyCafe_R.modules.study.StudyService;
+import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -38,7 +37,6 @@ public class AccountStudyManagerController {
         Study study = studyService.getStudy(path);
         List<AccountDto> studyMembers = accountStudyManagerService.getStudyMembers(account, study);
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyMembers);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse),HttpStatus.OK);
-
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 }
