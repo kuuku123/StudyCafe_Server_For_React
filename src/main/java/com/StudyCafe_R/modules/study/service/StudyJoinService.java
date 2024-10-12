@@ -55,6 +55,8 @@ public class StudyJoinService {
         }
         StudyJoinDto studyJoinDto = new StudyJoinDto();
         studyJoinDto.setId(study.getId());
+        studyJoinDto.setTitle(study.getTitle());
+        studyJoinDto.setShortDescription(study.getShortDescription());
         studyJoinDto.setTagDtoList(tagDtoList);
         studyJoinDto.setZoneDtoList(zoneDtoList);
 

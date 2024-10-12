@@ -42,17 +42,30 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
 
     }
 
-    @Override
     public Page<Study> findStudyByZonesAndTags(List<Tag> tags, List<Zone> zones, Pageable pageable) {
         QStudy study = QStudy.study;
-        JPQLQuery<Study> query = from(study)
-                .innerJoin(study.tags, QStudyTag.studyTag).fetchJoin()
-                .on(study.tags.any().tag.in(tags))
-                .innerJoin(study.zones, QStudyZone.studyZone).fetchJoin()
-                .on(study.zones.any().zone.in(zones));
+
+        JPQLQuery<Study> query = from(study);
+
+        // Conditionally add tag join and condition if the tags list is not empty
+        if (!tags.isEmpty()) {
+            query.innerJoin(study.tags, QStudyTag.studyTag)
+                    .on(study.tags.any().tag.in(tags));
+        }
+
+        // Conditionally add zone join and condition if the zones list is not empty
+        if (!zones.isEmpty()) {
+            query.innerJoin(study.zones, QStudyZone.studyZone)
+                    .on(study.zones.any().zone.in(zones));
+        }
+
+        query.orderBy(study.id.asc());
+
+        // Apply pagination to the query
         JPQLQuery<Study> pageableQuery = getQuerydsl().applyPagination(pageable, query);
         QueryResults<Study> fetchResults = pageableQuery.fetchResults();
 
         return new PageImpl<>(fetchResults.getResults(), pageable, fetchResults.getTotal());
     }
+
 }

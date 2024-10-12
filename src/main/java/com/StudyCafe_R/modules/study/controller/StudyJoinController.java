@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,19 +34,66 @@ public class StudyJoinController {
     private final ZoneService zoneService;
 
     @GetMapping("/get-study-by-tags-and-zones")
-    public ResponseEntity<String> getStudyByTagsAndZones(List<TagForm> tagFormList, List<ZoneForm> zoneFormList, PageRequestDto pageRequestDto) {
+    public ResponseEntity<String> getStudyByTagsAndZones(
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) List<String> cities,
+            @RequestParam(required = false) List<String> provinces,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        Result result = getResult(tags, cities, provinces, page, size);
+        List<StudyJoinDto> byStudyTagsAndZones = studyJoinService.getByStudyTagsAndZones(result.tagList(), result.zoneList(), result.pageRequestDto());
+        ApiResponse<List<StudyJoinDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, byStudyTagsAndZones);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
+    private Result getResult(List<String> tags, List<String> cities, List<String> provinces, int page, int size) {
+        List<TagForm> tagFormList = new ArrayList<>();
+        List<ZoneForm> zoneFormList = new ArrayList<>();
+
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        if (cities == null) {
+            cities = new ArrayList<>();
+        }
+        if (provinces == null) {
+            provinces = new ArrayList<>();
+        }
+
+        for (String tag : tags) {
+            TagForm tagForm = new TagForm();
+            tagForm.setTitle(tag);
+            tagFormList.add(tagForm);
+        }
+
+        for (String city : cities) {
+            for (String province : provinces) {
+                ZoneForm zoneForm = new ZoneForm();
+                zoneForm.setCity(city);
+                zoneForm.setProvince(province);
+                zoneFormList.add(zoneForm);
+            }
+        }
+
+        PageRequestDto pageRequestDto = new PageRequestDto();
+        pageRequestDto.setPage(page);
+        pageRequestDto.setSize(size);
+
         List<Tag> tagList = new ArrayList<>();
-        List<Zone>  zoneList = new ArrayList<>();
+        List<Zone> zoneList = new ArrayList<>();
         for (TagForm tagForm : tagFormList) {
             tagService.findByTitle(tagForm.getTitle()).ifPresent(tagList::add);
         }
-        for (Zone zone : zoneList) {
-            Zone byCityAndProvince = zoneService.findByCityAndProvince(zone.getCity(), zone.getProvince());
+        for (ZoneForm zoneForm : zoneFormList) {
+            Zone byCityAndProvince = zoneService.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
             zoneList.add(byCityAndProvince);
         }
-        List<StudyJoinDto> byStudyTagsAndZones = studyJoinService.getByStudyTagsAndZones(tagList, zoneList, pageRequestDto);
-        ApiResponse<List<StudyJoinDto>> apiResponse= new ApiResponse<>("tag added", HttpStatus.OK, byStudyTagsAndZones);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+        Result result = new Result(pageRequestDto, tagList, zoneList);
+        return result;
+    }
+
+    private record Result(PageRequestDto pageRequestDto, List<Tag> tagList, List<Zone> zoneList) {
     }
 
 }

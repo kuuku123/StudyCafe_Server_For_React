@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.zone.dto;
 
-import lombok.Data;
 
 public class ZoneForm {
 
