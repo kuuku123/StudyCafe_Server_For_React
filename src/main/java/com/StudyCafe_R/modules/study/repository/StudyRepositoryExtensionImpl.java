@@ -47,16 +47,26 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
 
         JPQLQuery<Study> query = from(study);
 
-        // Conditionally add tag join and condition if the tags list is not empty
+        // Conditionally add tag join if the tags list is not empty
         if (!tags.isEmpty()) {
-            query.innerJoin(study.tags, QStudyTag.studyTag)
+            query.leftJoin(study.tags, QStudyTag.studyTag)
                     .on(study.tags.any().tag.in(tags));
         }
 
-        // Conditionally add zone join and condition if the zones list is not empty
+        // Conditionally add zone join if the zones list is not empty
         if (!zones.isEmpty()) {
-            query.innerJoin(study.zones, QStudyZone.studyZone)
+            query.leftJoin(study.zones, QStudyZone.studyZone)
                     .on(study.zones.any().zone.in(zones));
+        }
+
+        // Add condition that matches if there are any matches in either tags or zones
+        if (!tags.isEmpty() && !zones.isEmpty()) {
+            query.where(study.tags.any().tag.in(tags)
+                    .or(study.zones.any().zone.in(zones)));
+        } else if (!tags.isEmpty()) {
+            query.where(study.tags.any().tag.in(tags));
+        } else if (!zones.isEmpty()) {
+            query.where(study.zones.any().zone.in(zones));
         }
 
         query.orderBy(study.id.asc());
