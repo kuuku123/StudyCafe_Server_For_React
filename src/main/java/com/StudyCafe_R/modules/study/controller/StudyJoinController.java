@@ -33,6 +33,13 @@ public class StudyJoinController {
     private final TagService tagService;
     private final ZoneService zoneService;
 
+    @GetMapping("/total-study")
+    public ResponseEntity<String> getTotalStudyCount() {
+        long totalStudyCount = studyJoinService.getTotalStudyCount();
+        ApiResponse<Long> apiResponse = new ApiResponse<>("total study count", HttpStatus.OK, totalStudyCount);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
     @GetMapping("/get-study-by-tags-and-zones")
     public ResponseEntity<String> getStudyByTagsAndZones(
             @RequestParam(required = false) List<String> tags,
@@ -43,7 +50,7 @@ public class StudyJoinController {
 
         Result result = getResult(tags, cities, provinces, page, size);
         List<StudyJoinDto> byStudyTagsAndZones = studyJoinService.getByStudyTagsAndZones(result.tagList(), result.zoneList(), result.pageRequestDto());
-        ApiResponse<List<StudyJoinDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, byStudyTagsAndZones);
+        ApiResponse<List<StudyJoinDto>> apiResponse = new ApiResponse<>("get study by tags and zones", HttpStatus.OK, byStudyTagsAndZones);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 

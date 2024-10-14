@@ -27,6 +27,11 @@ public class StudyJoinService {
 
     private final StudyRepository studyRepository;
 
+    public long getTotalStudyCount() {
+        long count = studyRepository.count();
+        return count;
+    }
+
     public List<StudyJoinDto> getByStudyTagsAndZones(List<Tag> tags, List<Zone> zones, PageRequestDto pageRequestDto) {
         PageRequest pageRequest = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize(), Sort.by("id").descending());
         Page<Study> studyByZoneAndTag = studyRepository.findStudyByZonesAndTags(tags, zones, pageRequest);
