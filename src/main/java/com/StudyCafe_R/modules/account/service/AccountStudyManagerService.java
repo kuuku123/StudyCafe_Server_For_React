@@ -54,6 +54,7 @@ public class AccountStudyManagerService {
         accountStudyManagerDto.setPath(study.getPath());
         accountStudyManagerDto.setShortDescription(study.getShortDescription());
         accountStudyManagerDto.setFullDescription(study.getFullDescription());
+        accountStudyManagerDto.setPublished(study.isPublished());
         byte[] studyImage = study.getStudyImage();
         String encodedImage = Base64.encodeBase64String(studyImage);
         accountStudyManagerDto.setStudyImage(encodedImage);

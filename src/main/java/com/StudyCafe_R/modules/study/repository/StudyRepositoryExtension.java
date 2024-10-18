@@ -14,5 +14,5 @@ public interface StudyRepositoryExtension {
 
     Page<Study> findStudyByKeyword(String keyword, Pageable pageable);
 
-    Page<Study> findStudyByZonesAndTags(List<Tag> tags, List<Zone> zones, Pageable pageable);
+    Page<Study> findStudyByZonesAndTagsAndPublished(List<Tag> tags, List<Zone> zones, Pageable pageable);
 }

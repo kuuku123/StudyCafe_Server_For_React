@@ -12,4 +12,5 @@ public class StudyDto {
     private String shortDescription;
     private String fullDescription;
     private String studyImage;
+    private boolean published;
 }

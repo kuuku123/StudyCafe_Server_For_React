@@ -59,7 +59,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/description")
-    public String updateStudyInfo(@CurrentAccount Account account , @PathVariable String path, @Valid StudyDescriptionForm studyDescriptionForm,
+    public String updateStudyInfo(@CurrentAccount Account account, @PathVariable String path, @Valid StudyDescriptionForm studyDescriptionForm,
                                   Errors errors, Model model, RedirectAttributes redirectAttributes) {
         Study study = studyService.getStudyToUpdate(account, path);
 
@@ -68,13 +68,13 @@ public class StudySettingController {
             model.addAttribute(study);
             return "study/settings/description";
         }
-        studyService.updateStudyDescription(study,studyDescriptionForm);
-        redirectAttributes.addFlashAttribute("message","스터디 소개를 수정했습니다.");
+        studyService.updateStudyDescription(study, studyDescriptionForm);
+        redirectAttributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
         return "redirect:/study/" + study.getEncodedPath() + "/settings/description";
     }
 
     @GetMapping("/banner")
-    public String studyImageForm(@CurrentAccount Account account, @PathVariable String path , Model model) {
+    public String studyImageForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
@@ -84,7 +84,7 @@ public class StudySettingController {
     @PostMapping("/banner")
     public String studyImageSubmit(@CurrentAccount Account account, @PathVariable String path, String image, RedirectAttributes redirectAttributes) {
         Study study = studyService.getStudyToUpdate(account, path);
-        studyService.updateStudyImage(study,image);
+        studyService.updateStudyImage(study, image);
         redirectAttributes.addFlashAttribute("message", "스터디 이미지를 수정했습니다.");
 
         return "redirect:/study/" + study.getEncodedPath() + "/settings/banner";
@@ -114,11 +114,11 @@ public class StudySettingController {
     @PostMapping(value = "/tags/add")
     @ResponseBody
     public ResponseEntity<String> addTag(@CurrentAccount Account account, @PathVariable String path,
-                                 @RequestBody List<TagForm> tagFormList) {
+                                         @RequestBody List<TagForm> tagFormList) {
         Study study = studySettingService.getStudyToUpdateTag(account, path);
-            for (TagForm tagForm : tagFormList) {
-                Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
-                studySettingService.addTag(study,tag);
+        for (TagForm tagForm : tagFormList) {
+            Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
+            studySettingService.addTag(study, tag);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -132,7 +132,7 @@ public class StudySettingController {
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        studySettingService.removeTag(study,tag.get());
+        studySettingService.removeTag(study, tag.get());
         return ResponseEntity.ok().build();
     }
 
@@ -146,7 +146,7 @@ public class StudySettingController {
     @PostMapping("/zones/add")
     @ResponseBody
     public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
-                                  @RequestBody List<ZoneForm> zoneFormList) {
+                                          @RequestBody List<ZoneForm> zoneFormList) {
         Study study = studySettingService.getStudyToUpdateZone(account, path);
         for (ZoneForm zoneForm : zoneFormList) {
             Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
@@ -174,7 +174,7 @@ public class StudySettingController {
     }
 
     @GetMapping("/study")
-    public String studySettingForm(@CurrentAccount Account account  , @PathVariable String path, Model model) {
+    public String studySettingForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
@@ -182,7 +182,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/publish")
-    public ResponseEntity<String> publishStudy(@CurrentAccount Account account, @PathVariable String path ) {
+    public ResponseEntity<String> publishStudy(@CurrentAccount Account account, @PathVariable String path) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
         ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, null);
@@ -200,7 +200,7 @@ public class StudySettingController {
     @PostMapping("/recruit/start")
     public String startRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
                                RedirectAttributes attributes) {
-        Study study = studyService  .getStudyToUpdateStatus(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         if (!study.canUpdateRecruiting()) {
             attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
             return "redirect:/study/" + study.getEncodedPath() + "/settings/study";

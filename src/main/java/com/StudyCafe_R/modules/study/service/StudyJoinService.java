@@ -11,7 +11,6 @@ import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,7 +33,7 @@ public class StudyJoinService {
 
     public List<StudyJoinDto> getByStudyTagsAndZones(List<Tag> tags, List<Zone> zones, PageRequestDto pageRequestDto) {
         PageRequest pageRequest = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize(), Sort.by("id").descending());
-        Page<Study> studyByZoneAndTag = studyRepository.findStudyByZonesAndTags(tags, zones, pageRequest);
+        Page<Study> studyByZoneAndTag = studyRepository.findStudyByZonesAndTagsAndPublished(tags, zones, pageRequest);
         return studyByZoneAndTag.map(this::mapStudyToStudyJoinDto).toList();
     }
 

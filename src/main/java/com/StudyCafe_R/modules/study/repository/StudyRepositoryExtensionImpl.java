@@ -42,7 +42,7 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
 
     }
 
-    public Page<Study> findStudyByZonesAndTags(List<Tag> tags, List<Zone> zones, Pageable pageable) {
+    public Page<Study> findStudyByZonesAndTagsAndPublished(List<Tag> tags, List<Zone> zones, Pageable pageable) {
         QStudy study = QStudy.study;
 
         JPQLQuery<Study> query = from(study);
@@ -68,6 +68,7 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
         } else if (!zones.isEmpty()) {
             query.where(study.zones.any().zone.in(zones));
         }
+        query.where(study.published);
 
         query.orderBy(study.id.asc());
 
