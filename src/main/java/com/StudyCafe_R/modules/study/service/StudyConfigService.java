@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.study.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.domain.StudyTag;
@@ -27,6 +28,13 @@ public class StudyConfigService {
     private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
 
+
+    public Study updateStudyInfo(Account account, StudyForm studyForm) {
+        Study study = studyRepository.findByPath(studyForm.getPath());
+        checkIfManager(account, study);
+        modelMapper.map(studyForm, study);
+        return study;
+    }
 
     public List<TagDto> getStudyTags(String path) {
         Study study = studyRepository.findByPath(path);

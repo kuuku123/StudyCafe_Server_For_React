@@ -28,11 +28,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -41,7 +44,7 @@ import java.util.Optional;
 public class StudySettingController {
 
     private final StudyService studyService;
-    private final StudyConfigService studySettingService;
+    private final StudyConfigService studyConfigService;
     private final ModelMapper modelMapper;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
@@ -56,6 +59,26 @@ public class StudySettingController {
         model.addAttribute(study);
         model.addAttribute(modelMapper.map(study, StudyDescriptionForm.class));
         return "study/settings/description";
+    }
+
+
+    @PostMapping("/update-study")
+    public ResponseEntity<String> newStudySubmit(@CurrentAccount Account account, @RequestBody @Valid StudyForm studyForm, Errors errors, Model model) {
+        if (errors.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError error : errors.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            ApiResponse<Map<String, String>> createStudyFailed = new ApiResponse<>("create Study Failed", HttpStatus.BAD_REQUEST, errorMap);
+            return new ResponseEntity<>(new Gson().toJson(createStudyFailed), HttpStatus.BAD_REQUEST);
+        }
+
+        Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm, Study.class), account);
+        studyConfigService.updateStudyInfo(account, studyForm);
+
+        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, studyForm);
+
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/description")
@@ -106,7 +129,7 @@ public class StudySettingController {
 
     @GetMapping("/tags")
     public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        List<TagDto> studyTagDtoList = studySettingService.getStudyTags(path);
+        List<TagDto> studyTagDtoList = studyConfigService.getStudyTags(path);
         ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, studyTagDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
@@ -115,10 +138,10 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity<String> addTag(@CurrentAccount Account account, @PathVariable String path,
                                          @RequestBody List<TagForm> tagFormList) {
-        Study study = studySettingService.getStudyToUpdateTag(account, path);
+        Study study = studyConfigService.getStudyToUpdateTag(account, path);
         for (TagForm tagForm : tagFormList) {
             Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
-            studySettingService.addTag(study, tag);
+            studyConfigService.addTag(study, tag);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -127,18 +150,18 @@ public class StudySettingController {
     @PostMapping("/tags/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
-        Study study = studySettingService.getStudyToUpdateTag(account, path);
+        Study study = studyConfigService.getStudyToUpdateTag(account, path);
         Optional<Tag> tag = tagService.findByTitle(tagForm.getTitle());
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        studySettingService.removeTag(study, tag.get());
+        studyConfigService.removeTag(study, tag.get());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/zones")
     public ResponseEntity<String> studyZonesForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        List<ZoneDto> zoneDtoList = studySettingService.getStudyZones(path);
+        List<ZoneDto> zoneDtoList = studyConfigService.getStudyZones(path);
         ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, zoneDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
@@ -147,13 +170,13 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
                                           @RequestBody List<ZoneForm> zoneFormList) {
-        Study study = studySettingService.getStudyToUpdateZone(account, path);
+        Study study = studyConfigService.getStudyToUpdateZone(account, path);
         for (ZoneForm zoneForm : zoneFormList) {
             Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
             if (zone == null) {
                 return ResponseEntity.badRequest().build();
             }
-            studySettingService.addZone(study, zone);
+            studyConfigService.addZone(study, zone);
         }
         ApiResponse<Object> apiResponse = new ApiResponse<>("zone added", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -163,13 +186,13 @@ public class StudySettingController {
     @ResponseBody
     public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
                                      @RequestBody ZoneForm zoneForm) {
-        Study study = studySettingService.getStudyToUpdateZone(account, path);
+        Study study = studyConfigService.getStudyToUpdateZone(account, path);
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        studySettingService.removeZone(study, zone);
+        studyConfigService.removeZone(study, zone);
         return ResponseEntity.ok().build();
     }
 

@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.StudyCafe_R.modules.study.domain.QStudy.study;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
