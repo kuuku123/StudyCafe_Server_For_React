@@ -69,15 +69,12 @@ public class StudySettingController {
             for (FieldError error : errors.getFieldErrors()) {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
-            ApiResponse<Map<String, String>> createStudyFailed = new ApiResponse<>("create Study Failed", HttpStatus.BAD_REQUEST, errorMap);
+            ApiResponse<Map<String, String>> createStudyFailed = new ApiResponse<>("update Study Failed", HttpStatus.BAD_REQUEST, errorMap);
             return new ResponseEntity<>(new Gson().toJson(createStudyFailed), HttpStatus.BAD_REQUEST);
         }
+        Study study = studyConfigService.updateStudyInfo(account, studyForm);
 
-        Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm, Study.class), account);
-        studyConfigService.updateStudyInfo(account, studyForm);
-
-        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, studyForm);
-
+        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study update succeeded", HttpStatus.OK, studyForm);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 

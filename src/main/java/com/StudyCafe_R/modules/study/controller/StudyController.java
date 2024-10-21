@@ -3,6 +3,7 @@ package com.StudyCafe_R.modules.study.controller;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.domain.Study;
@@ -41,11 +42,12 @@ public class StudyController {
     }
 
 
-    @GetMapping("/new-study")
-    public String newStudyForm(@CurrentAccount Account account, Model model) {
-        model.addAttribute(account);
-        model.addAttribute(new StudyForm());
-        return "study/form";
+    @GetMapping("/get-study/{path}")
+    public ResponseEntity<String> getStudy(@CurrentAccount Account account, @PathVariable String path) {
+        Study study = studyService.getStudy(path);
+        StudyDto studyDto = modelMapper.map(study, StudyDto.class);
+        ApiResponse<StudyDto> apiResponse = new ApiResponse<>("get study succeeded", HttpStatus.OK, studyDto);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/new-study")
