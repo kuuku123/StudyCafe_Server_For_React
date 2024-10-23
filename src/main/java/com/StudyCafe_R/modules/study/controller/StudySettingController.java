@@ -146,14 +146,15 @@ public class StudySettingController {
 
     @PostMapping("/tags/remove")
     @ResponseBody
-    public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
+    public ResponseEntity<String> removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
         Study study = studyConfigService.getStudyToUpdateTag(account, path);
         Optional<Tag> tag = tagService.findByTitle(tagForm.getTitle());
         if (tag.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         studyConfigService.removeTag(study, tag.get());
-        return ResponseEntity.ok().build();
+        ApiResponse<Object> apiResponse = new ApiResponse<>("tag removed", HttpStatus.OK, null);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/zones")
@@ -181,8 +182,8 @@ public class StudySettingController {
 
     @PostMapping("/zones/remove")
     @ResponseBody
-    public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
-                                     @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity<String> removeZone(@CurrentAccount Account account, @PathVariable String path,
+                                             @RequestBody ZoneForm zoneForm) {
         Study study = studyConfigService.getStudyToUpdateZone(account, path);
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
@@ -190,7 +191,8 @@ public class StudySettingController {
         }
 
         studyConfigService.removeZone(study, zone);
-        return ResponseEntity.ok().build();
+        ApiResponse<Object> apiResponse = new ApiResponse<>("zone removed", HttpStatus.OK, null);
+        return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/study")
