@@ -1,5 +1,8 @@
 package com.StudyCafe_R.modules.study.service;
 
+import com.StudyCafe_R.modules.account.form.Profile;
+import com.StudyCafe_R.modules.account.responseDto.StudyDto;
+import com.StudyCafe_R.modules.study.domain.QStudy;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 import static com.StudyCafe_R.modules.study.domain.QStudy.study;
 
@@ -32,18 +36,14 @@ import static com.StudyCafe_R.modules.study.domain.QStudy.study;
 public class StudyService {
 
     private final StudyRepository studyRepository;
+    private final StudyConfigService studyConfigService;
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final TagRepository tagRepository;
 
-    public Study createNewStudy(Study study, Account account) {
-        ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
-        try (InputStream inputStream = imgFile.getInputStream()) {
-            byte[] anonymousProfileJpg = inputStream.readAllBytes();
-            study.setStudyImage(anonymousProfileJpg);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Study createNewStudy(StudyForm studyForm, Account account) {
+        Study study = modelMapper.map(studyForm, Study.class);
+        studyConfigService.updateStudyImage(study, studyForm);
         Study newStudy = studyRepository.save(study);
         AccountStudyManager accountStudyManager = AccountStudyManager.builder()
                 .account(account)
@@ -53,6 +53,18 @@ public class StudyService {
         newStudy.addManager(accountStudyManager);
         return newStudy;
     }
+
+    public Study createNewStudy(Study study, Account account) {
+        Study newStudy = studyRepository.save(study);
+        AccountStudyManager accountStudyManager = AccountStudyManager.builder()
+                .account(account)
+                .study(study)
+                .build();
+
+        newStudy.addManager(accountStudyManager);
+        return newStudy;
+    }
+
 
     public Study getStudyToUpdate(Account account, String path) {
         Study study = getStudy(path);

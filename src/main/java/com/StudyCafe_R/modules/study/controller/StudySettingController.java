@@ -2,6 +2,7 @@ package com.StudyCafe_R.modules.study.controller;
 
 import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
@@ -22,6 +23,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,6 +94,13 @@ public class StudySettingController {
         studyService.updateStudyDescription(study, studyDescriptionForm);
         redirectAttributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
         return "redirect:/study/" + study.getEncodedPath() + "/settings/description";
+    }
+
+    @GetMapping(value = "/study-image")
+    public ResponseEntity<String> studyImage(@PathVariable String path) {
+        String encodedImage = studyConfigService.getStudyImage(path);
+        ApiResponse<String> apiResponse = new ApiResponse<>("study-image", HttpStatus.OK, encodedImage);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/banner")

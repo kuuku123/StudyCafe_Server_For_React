@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.study.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.domain.Study;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,11 +30,32 @@ public class StudyConfigService {
     private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
 
+    public String getStudyImage(String path) {
+        Study study = studyRepository.findByPath(path);
+        byte[] studyImage = study.getStudyImage();
+        String encodedImage = org.apache.tomcat.util.codec.binary.Base64.encodeBase64String(studyImage);
+        return encodedImage;
+    }
+
+
+    public void updateStudyImage(Study study, StudyForm studyForm) {
+        // Remove the data URL prefix if it exists
+        String base64Image = studyForm.getStudyImage();
+        if (base64Image.startsWith("data:image/jpeg;base64,")) {
+            base64Image = base64Image.substring("data:image/jpeg;base64,".length());
+        }
+        if (base64Image.startsWith("data:image/png;base64,")) {
+            base64Image = base64Image.substring("data:image/png;base64,".length());
+        }
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        study.setStudyImage(imageBytes); // dirty update will happen
+    }
 
     public Study updateStudyInfo(Account account, StudyForm studyForm) {
         Study study = studyRepository.findByPath(studyForm.getPath());
         checkIfManager(account, study);
         modelMapper.map(studyForm, study);
+        updateStudyImage(study, studyForm);
         return study;
     }
 
