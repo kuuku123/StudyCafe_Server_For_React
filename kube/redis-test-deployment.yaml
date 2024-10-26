@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: redis-test
+  name: redis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: redis-test
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: redis-test
+    spec:
+      containers:
+        - image: redis:alpine
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: redis-test
+          ports:
+            - containerPort: 6379
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: redis-test-claim0
+      restartPolicy: Always
+      volumes:
+        - name: redis-test-claim0
+          persistentVolumeClaim:
+            claimName: redis-test-claim0
+status: {}

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: spring-app
+  name: spring-app
+spec:
+  containers:
+    - command:
+        - java
+        - -jar
+        - -Djasypt.encryptor.password=my_jasypt_key
+        - -Dspring.profiles.active=prod
+        - /app/StudyCafe_Server_For_React-1.0.jar
+      image: kuuku123/studycafe_server_for_react:latest
+      name: spring-app
+      ports:
+        - containerPort: 8081
+      resources: {}
+  restartPolicy: OnFailure
+status: {}
