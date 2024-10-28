@@ -3,10 +3,11 @@ package com.StudyCafe_R.infra.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public interface ProviderUser {
+public interface ProviderUser extends Serializable {
 
     String getId();
 
