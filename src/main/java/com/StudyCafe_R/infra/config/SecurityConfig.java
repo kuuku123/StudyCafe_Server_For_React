@@ -1,5 +1,6 @@
 package com.StudyCafe_R.infra.config;
 
+import com.StudyCafe_R.infra.security.service.CustomOAuth2UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final DataSource dataSource;
     private final HandlerMappingIntrospector handlerMappingIntrospector;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,26 +49,31 @@ public class SecurityConfig {
                 .csrfTokenRequestHandler(cookeCsrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers(new SingUpRequestMatchers()));
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("/index.html","/css/**", "/js/**", "/images/**", "/static/**", "/dist/**", "/*.css", "/*.js").permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/login")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/sign-up")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/check-email-token")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/email-login")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/login-by-email")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/search/study")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/profile/*")).permitAll()
-                                .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector,"/xsrf-token")).permitAll()
-                                .anyRequest().authenticated());
+                authorizationManagerRequestMatcherRegistry
+                        .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**", "/static/**", "/dist/**", "/*.css", "/*.js").permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/sign-up")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/check-email-token")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/email-login")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login-by-email")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/search/study")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/profile/*")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/xsrf-token")).permitAll()
+                        .anyRequest().authenticated());
 
 
         http.rememberMe(httpSecurityRememberMeConfigurer ->
-                        httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)
-                                .tokenRepository(tokenRepository()));
+                httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)
+                        .tokenRepository(tokenRepository()));
+
+        http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(
+                userInfoEndpointConfig -> userInfoEndpointConfig
+                        .userService(customOAuth2UserService)));  // OAuth2
 
         return http.build();
     }
+
     @Bean
     public RememberMeServices rememberMeServices() {
         PersistentTokenBasedRememberMeServices rememberMeServices =
@@ -79,6 +86,7 @@ public class SecurityConfig {
         rememberMeServices.setAlwaysRemember(true); // Set to true if you want to always remember
         return rememberMeServices;
     }
+
     @Bean
     public PersistentTokenRepository tokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();

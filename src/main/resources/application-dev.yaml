@@ -6,9 +6,9 @@ spring:
     password: ENC(k+QRlojJ5PRJcIcwoBZGhA==)
   jpa:
     hibernate:
-#      ddl-auto: create
+      #      ddl-auto: create
       ddl-auto: update
-#    show-sql: true
+    #    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -31,6 +31,17 @@ spring:
         enabled: true
   thymeleaf:
     cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 742031203215-3ki2goqrmvc6qh6gpe6c6js3d5ve39qu.apps.googleusercontent.com
+            client-secret: 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
+            scope: email,profile
+
+
+
 logging:
   level:
     org:
