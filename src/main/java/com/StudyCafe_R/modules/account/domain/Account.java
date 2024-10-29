@@ -9,18 +9,20 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
-@Builder @AllArgsConstructor @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "account_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
     private Long id;
 
     @Column(unique = true)
@@ -47,7 +49,8 @@ public class Account implements Serializable {
 
     private String location; // varchar(255) above all info
 
-    @Lob @Column(columnDefinition = "LONGBLOB")
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] profileImage;
 
     private boolean studyCreatedByEmail;
@@ -62,28 +65,30 @@ public class Account implements Serializable {
 
     private boolean studyUpdatedByEmail;
 
+    private String createdOrMergedSocialProviders;
+
     @Builder.Default
     private boolean studyUpdatedByWeb = true;
     private LocalDateTime emailCheckTokenGeneratedAt;
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<AccountTag> accountTagSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<AccountZone> accountZoneSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<AccountStudyManager> managers = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<AccountStudyManager> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<Event> events = new HashSet<>();
 
@@ -115,11 +120,12 @@ public class Account implements Serializable {
         this.accountTagSet.add(accountTag);
         accountTag.setAccount(this);
     }
-//TODO check if i need to set accountTag account to null
+
+    //TODO check if i need to set accountTag account to null
     public void removeAccountTag(Tag tag) {
         accountTagSet.stream()
-                        .filter(at -> at.getTag().equals(tag))
-                                .findAny().ifPresent(at -> at.setAccount(null));
+                .filter(at -> at.getTag().equals(tag))
+                .findAny().ifPresent(at -> at.setAccount(null));
         accountTagSet.removeIf(accountTag -> accountTag.getTag().equals(tag));
     }
 
@@ -130,8 +136,8 @@ public class Account implements Serializable {
 
     public void removeAccountZone(Zone zone) {
         accountZoneSet.stream()
-                        .filter(az -> az.getZone().equals(zone))
-                                .findAny().ifPresent(az -> az.setAccount(null));
+                .filter(az -> az.getZone().equals(zone))
+                .findAny().ifPresent(az -> az.setAccount(null));
         accountZoneSet.removeIf(accountZone -> accountZone.getZone().equals(zone));
     }
 

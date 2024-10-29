@@ -3,6 +3,7 @@ package com.StudyCafe_R.modules.account.service;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
+import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -47,7 +48,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Slf4j @RequiredArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class AccountService {
@@ -77,6 +79,7 @@ public class AccountService {
         sendSignupConfirmEmail(newAccount);
         return newAccount;
     }
+
     private Account saveNewAccount(SignUpForm signUpForm) {
 
         signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
@@ -84,7 +87,7 @@ public class AccountService {
         account.generateEmailCheckToken();
 
         ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
-        try(InputStream inputStream = imgFile.getInputStream()){
+        try (InputStream inputStream = imgFile.getInputStream()) {
             byte[] anonymousProfileJpg = inputStream.readAllBytes();
             account.setProfileImage(anonymousProfileJpg);
         } catch (IOException e) {
@@ -93,27 +96,14 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    private byte[] readFileToByteArray(String filePath) {
-        File file = new File(filePath);
-        byte[] byteArray = new byte[(int) file.length()];
-
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(byteArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return byteArray;
-    }
-
     public void sendSignupConfirmEmail(Account newAccount) {
 
         Context context = new Context();
-        context.setVariable("link","/check-email-token?token=" + newAccount.getEmailCheckToken() + "&email=" + newAccount.getEmail());
-        context.setVariable("nickname",newAccount.getNickname());
-        context.setVariable("linkName","Email Verification");
-        context.setVariable("message","Click the link to use the Study Cafe service.");
-        context.setVariable("host",appProperties.getHost());
+        context.setVariable("link", "/check-email-token?token=" + newAccount.getEmailCheckToken() + "&email=" + newAccount.getEmail());
+        context.setVariable("nickname", newAccount.getNickname());
+        context.setVariable("linkName", "Email Verification");
+        context.setVariable("message", "Click the link to use the Study Cafe service.");
+        context.setVariable("host", appProperties.getHost());
 
         executorService.submit(() -> {
             String message = templateEngine.process("email/simple-link", context);
@@ -156,8 +146,8 @@ public class AccountService {
         SecurityContext context = securityContextHolderStrategy.createEmptyContext();
         context.setAuthentication(authorizedToken);
         securityContextHolderStrategy.setContext(context);
-        securityContextRepository.saveContext(context,request ,response);
-        rememberMeServices.loginSuccess(request,response,authorizedToken);
+        securityContextRepository.saveContext(context, request, response);
+        rememberMeServices.loginSuccess(request, response, authorizedToken);
     }
 
     public void signUp(Account account, HttpServletRequest request, HttpServletResponse response) {
@@ -189,7 +179,7 @@ public class AccountService {
 
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
         account.setProfileImage(imageBytes);
-        modelMapper.map(profile,account);
+        modelMapper.map(profile, account);
         accountRepository.save(account); // merge detached entity
     }
 
@@ -199,7 +189,7 @@ public class AccountService {
     }
 
     public void updateNotifications(Account account, Notifications notifications) {
-        modelMapper.map(notifications,account);
+        modelMapper.map(notifications, account);
         accountRepository.save(account);
     }
 
@@ -215,11 +205,11 @@ public class AccountService {
     public void sendLoginLink(Account account) {
 
         Context context = new Context();
-        context.setVariable("link","/login-by-email?token=" + account.getEmailCheckToken() + "&email=" + account.getEmail());
-        context.setVariable("nickname",account.getNickname());
-        context.setVariable("linkName","스터디 카페 로그인하기");
-        context.setVariable("message","로그인 하려면 링크를 클릭하세요.");
-        context.setVariable("host",appProperties.getHost());
+        context.setVariable("link", "/login-by-email?token=" + account.getEmailCheckToken() + "&email=" + account.getEmail());
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("linkName", "스터디 카페 로그인하기");
+        context.setVariable("message", "로그인 하려면 링크를 클릭하세요.");
+        context.setVariable("host", appProperties.getHost());
 
         executorService.submit(() -> {
             String message = templateEngine.process("email/simple-link", context);
@@ -270,14 +260,14 @@ public class AccountService {
 
         boolean exist = repoAccount.getAccountZoneSet().stream()
                 .anyMatch(az -> az.getZone() == zone);
-        if(!exist) {
+        if (!exist) {
             repoAccount.addAccountZone(accountZone);
         }
     }
 
     public void removeZone(Account account, Zone zone) {
         accountRepository.findById(account.getId())
-                        .ifPresent(a -> a.removeAccountZone(zone));
+                .ifPresent(a -> a.removeAccountZone(zone));
     }
 
     public Account getAccount(String nicknameOrEmail) {
@@ -295,6 +285,6 @@ public class AccountService {
         Account accountFromDb = getAccount(account.getEmail()); // due to session split because of email verfication is localhost:8081 , (2 session get created 3000, 8081 and security are saved in session differently
         AccountDto accountDto = new AccountDto();
         modelMapper.map(accountFromDb, accountDto);
-        return  accountDto;
+        return accountDto;
     }
 }

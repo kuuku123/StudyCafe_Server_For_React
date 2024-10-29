@@ -69,7 +69,9 @@ public class SecurityConfig {
 
         http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(
                 userInfoEndpointConfig -> userInfoEndpointConfig
-                        .userService(customOAuth2UserService)));  // OAuth2
+                        .userService(customOAuth2UserService)).successHandler((request, response, authentication) -> {
+            response.sendRedirect("/on-oauth-success");
+        }));  // OAuth2
 
         return http.build();
     }
