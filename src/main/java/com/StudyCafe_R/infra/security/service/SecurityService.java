@@ -21,13 +21,15 @@ public class SecurityService {
 
     @Transactional
     public String createAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
-        Account account = accountService.getAccount(principalUser.getEmail());
+        Account account = accountService.getAccount(principalUser.getAttribute("email"));
         if (account != null) {
             String mergedSocialProviders = account.getCreatedOrMergedSocialProviders();
-            String[] providers = mergedSocialProviders.split(",");
-            for (String provider : providers) {
-                if (provider.equals(principalUser.providerUser().getProvider())) {
-                    return "redirect:http://localhost:3000/already-merged-account";
+            if (mergedSocialProviders != null) {
+                String[] providers = mergedSocialProviders.split(",");
+                for (String provider : providers) {
+                    if (provider.equals(principalUser.providerUser().getProvider())) {
+                        return "redirect:http://localhost:3000/already-merged-account";
+                    }
                 }
             }
             return "redirect:http://localhost:3000/merge-account";
