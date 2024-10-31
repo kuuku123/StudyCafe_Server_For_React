@@ -2,7 +2,6 @@ package com.StudyCafe_R.modules.study.controller;
 
 import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
-import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
@@ -23,8 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -217,7 +214,7 @@ public class StudySettingController {
     public ResponseEntity<String> publishStudy(@CurrentAccount Account account, @PathVariable String path) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
-        ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, null);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, study.isPublished());
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
