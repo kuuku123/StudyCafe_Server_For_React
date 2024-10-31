@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MultipleTaskCommandLineRunner  implements CommandLineRunner {
+public class MultipleTaskCommandLineRunner implements CommandLineRunner {
 
     private final DatabaseTruncator databaseTruncator;
     private final ZoneService zoneService;

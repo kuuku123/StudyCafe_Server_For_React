@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -24,6 +25,9 @@ public class Account implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
     private Long id;
+
+    @Column(unique = true)
+    private BigInteger subSocialIdentifier;
 
     @Column(unique = true)
     private String email;
@@ -65,7 +69,7 @@ public class Account implements Serializable {
 
     private boolean studyUpdatedByEmail;
 
-    private String createdOrMergedSocialProviders;
+    private String createdOrMergedSocialProviders = "";
 
     @Builder.Default
     private boolean studyUpdatedByWeb = true;

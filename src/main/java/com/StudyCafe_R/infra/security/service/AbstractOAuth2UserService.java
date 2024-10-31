@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 public abstract class AbstractOAuth2UserService {
 
     @Autowired
-    private UserService userService;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private SelfCertification certification;

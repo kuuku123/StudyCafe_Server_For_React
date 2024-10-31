@@ -2,16 +2,15 @@ package com.StudyCafe_R.infra.security.service;
 
 import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.form.LoginForm;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
-import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.service.AccountService;
-import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class SecurityService {
     private final AccountService accountService;
 
     @Transactional
-    public String createAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
+    public String chooseOptioncreateAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
         Account account = accountService.getAccount(principalUser.getAttribute("email"));
         if (account != null) {
             String mergedSocialProviders = account.getCreatedOrMergedSocialProviders();
@@ -45,4 +44,18 @@ public class SecurityService {
             return "redirect:http://localhost:3000/social-account-setPassword";
         }
     }
+
+    @Transactional
+    public void mergeAccount(PrincipalUser principalUser) {
+        String sub = principalUser.getAttribute("sub");
+        Account account = accountService.getAccount(principalUser.getAttribute("email"));
+        BigInteger subSocialIdentifier = new BigInteger(sub);
+        account.setSubSocialIdentifier(subSocialIdentifier);
+
+        String createdOrMergedSocialProviders = account.getCreatedOrMergedSocialProviders();
+        createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
+        account.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
+    }
+
+
 }

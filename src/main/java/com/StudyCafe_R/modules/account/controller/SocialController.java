@@ -1,8 +1,10 @@
 package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.security.PrincipalUser;
+import com.StudyCafe_R.infra.security.service.SecurityService;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/social")
+@RequiredArgsConstructor
 public class SocialController {
+
+    private final SecurityService securityService;
 
     @GetMapping("/merge-accounts")
     public ResponseEntity<String> mergeAccounts(@AuthenticationPrincipal PrincipalUser principalUser) {
-        System.out.println("principalUser = " + principalUser);
+        securityService.mergeAccount(principalUser);
         ApiResponse<String> apiResponse = new ApiResponse<>("account has merged", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
