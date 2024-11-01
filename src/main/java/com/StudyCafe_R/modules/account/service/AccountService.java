@@ -127,7 +127,7 @@ public class AccountService {
                 new UserAccount(account), loginForm.getPassword());
         authenticationProvider.authenticate(token);
 
-        saveAuthentication(request, response, account, loginForm.getPassword());
+        saveAuthentication(request, response, account, loginForm.getPassword(), false);
 
         return account;
     }
@@ -139,9 +139,15 @@ public class AccountService {
         persistentTokenRepository.removeUserTokens(account.getNickname());
     }
 
-    private void saveAuthentication(HttpServletRequest request, HttpServletResponse response, Account account, String password) {
+    public void saveAuthentication(HttpServletRequest request, HttpServletResponse response, Account account, String password, boolean alreadyEncoded) {
+        String encodedPassword = null;
+        if (alreadyEncoded) {
+            encodedPassword = password;
+        } else {
+            encodedPassword = passwordEncoder.encode(password);
+        }
         UsernamePasswordAuthenticationToken authorizedToken = new UsernamePasswordAuthenticationToken(
-                new UserAccount(account), passwordEncoder.encode(password), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                new UserAccount(account), encodedPassword, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
         SecurityContext context = securityContextHolderStrategy.createEmptyContext();
         context.setAuthentication(authorizedToken);
@@ -151,7 +157,7 @@ public class AccountService {
     }
 
     public void signUp(Account account, HttpServletRequest request, HttpServletResponse response) {
-        saveAuthentication(request, response, account, account.getPassword());
+        saveAuthentication(request, response, account, account.getPassword(), false);
     }
 
     public void completeSignUp(Account account, HttpServletRequest request, HttpServletResponse response) {

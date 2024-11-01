@@ -2,11 +2,14 @@ package com.StudyCafe_R.infra.security.service;
 
 import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.form.LoginForm;
 import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ import java.math.BigInteger;
 public class SecurityService {
 
     private final AccountService accountService;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public String chooseOptioncreateAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
@@ -46,7 +50,7 @@ public class SecurityService {
     }
 
     @Transactional
-    public void mergeAccount(PrincipalUser principalUser) {
+    public AccountDto mergeAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
         String sub = principalUser.getAttribute("sub");
         Account account = accountService.getAccount(principalUser.getAttribute("email"));
         BigInteger subSocialIdentifier = new BigInteger(sub);
@@ -55,6 +59,11 @@ public class SecurityService {
         String createdOrMergedSocialProviders = account.getCreatedOrMergedSocialProviders();
         createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
         account.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
+        account.setEmailVerified(true);
+
+        accountService.saveAuthentication(request, response, account, account.getPassword(), true);
+        AccountDto accountDto = modelMapper.map(account, AccountDto.class);
+        return accountDto;
     }
 
 
