@@ -283,7 +283,8 @@ public class AccountService {
         if (account == null) {
             account = accountRepository.findByEmail(nicknameOrEmail);
             if (account == null) {
-                throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
+                log.error(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
+//                throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
             }
         }
         return account;

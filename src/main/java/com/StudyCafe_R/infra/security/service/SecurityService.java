@@ -39,8 +39,8 @@ public class SecurityService {
             return "redirect:http://localhost:3000/merge-account";
         } else {
             SignUpForm signUpForm = new SignUpForm();
-            signUpForm.setNickname(principalUser.getName());
-            signUpForm.setEmail(principalUser.getEmail());
+            signUpForm.setNickname(principalUser.getAttribute("name"));
+            signUpForm.setEmail(principalUser.getAttribute("email"));
             Account createdAccount = accountService.processNewAccount(signUpForm);
             String createdOrMergedSocialProviders = createdAccount.getCreatedOrMergedSocialProviders();
             createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();

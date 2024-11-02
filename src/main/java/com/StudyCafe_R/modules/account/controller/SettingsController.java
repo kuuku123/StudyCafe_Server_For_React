@@ -30,13 +30,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.StudyCafe_R.modules.account.controller.SettingsController.ROOT;
@@ -47,7 +46,6 @@ import static com.StudyCafe_R.modules.account.controller.SettingsController.SETT
 @RequiredArgsConstructor
 @RequestMapping(ROOT + SETTINGS)
 public class SettingsController {
-
 
 
     static final String ROOT = "/";
@@ -72,22 +70,25 @@ public class SettingsController {
     public void passwordFormInitBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new PasswordFormValidator());
     }
+
     @InitBinder("nicknameForm")
     public void nicknameFormInitBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(nicknameValidator);
     }
+
     @GetMapping(PROFILE)
-    public String updateProfileForm(@CurrentAccount Account account , Model model) {
+    public String updateProfileForm(@CurrentAccount Account account, Model model) {
 
         model.addAttribute(account);
         model.addAttribute(modelMapper.map(account, Profile.class));
 
         return SETTINGS + PROFILE;
     }
+
     @PostMapping(PROFILE)
     public ResponseEntity<String> updateProfile(@CurrentAccount Account account, @Valid @RequestBody Profile profile) {
-        accountService.updateProfile(account,profile);
-        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK,null);
+        accountService.updateProfile(account, profile);
+        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
@@ -99,16 +100,19 @@ public class SettingsController {
     }
 
     @PostMapping(PASSWORD)
-    public String updatePassword(@CurrentAccount Account account , @Valid PasswordForm passwordForm, Errors errors,
-                                 Model model, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid PasswordForm passwordForm, Errors errors) {
         if (errors.hasErrors()) {
-            model.addAttribute(account);
-            return SETTINGS + PASSWORD;
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError error : errors.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            ApiResponse<Map<String, String>> passwordUpdateFailed = new ApiResponse<>("password update failed", HttpStatus.BAD_REQUEST, errorMap);
+            return new ResponseEntity<>(new Gson().toJson(passwordUpdateFailed), HttpStatus.BAD_REQUEST);
         }
 
-        accountService.updatePassword(account,passwordForm.getNewPassword());
-        redirectAttributes.addFlashAttribute("message", "패스워드를 변경 성공");
-        return "redirect:/"+SETTINGS + PASSWORD;
+        accountService.updatePassword(account, passwordForm.getNewPassword());
+        ApiResponse<Map<String, String>> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(passwordUpdateSucceed), HttpStatus.OK);
     }
 
     @GetMapping(NOTIFICATIONS)
@@ -132,7 +136,6 @@ public class SettingsController {
     }
 
 
-
     @GetMapping(ACCOUNT)
     public String updateAccountForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
@@ -142,14 +145,14 @@ public class SettingsController {
 
     @PostMapping(ACCOUNT)
     public String updateAccount(@CurrentAccount Account account, @Valid NicknameForm nicknameForm, Errors errors
-    , Model model, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
-        if(errors.hasErrors()) {
+            , Model model, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
+        if (errors.hasErrors()) {
             model.addAttribute(account);
             return SETTINGS + ACCOUNT;
         }
 
-        accountService.updateNickname(account,nicknameForm.getNickname(), request, response);
-        redirectAttributes.addFlashAttribute("message","닉네임을 수정했습니다.");
+        accountService.updateNickname(account, nicknameForm.getNickname(), request, response);
+        redirectAttributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
         return "redirect:/" + SETTINGS + ACCOUNT;
     }
 
@@ -157,10 +160,10 @@ public class SettingsController {
     public String updateTags(@CurrentAccount Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
         Set<AccountTag> accountTags = accountService.getTags(account);
-        model.addAttribute("tags",accountTags.stream().map(at -> at.getTag().getTitle()).collect(Collectors.toList()));
+        model.addAttribute("tags", accountTags.stream().map(at -> at.getTag().getTitle()).collect(Collectors.toList()));
 
         List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
-        model.addAttribute("whitelist",objectMapper.writeValueAsString(allTags));
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
 
         return SETTINGS + TAGS;
     }
@@ -170,11 +173,11 @@ public class SettingsController {
     public ResponseEntity addTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
 
         Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
-        accountService.addTag(account,tag);
+        accountService.addTag(account, tag);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(TAGS+"/remove")
+    @PostMapping(TAGS + "/remove")
     @ResponseBody
     public ResponseEntity removeTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
         String title = tagForm.getTitle();
@@ -183,7 +186,7 @@ public class SettingsController {
             return ResponseEntity.badRequest().build();
         }
 
-        accountService.removeTag(account,tag.get());
+        accountService.removeTag(account, tag.get());
         return ResponseEntity.ok().build();
     }
 
