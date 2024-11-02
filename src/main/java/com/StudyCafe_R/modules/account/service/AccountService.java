@@ -176,17 +176,19 @@ public class AccountService {
     public void updateProfile(Account account, Profile profile) {
         // Remove the data URL prefix if it exists
         String base64Image = profile.getProfileImage();
-        if (base64Image.startsWith("data:image/jpeg;base64,")) {
-            base64Image = base64Image.substring("data:image/jpeg;base64,".length());
-        }
-        if (base64Image.startsWith("data:image/png;base64,")) {
-            base64Image = base64Image.substring("data:image/png;base64,".length());
-        }
+        if (base64Image != null) {
+            if (base64Image.startsWith("data:image/jpeg;base64,")) {
+                base64Image = base64Image.substring("data:image/jpeg;base64,".length());
+            }
+            if (base64Image.startsWith("data:image/png;base64,")) {
+                base64Image = base64Image.substring("data:image/png;base64,".length());
+            }
 
-        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-        account.setProfileImage(imageBytes);
-        modelMapper.map(profile, account);
-        accountRepository.save(account); // merge detached entity
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            account.setProfileImage(imageBytes);
+            modelMapper.map(profile, account);
+            accountRepository.save(account); // merge detached entity
+        }
     }
 
     public void updatePassword(Account account, String newPassword) {

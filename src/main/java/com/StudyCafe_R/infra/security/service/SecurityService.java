@@ -31,6 +31,7 @@ public class SecurityService {
                 String[] providers = mergedSocialProviders.split(",");
                 for (String provider : providers) {
                     if (provider.equals(principalUser.providerUser().getProvider())) {
+                        accountService.saveAuthentication(request, response, account, account.getPassword(), true);
                         return "redirect:http://localhost:3000/already-merged-account";
                     }
                 }

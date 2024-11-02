@@ -41,14 +41,16 @@ public class StudyConfigService {
     public void updateStudyImage(Study study, StudyForm studyForm) {
         // Remove the data URL prefix if it exists
         String base64Image = studyForm.getStudyImage();
-        if (base64Image.startsWith("data:image/jpeg;base64,")) {
-            base64Image = base64Image.substring("data:image/jpeg;base64,".length());
+        if (base64Image != null) {
+            if (base64Image.startsWith("data:image/jpeg;base64,")) {
+                base64Image = base64Image.substring("data:image/jpeg;base64,".length());
+            }
+            if (base64Image.startsWith("data:image/png;base64,")) {
+                base64Image = base64Image.substring("data:image/png;base64,".length());
+            }
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            study.setStudyImage(imageBytes); // dirty update will happen
         }
-        if (base64Image.startsWith("data:image/png;base64,")) {
-            base64Image = base64Image.substring("data:image/png;base64,".length());
-        }
-        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-        study.setStudyImage(imageBytes); // dirty update will happen
     }
 
     public Study updateStudyInfo(Account account, StudyForm studyForm) {
