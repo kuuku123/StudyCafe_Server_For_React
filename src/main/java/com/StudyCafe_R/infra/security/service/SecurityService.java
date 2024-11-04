@@ -41,10 +41,12 @@ public class SecurityService {
             SignUpForm signUpForm = new SignUpForm();
             signUpForm.setNickname(principalUser.getAttribute("name"));
             signUpForm.setEmail(principalUser.getAttribute("email"));
+            signUpForm.setPassword(principalUser.getPassword());
             Account createdAccount = accountService.processNewAccount(signUpForm);
             String createdOrMergedSocialProviders = createdAccount.getCreatedOrMergedSocialProviders();
             createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
             createdAccount.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
+            accountService.saveAuthentication(request, response, createdAccount, createdAccount.getPassword(), true);
 
             return "redirect:http://localhost:3000/social-account-setPassword";
         }

@@ -100,7 +100,7 @@ public class SettingsController {
     }
 
     @PostMapping(PASSWORD)
-    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid PasswordForm passwordForm, Errors errors) {
+    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid @RequestBody PasswordForm passwordForm, Errors errors) {
         if (errors.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
             for (FieldError error : errors.getFieldErrors()) {
