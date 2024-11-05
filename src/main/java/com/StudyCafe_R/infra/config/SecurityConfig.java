@@ -1,5 +1,6 @@
 package com.StudyCafe_R.infra.config;
 
+import com.StudyCafe_R.infra.security.CustomAuthorizationRequestResolver;
 import com.StudyCafe_R.infra.security.service.CustomOAuth2UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
@@ -39,6 +41,7 @@ public class SecurityConfig {
     private final DataSource dataSource;
     private final HandlerMappingIntrospector handlerMappingIntrospector;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -67,11 +70,14 @@ public class SecurityConfig {
                 httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)
                         .tokenRepository(tokenRepository()));
 
-        http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(
-                userInfoEndpointConfig -> userInfoEndpointConfig
-                        .userService(customOAuth2UserService)).successHandler((request, response, authentication) -> {
-            response.sendRedirect("/on-oauth-success");
-        }));  // OAuth2
+        http.oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(
+                        userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                .authorizationEndpoint(authEndpoint -> authEndpoint.authorizationRequestResolver(new CustomAuthorizationRequestResolver(clientRegistrationRepository)))
+                .successHandler((request, response, authentication) -> {
+                    response.sendRedirect("/on-oauth-success");
+                }));  // OAuth2
 
         return http.build();
     }

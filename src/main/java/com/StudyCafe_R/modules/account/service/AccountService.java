@@ -3,7 +3,6 @@ package com.StudyCafe_R.modules.account.service;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
-import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -39,7 +38,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -191,9 +189,10 @@ public class AccountService {
         }
     }
 
-    public void updatePassword(Account account, String newPassword) {
+    public AccountDto updatePassword(Account account, String newPassword) {
         account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
+        Account updatedAccount = accountRepository.save(account);
+        return modelMapper.map(updatedAccount, AccountDto.class);
     }
 
     public void updateNotifications(Account account, Notifications notifications) {

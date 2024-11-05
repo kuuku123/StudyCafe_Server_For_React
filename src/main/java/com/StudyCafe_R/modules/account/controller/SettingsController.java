@@ -5,6 +5,7 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
 import com.StudyCafe_R.modules.account.domain.AccountZone;
 import com.StudyCafe_R.modules.account.form.*;
+import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.validator.NicknameValidator;
@@ -110,8 +111,8 @@ public class SettingsController {
             return new ResponseEntity<>(new Gson().toJson(passwordUpdateFailed), HttpStatus.BAD_REQUEST);
         }
 
-        accountService.updatePassword(account, passwordForm.getNewPassword());
-        ApiResponse<Map<String, String>> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, null);
+        AccountDto accountDto = accountService.updatePassword(account, passwordForm.getNewPassword());
+        ApiResponse<AccountDto> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, accountDto);
         return new ResponseEntity<>(new Gson().toJson(passwordUpdateSucceed), HttpStatus.OK);
     }
 
