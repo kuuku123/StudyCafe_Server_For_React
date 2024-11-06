@@ -29,5 +29,5 @@ public class StudyForm {
     @NotBlank
     private String fullDescriptionText;
 
-    private String StudyImage;
+    private String studyImage;
 }
