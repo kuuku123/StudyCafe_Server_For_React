@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.notification;
 
-import com.StudyCafe_R.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.modules.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -10,10 +9,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 public class Notification {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
@@ -31,7 +33,6 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-
 
 
 }

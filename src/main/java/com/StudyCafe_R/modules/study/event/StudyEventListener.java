@@ -1,6 +1,6 @@
 package com.StudyCafe_R.modules.study.event;
 
-import com.StudyCafe_R.StudyCafe_R.modules.notification.NotificationType;
+import com.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
