@@ -14,6 +14,7 @@ import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagForm;
 import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
+import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
@@ -158,24 +159,26 @@ public class SettingsController {
     }
 
     @GetMapping(TAGS)
-    public String updateTags(@CurrentAccount Account account, Model model) throws JsonProcessingException {
-        model.addAttribute(account);
-        Set<AccountTag> accountTags = accountService.getTags(account);
-        model.addAttribute("tags", accountTags.stream().map(at -> at.getTag().getTitle()).collect(Collectors.toList()));
-
-        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
-
-        return SETTINGS + TAGS;
+    public ResponseEntity<String> getTags(@CurrentAccount Account account) {
+        List<TagDto> tagDtos = accountService.getTags(account);
+        ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("get tags complete", HttpStatus.OK, tagDtos);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping(TAGS + "/add")
     @ResponseBody
-    public ResponseEntity addTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
-
-        Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
-        accountService.addTag(account, tag);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> addTag(@CurrentAccount Account account, Model model, @RequestBody List<TagForm> tagFormList) {
+        List<TagDto> tagDtos = new ArrayList<>();
+        for (TagForm tagForm : tagFormList) {
+            Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
+            accountService.addTag(account, tag);
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDtos.add(tagDto);
+        }
+        AccountDto accountDto = modelMapper.map(account, AccountDto.class);
+        accountDto.setTags(tagDtos);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("tag add complete", HttpStatus.OK, accountDto);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping(TAGS + "/remove")

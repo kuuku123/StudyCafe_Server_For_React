@@ -132,7 +132,7 @@ public class StudySettingController {
     }
 
     @GetMapping("/tags")
-    public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+    public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path) throws JsonProcessingException {
         List<TagDto> studyTagDtoList = studyConfigService.getStudyTags(path);
         ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, studyTagDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);

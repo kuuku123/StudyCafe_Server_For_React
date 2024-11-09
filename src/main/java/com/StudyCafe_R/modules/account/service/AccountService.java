@@ -12,7 +12,9 @@ import com.StudyCafe_R.modules.account.form.*;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;
+import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,10 +40,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.*;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -242,9 +241,16 @@ public class AccountService {
         }
     }
 
-    public Set<AccountTag> getTags(Account account) {
+    public List<TagDto> getTags(Account account) {
         Optional<Account> byId = accountRepository.findById(account.getId());
-        return byId.orElseThrow().getAccountTagSet();
+        Set<AccountTag> accountTagSet = byId.orElseThrow().getAccountTagSet();
+        List<Tag> tags = accountTagSet.stream().map(AccountTag::getTag).toList();
+        List<TagDto> tagDtos = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDtos.add(tagDto);
+        }
+        return tagDtos;
     }
 
     public void removeTag(Account account, Tag tag) {
@@ -293,6 +299,20 @@ public class AccountService {
         Account accountFromDb = getAccount(account.getEmail()); // due to session split because of email verfication is localhost:8081 , (2 session get created 3000, 8081 and security are saved in session differently
         AccountDto accountDto = new AccountDto();
         modelMapper.map(accountFromDb, accountDto);
+        List<Tag> tags = accountFromDb.getAccountTagSet().stream().map(AccountTag::getTag).toList();
+        List<Zone> zones = accountFromDb.getAccountZoneSet().stream().map(AccountZone::getZone).toList();
+        List<TagDto> tagDtos = new ArrayList<>();
+        List<ZoneDto> zoneDtos = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDtos.add(tagDto);
+        }
+        for (Zone zone : zones) {
+            ZoneDto zoneDto = modelMapper.map(zone, ZoneDto.class);
+            zoneDtos.add(zoneDto);
+        }
+        accountDto.setTags(tagDtos);
+        accountDto.setZones(zoneDtos);
         return accountDto;
     }
 }

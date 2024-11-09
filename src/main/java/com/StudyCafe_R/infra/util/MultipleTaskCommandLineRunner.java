@@ -15,7 +15,7 @@ public class MultipleTaskCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        databaseTruncator.truncateAllTables();
+        databaseTruncator.truncateAllTables();
         zoneService.initZoneData();
     }
 }
