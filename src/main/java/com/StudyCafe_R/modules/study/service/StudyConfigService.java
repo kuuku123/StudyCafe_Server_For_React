@@ -48,6 +48,9 @@ public class StudyConfigService {
             if (base64Image.startsWith("data:image/png;base64,")) {
                 base64Image = base64Image.substring("data:image/png;base64,".length());
             }
+            if (base64Image.equals("undefined")) {
+                return;
+            }
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
             study.setStudyImage(imageBytes); // dirty update will happen
         }

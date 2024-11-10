@@ -24,7 +24,11 @@ public class SecurityService {
 
     @Transactional
     public String chooseOptioncreateAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
-        Account account = accountService.getAccount(principalUser.getAttribute("email"));
+        Account account = null;
+        try {
+            account = accountService.getAccount(principalUser.getAttribute("email"));
+        } catch (Exception e) {
+        }
         if (account != null) {
             String mergedSocialProviders = account.getCreatedOrMergedSocialProviders();
             if (mergedSocialProviders != null) {

@@ -283,13 +283,14 @@ public class AccountService {
                 .ifPresent(a -> a.removeAccountZone(zone));
     }
 
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
     public Account getAccount(String nicknameOrEmail) {
         Account account = accountRepository.findByNickname(nicknameOrEmail);
         if (account == null) {
             account = accountRepository.findByEmail(nicknameOrEmail);
             if (account == null) {
                 log.error(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
-//                throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
+                throw new IllegalArgumentException(nicknameOrEmail + "에 해당하는 사용자가 없습니다.");
             }
         }
         return account;
