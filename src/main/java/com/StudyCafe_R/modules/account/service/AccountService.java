@@ -257,13 +257,19 @@ public class AccountService {
 
         Account repoAccount = accountRepository.findById(account.getId()).get();
         repoAccount.removeAccountTag(tag);
-//        tagRepository.delete(tag);  // we want tag to be alive , later we can look AccountTag table and search for Tag that has no reference
     }
 
 
-    public Set<AccountZone> getZones(Account account) {
+    public List<ZoneDto> getZones(Account account) {
         Optional<Account> byId = accountRepository.findById(account.getId());
-        return byId.orElseThrow().getAccountZoneSet();
+        Set<AccountZone> accountZoneSet = byId.orElseThrow().getAccountZoneSet();
+        List<Zone> zones = accountZoneSet.stream().map(AccountZone::getZone).toList();
+        List<ZoneDto> zoneDtos = new ArrayList<>();
+        for (Zone zone : zones) {
+            ZoneDto zoneDto = modelMapper.map(zone, ZoneDto.class);
+            zoneDtos.add(zoneDto);
+        }
+        return zoneDtos;
     }
 
     public void addZone(Account account, Zone zone) {

@@ -75,11 +75,11 @@ public class Account implements Serializable {
     private boolean studyUpdatedByWeb = true;
     private LocalDateTime emailCheckTokenGeneratedAt;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<AccountTag> accountTagSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<AccountZone> accountZoneSet = new HashSet<>();
 
@@ -127,9 +127,6 @@ public class Account implements Serializable {
 
     //TODO check if i need to set accountTag account to null
     public void removeAccountTag(Tag tag) {
-        accountTagSet.stream()
-                .filter(at -> at.getTag().equals(tag))
-                .findAny().ifPresent(at -> at.setAccount(null));
         accountTagSet.removeIf(accountTag -> accountTag.getTag().equals(tag));
     }
 
@@ -139,9 +136,6 @@ public class Account implements Serializable {
     }
 
     public void removeAccountZone(Zone zone) {
-        accountZoneSet.stream()
-                .filter(az -> az.getZone().equals(zone))
-                .findAny().ifPresent(az -> az.setAccount(null));
         accountZoneSet.removeIf(accountZone -> accountZone.getZone().equals(zone));
     }
 

@@ -16,6 +16,8 @@ import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.ZoneService;
+import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,6 +68,7 @@ public class SettingsController {
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
     private final ObjectMapper objectMapper;
+    private final ZoneService zoneService;
 
 
     @InitBinder("passwordForm")
@@ -191,32 +194,31 @@ public class SettingsController {
         }
 
         accountService.removeTag(account, tag.get());
-        return ResponseEntity.ok().build();
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("tag remove complete", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping(ZONES)
-    public String updateZonesForm(@CurrentAccount Account account, Model model) throws JsonProcessingException {
-        model.addAttribute(account);
-
-        Set<AccountZone> accountZones = accountService.getZones(account);
-        model.addAttribute("zones", accountZones.stream().map(az -> az.getZone()).collect(Collectors.toList()));
-
-        List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(allZones));
-
-        return SETTINGS + ZONES;
+    public ResponseEntity<String> getZones(@CurrentAccount Account account) throws JsonProcessingException {
+        List<ZoneDto> accountZones = accountService.getZones(account);
+        ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("get tags complete", HttpStatus.OK, accountZones);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping(ZONES + "/add")
     @ResponseBody
-    public ResponseEntity addZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
-        if (zone == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity addZone(@CurrentAccount Account account, @RequestBody List<ZoneForm> zoneFormList) {
+        List<ZoneDto> zoneDtos = new ArrayList<>();
+        for (ZoneForm zoneForm : zoneFormList) {
+            Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+            accountService.addZone(account, zone);
+            ZoneDto zoneDto = modelMapper.map(zone, ZoneDto.class);
+            zoneDtos.add(zoneDto);
         }
-
-        accountService.addZone(account, zone);
-        return ResponseEntity.ok().build();
+        AccountDto accountDto = modelMapper.map(account, AccountDto.class);
+        accountDto.setZones(zoneDtos);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("zone add complete", HttpStatus.OK, accountDto);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping(ZONES + "/remove")
@@ -228,7 +230,8 @@ public class SettingsController {
         }
 
         accountService.removeZone(account, zone);
-        return ResponseEntity.ok().build();
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("zone remove complete", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
 

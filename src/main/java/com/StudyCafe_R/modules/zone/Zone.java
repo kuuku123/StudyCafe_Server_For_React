@@ -5,16 +5,22 @@ import com.StudyCafe_R.modules.study.domain.StudyZone;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter @Setter @EqualsAndHashCode(of = {"city","localNameOfCity","province"})
-@Builder @AllArgsConstructor @NoArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"city","province"}))
-public class Zone {
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"city", "localNameOfCity", "province"})
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"city", "province"}))
+public class Zone implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "zone_id")
     private Long id;
 
@@ -27,7 +33,7 @@ public class Zone {
     @Column(nullable = true)
     private String province;
 
-    @OneToMany(mappedBy = "zone",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<AccountZone> accountZoneSet = new HashSet<>();
 

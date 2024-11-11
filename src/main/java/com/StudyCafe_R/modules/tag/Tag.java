@@ -6,28 +6,33 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter @Setter
-@EqualsAndHashCode(of="id")
-@Builder @AllArgsConstructor @NoArgsConstructor
-public class Tag {
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Tag implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnore
     private Set<AccountTag> accountTagSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "tag" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnore
     private Set<StudyTag> studyTagSet = new HashSet<>();
