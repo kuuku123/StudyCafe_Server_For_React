@@ -8,11 +8,17 @@ import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.domain.StudyTag;
 import com.StudyCafe_R.modules.study.domain.StudyZone;
 import com.StudyCafe_R.modules.tag.Tag;
+import com.StudyCafe_R.modules.tag.TagForm;
+import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
+import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
+import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +36,8 @@ public class StudyConfigService {
 
     private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
+    private final TagService tagService;
+    private final ZoneRepository zoneRepository;
 
     public String getStudyImage(String path) {
         Study study = studyRepository.findByPath(path);
@@ -87,39 +96,66 @@ public class StudyConfigService {
     }
 
 
-    public void addTag(Study study, Tag tag) {
+    private void addTag(Study study, Tag tag) {
         StudyTag studyTag = StudyTag.builder()
                 .study(study)
                 .tag(tag).build();
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        boolean exist = repoStudy.getTags().stream()
+        boolean exist = study.getTags().stream()
                 .anyMatch(st -> st.getTag() == tag);
         if (!exist) {
-            repoStudy.addStudyTag(studyTag);
+            study.addStudyTag(studyTag);
         }
     }
 
-    public void removeTag(Study study, Tag tag) {
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        repoStudy.removeStudyTag(tag);
+    public void addTag(String path, List<TagForm> tagFormList) {
+
+        Study study = studyRepository.findByPath(path);
+        for (TagForm tagForm : tagFormList) {
+            Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
+            addTag(study, tag);
+        }
+
     }
 
-    public void addZone(Study study, Zone zone) {
+    public void removeTag(String path, TagForm tagForm) {
+        Optional<Tag> tag = tagService.findByTitle(tagForm.getTitle());
+        if (tag.isEmpty()) {
+            throw new IllegalArgumentException("tag doesn't exist");
+        }
+        Study study = studyRepository.findByPath(path);
+        study.removeStudyTag(tag.get());
+    }
+
+    private void addZone(Study study, Zone zone) {
         StudyZone studyZone = StudyZone.builder()
                 .zone(zone)
                 .study(study)
                 .build();
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        boolean exist = repoStudy.getZones().stream()
+        boolean exist = study.getZones().stream()
                 .anyMatch(sz -> sz.getZone() == zone);
         if (!exist) {
-            repoStudy.addStudyZone(studyZone);
+            study.addStudyZone(studyZone);
         }
     }
 
-    public void removeZone(Study study, Zone zone) {
-        Study repoStudy = studyRepository.findByPath(study.getPath());
-        repoStudy.removeStudyZone(zone);
+    public void addZone(String path, List<ZoneForm> zoneFormList) {
+        Study study = studyRepository.findByPath(path);
+        for (ZoneForm zoneForm : zoneFormList) {
+            Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+            if (zone == null) {
+                throw new IllegalArgumentException("zone doesn't exist");
+            }
+            addZone(study, zone);
+        }
+    }
+
+    public void removeZone(String path, ZoneForm zoneForm) {
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+        if (zone == null) {
+            throw new IllegalArgumentException("zone doesn't exist");
+        }
+        Study study = studyRepository.findByPath(path);
+        study.removeStudyZone(zone);
         studyRepository.save(study);
     }
 
