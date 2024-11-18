@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.study.event;
 
+import com.StudyCafe_R.modules.event.sse.SSEController;
 import com.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
@@ -44,6 +45,7 @@ public class StudyEventListener {
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
     private final NotificationRepository notificationRepository;
+    private final SSEController sseController;
 
     @EventListener
     public void handleStudyUpdateEvent(StudyUpdateEvent studyUpdateEvent) {
@@ -88,6 +90,7 @@ public class StudyEventListener {
         notification.setAccount(account);
         notification.setNotificationType(notificationType);
         notificationRepository.save(notification);
+        sseController.notifyClientsStudyCreate(account, study);
     }
 
     private void sendStudyCreatedEmail(Study study, Account account, String contextMessage, String emailSubject) {
