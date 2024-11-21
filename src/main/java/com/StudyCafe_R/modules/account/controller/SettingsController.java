@@ -2,8 +2,6 @@ package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.domain.AccountTag;
-import com.StudyCafe_R.modules.account.domain.AccountZone;
 import com.StudyCafe_R.modules.account.form.*;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -40,7 +38,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.StudyCafe_R.modules.account.controller.SettingsController.ROOT;
 import static com.StudyCafe_R.modules.account.controller.SettingsController.SETTINGS;

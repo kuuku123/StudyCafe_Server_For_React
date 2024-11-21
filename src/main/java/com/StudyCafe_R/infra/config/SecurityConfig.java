@@ -26,6 +26,9 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import org.springframework.web.util.WebUtils;
 
@@ -48,6 +51,7 @@ public class SecurityConfig {
         CookieCsrfTokenRequestAttributeHandler cookeCsrfTokenRequestAttributeHandler = new CookieCsrfTokenRequestAttributeHandler();
         cookeCsrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
 
+        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()));
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(new CookieCsrfTokenRepository())
                 .csrfTokenRequestHandler(cookeCsrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers(new SingUpRequestMatchers()));
@@ -137,5 +141,17 @@ public class SecurityConfig {
             }
             return cookie.getValue();
         }
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000"); // React dev server
+        configuration.addAllowedMethod("*"); // Allow all HTTP methods
+        configuration.addAllowedHeader("*"); // Allow all headers
+        configuration.setAllowCredentials(true); // Allow cookies or authentication
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

@@ -17,6 +17,7 @@ public class DatabaseTruncator {
     public DatabaseTruncator(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
+
     public void truncateAllTables() {
         // Get the list of table names
         String query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'test' AND table_type = 'BASE TABLE'";
@@ -27,7 +28,9 @@ public class DatabaseTruncator {
             try {
                 System.out.println("truncating tableName = " + tableName);
                 jdbcTemplate.execute("DELETE FROM " + tableName);
-            } catch( Exception e ) {
+            } catch (Exception e) {
+                String message = e.getMessage();
+                System.out.println("message = " + message);
                 System.out.println("having exception due to foreign key but will ignore and keep going on");
             }
         }
