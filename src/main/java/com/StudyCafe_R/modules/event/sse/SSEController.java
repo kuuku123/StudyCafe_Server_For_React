@@ -22,36 +22,28 @@ public class SSEController {
 
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@CurrentAccount Account account) {
-        SseEmitter emitter = clients.get(account.getEmail());
-        if (emitter == null) {
-            emitter = new SseEmitter();
-            clients.put(account.getEmail(), emitter);
-            emitter.onCompletion(() -> clients.remove(account));
-            emitter.onTimeout(() -> clients.remove(account));
-            emitter.onError((e) -> clients.remove(account));
-
-            SseEmitter finalEmitter = emitter;
-            CompletableFuture.runAsync(() -> {
-                try {
-                    // Simulate data stream
-                    for (int i = 0; i < 5; i++) {
-                        finalEmitter.send(SseEmitter.event().data(i));
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-                    finalEmitter.completeWithError(e);
-                }
-            });
-            return emitter;
+        SseEmitter sseEmitter = clients.get(account.getEmail());
+        if (sseEmitter == null) {
+            sseEmitter = new SseEmitter();
+            clients.put(account.getEmail(), sseEmitter);
+            sseEmitter.onCompletion(() -> clients.remove(account.getEmail()));
+            sseEmitter.onTimeout(() -> clients.remove(account.getEmail()));
+            sseEmitter.onError((e) -> clients.remove(account.getEmail()));
         }
-        return emitter;
+        try {
+            sseEmitter.send(SseEmitter.event().name("test").data("test"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            clients.remove(account.getEmail());
+        }
+        return sseEmitter;
     }
 
     public void notifyClientsStudyCreate(Account account, Study study) {
         SseEmitter sseEmitter = clients.get(account.getEmail());
         if (sseEmitter != null) {
             try {
-                sseEmitter.send(SseEmitter.event().name("studyCreate").data(study.getEncodedPath()));
+                sseEmitter.send(SseEmitter.event().name("StudyCreate").data(study.getEncodedPath()));
             } catch (IOException e) {
                 e.printStackTrace();
                 clients.remove(account.getEmail());

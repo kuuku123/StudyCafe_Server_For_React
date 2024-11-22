@@ -27,6 +27,7 @@ public class Notification {
     private boolean checked;
 
     @ManyToOne
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account account;
 
     private LocalDateTime createdDateTime;
