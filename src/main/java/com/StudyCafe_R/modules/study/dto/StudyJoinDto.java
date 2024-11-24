@@ -12,6 +12,7 @@ public class StudyJoinDto {
 
     private Long id;
     private String title;
+    private String path;
     private String shortDescription;
     private List<TagDto> tagDtoList;
     private List<ZoneDto> zoneDtoList;
@@ -30,6 +31,14 @@ public class StudyJoinDto {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getShortDescription() {

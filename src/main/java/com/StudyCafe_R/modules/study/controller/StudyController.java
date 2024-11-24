@@ -44,8 +44,7 @@ public class StudyController {
 
     @GetMapping("/get-study/{path}")
     public ResponseEntity<String> getStudy(@CurrentAccount Account account, @PathVariable String path) {
-        Study study = studyService.getStudy(path);
-        StudyDto studyDto = modelMapper.map(study, StudyDto.class);
+        StudyDto studyDto = studyService.getStudyDto(path);
         ApiResponse<StudyDto> apiResponse = new ApiResponse<>("get study succeeded", HttpStatus.OK, studyDto);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }

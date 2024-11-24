@@ -2,6 +2,7 @@ package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -37,6 +38,14 @@ public class AccountStudyManagerController {
         Study study = studyService.getStudy(path);
         List<AccountDto> studyMembers = accountStudyManagerService.getStudyMembers(account, study);
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyMembers);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/{path}/study-managers")
+    public ResponseEntity<String> getStudyManager(@CurrentAccount Account account, @PathVariable String path) {
+        Study study = studyService.getStudy(path);
+        List<AccountDto> studyManagers = accountStudyManagerService.getStudyManagers(study);
+        ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyManagers);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 }

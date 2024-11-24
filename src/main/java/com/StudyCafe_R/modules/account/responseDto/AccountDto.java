@@ -19,6 +19,7 @@ public class AccountDto {
     private String location;
     private String email;
     private boolean emailVerified;
+    private String profileImage;
     private List<TagDto> tags = new ArrayList<>();
     private List<ZoneDto> zones = new ArrayList<>();
 

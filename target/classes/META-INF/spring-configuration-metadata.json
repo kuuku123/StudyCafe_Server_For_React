@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "com.StudyCafe_R.infra.config.AppProperties",
+      "sourceType": "com.StudyCafe_R.infra.config.AppProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.host",
+      "type": "java.lang.String",
+      "sourceType": "com.StudyCafe_R.infra.config.AppProperties"
+    }
+  ],
+  "hints": []
+}

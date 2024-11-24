@@ -320,6 +320,10 @@ public class AccountService {
         }
         accountDto.setTags(tagDtos);
         accountDto.setZones(zoneDtos);
+
+        String profileImage = getProfileImage(account);
+        accountDto.setProfileImage(profileImage);
+
         return accountDto;
     }
 }

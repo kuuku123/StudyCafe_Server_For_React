@@ -1,0 +1,72 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(nBbb+njXtjlneIFew/UFNq78q/2iIuvH3kFKaX4gqowaDj9gH4pPMiN3Jfj+ZlEIpUX8KtriuavFfPuCoaLzVPmU0L+cWqcnAjkEMfO/pImE318lXsqDcA==)
+    username: ENC(PM6hzMZxoQxfeMYEjlqe9Q==)
+    password: ENC(k+QRlojJ5PRJcIcwoBZGhA==)
+  jpa:
+    hibernate:
+      #      ddl-auto: create
+      ddl-auto: update
+    #    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(GXEU5MhA5rAmRzD9eeJVQgjiNwB7mSTLiIqkb8D90OA=)
+    password: ENC(FzUlexyhDLQSdAvxlkPSDdjqQdP1E23Fst6/6rrstIk=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 742031203215-3ki2goqrmvc6qh6gpe6c6js3d5ve39qu.apps.googleusercontent.com
+            client-secret: ENC(peUYU35cbfi4UxhQjHvS7jJAIWdJ62XzoZ6XnYOSatkKFa4iiYFFoa/q6ur4aqYt)
+            scope: email,profile
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+server:
+  port: 8081
+  servlet:
+    session:
+      cookie:
+        http-only: false
+        name: StudyCafe_Session_Cookie
+      timeout: 30m
+  session:
+    store-type: redis
+
+  redis:
+    host: localhost
+    port: 16379

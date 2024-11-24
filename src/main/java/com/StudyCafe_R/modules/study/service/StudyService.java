@@ -89,6 +89,14 @@ public class StudyService {
         return study;
     }
 
+    public StudyDto getStudyDto(String path) {
+        Study study = studyRepository.findByPath(path);
+        StudyDto studyDto = modelMapper.map(study, StudyDto.class);
+        String studyImage = studyConfigService.getStudyImage(path);
+        studyDto.setStudyImage(studyImage);
+        return studyDto;
+    }
+
     public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
         modelMapper.map(studyDescriptionForm, study);
         eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디 소개를 수정했습니다."));

@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.account.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.repository.AccountStudyManagerRepository;
 import com.StudyCafe_R.modules.account.repository.AccountStudyMembersRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
@@ -24,6 +25,7 @@ public class AccountStudyManagerService {
     private final AccountStudyManagerRepository accountStudyManagerRepository;
     private final AccountStudyMembersRepository accountStudyMembersRepository;
     private final ModelMapper modelMapper;
+    private final AccountService accountService;
 
     @Transactional(readOnly = true)
     public List<AccountDto> getStudyMembers(Account account, Study study) {
@@ -32,6 +34,20 @@ public class AccountStudyManagerService {
         for (Account studyMember : studyMembers) {
             AccountDto accountDto = new AccountDto();
             modelMapper.map(studyMember, accountDto);
+            accountDtoList.add(accountDto);
+        }
+        return accountDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AccountDto> getStudyManagers(Study study) {
+        List<Account> studyManagers = study.getManagers().stream().map(AccountStudyManager::getAccount).toList();
+        List<AccountDto> accountDtoList = new ArrayList<>();
+        for (Account studyManager : studyManagers) {
+            AccountDto accountDto = new AccountDto();
+            modelMapper.map(studyManager, accountDto);
+            String profileImage = accountService.getProfileImage(studyManager);
+            accountDto.setProfileImage(profileImage);
             accountDtoList.add(accountDto);
         }
         return accountDtoList;
