@@ -55,15 +55,6 @@ public class AccountController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    //TODO
-    // "user" doesn't have to be in query params, because we have session
-    @GetMapping(value = "/profile-image")
-    public ResponseEntity<String> profileImage(@CurrentAccount Account account) {
-        String encodedImage = accountService.getProfileImage(account);
-        ApiResponse<String> apiResponse = new ApiResponse<>("profile-image", HttpStatus.OK, encodedImage);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
-    }
-
     @GetMapping("/profile")
     public ResponseEntity<String> profile(@CurrentAccount Account account) {
         AccountDto accountDto = accountService.getAccountDto(account);

@@ -67,15 +67,6 @@ public class StudyController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/study/{path}/study-image")
-    public ResponseEntity<String> studyImage(@PathVariable String path) {
-        Study study = studyService.getStudy(path);
-        byte[] studyImage = study.getStudyImage();
-        String encodedImage = Base64.encodeBase64String(studyImage);
-        ApiResponse<String> apiResponse = new ApiResponse<>("study-image", HttpStatus.OK, encodedImage);
-        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
-    }
-
     @GetMapping("/study/{path}")
     public String viewStudy(@CurrentAccount Account account, @PathVariable String path, Model model) {
         model.addAttribute(account);
