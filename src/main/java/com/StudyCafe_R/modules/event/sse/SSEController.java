@@ -2,6 +2,8 @@ package com.StudyCafe_R.modules.event.sse;
 
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.notification.Notification;
+import com.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -41,12 +43,26 @@ public class SSEController {
         return sseEmitter;
     }
 
-    public void notifyClientsStudyCreate(Account account, Study study) {
+    public void notifyClientsStudyCreate(Notification notification , Study study) {
+        Account account = notification.getAccount();
+        String eventName = "";
+        switch(notification.getNotificationType()) {
+            case STUDY_CREATED:
+                eventName = "StudyCreated";
+                break;
+            case EVENT_ENROLLMENT:
+                eventName = "EventEnrollment";
+                break;
+            case STUDY_UPDATED:
+                eventName = "StudyUpdated";
+                break;
+        }
+
         SseEmitter sseEmitter = clients.get(account.getEmail());
         if (sseEmitter != null) {
             try {
                 log.info("StudyCrate event sse send");
-                sseEmitter.send(SseEmitter.event().name("StudyCreate").data(study.getEncodedPath()));
+                sseEmitter.send(SseEmitter.event().name("StudyCreated").data(study.getEncodedPath()));
             } catch (IOException e) {
                 e.printStackTrace();
                 clients.remove(account.getEmail());

@@ -90,7 +90,7 @@ public class StudyEventListener {
         notification.setAccount(account);
         notification.setNotificationType(notificationType);
         notificationRepository.save(notification);
-        sseController.notifyClientsStudyCreate(account, study);
+        sseController.notifyClientsStudyCreate(notification, study);
     }
 
     private void sendStudyCreatedEmail(Study study, Account account, String contextMessage, String emailSubject) {
