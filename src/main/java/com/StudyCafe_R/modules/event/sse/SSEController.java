@@ -61,10 +61,11 @@ public class SSEController {
         SseEmitter sseEmitter = clients.get(account.getEmail());
         if (sseEmitter != null) {
             try {
-                log.info("StudyCrate event sse send");
-                sseEmitter.send(SseEmitter.event().name("StudyCreated").data(study.getEncodedPath()));
+                log.info(account.getEmail() + " "+eventName +" event sse send");
+                sseEmitter.send(SseEmitter.event().name(eventName).data(study.getEncodedPath()));
             } catch (IOException e) {
                 e.printStackTrace();
+                sseEmitter.completeWithError(e);
                 clients.remove(account.getEmail());
             }
         }

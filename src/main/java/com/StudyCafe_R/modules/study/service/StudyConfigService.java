@@ -1,7 +1,9 @@
 package com.StudyCafe_R.modules.study.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
+import com.StudyCafe_R.modules.study.event.StudyUpdateEvent;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.domain.Study;
@@ -18,6 +20,7 @@ import com.StudyCafe_R.modules.zone.dto.ZoneForm;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,7 @@ public class StudyConfigService {
     private final ModelMapper modelMapper;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public String getStudyImage(String path) {
         Study study = studyRepository.findByPath(path);
@@ -70,6 +74,7 @@ public class StudyConfigService {
         checkIfManager(account, study);
         modelMapper.map(studyForm, study);
         updateStudyImage(study, studyForm);
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "study updated"));
         return study;
     }
 
