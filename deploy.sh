@@ -3,28 +3,24 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Step 1: Clean and package the Maven project without running tests
-echo "Running Maven clean and package..."
-mvn clean package -DskipTests
+# Step 0: Remove the existing Docker container if it exists
+if docker ps -a --format '{{.Names}}' | grep -Eq "^react-apache\$"; then
+  echo "Stopping and removing existing 'react-apache' container..."
+  docker stop react-apache
+  docker rm react-apache
+fi
+
+# Step 1: Build the React app
+echo "Building React app..."
+npm run build
 
 # Step 2: Build the Docker image
 echo "Building Docker image..."
-docker build -t studycafe_server_for_react .
+docker build -t react-apache-app .
 
-# Step 3: Tag the Docker image
-echo "Tagging Docker image..."
-docker tag studycafe_server_for_react:latest kuuku123/studycafe_server_for_react:latest
+# Step 3: Run the Docker container
+echo "Running Docker container..."
+docker run -d -p 3000:80 --name react-apache react-apache-app
 
-# Step 4: Push the Docker image to Docker Hub
-echo "Pushing Docker image to Docker Hub..."
-docker push kuuku123/studycafe_server_for_react:latest
+echo "Deployment completed! Your app is running at http://localhost:3000"
 
-# Step 5: Bring down any existing Docker Compose services
-echo "Stopping and removing existing Docker containers..."
-docker-compose -f deploy.yml down
-
-# Step 6: Start Docker Compose services
-echo "Starting Docker Compose services..."
-docker-compose -f deploy.yml up
-
-echo "Deployment complete!"
