@@ -17,7 +17,7 @@
         <java.version>21</java.version>
         <querydsl.version>5.0.0</querydsl.version>
         <jasypt-spring-boot.version>3.0.5</jasypt-spring-boot.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <byte-buddy.version>1.14.9</byte-buddy.version>
         <testcontainers.version>1.19.7</testcontainers.version>
     </properties>
