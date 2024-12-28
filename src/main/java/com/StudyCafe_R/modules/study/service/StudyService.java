@@ -21,6 +21,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -185,5 +187,14 @@ public class StudyService {
             StudyTag studytag = StudyTag.builder().study(newStudy).tag(jpa).build();
             newStudy.getTags().add(studytag);
         }
+    }
+
+    public boolean checkIfJoined(Study study, Account account) {
+        List<Account> members = study.getMembers().stream()
+                .map(AccountStudyMembers::getAccount)
+                .filter(account1 -> account.getEmail().equals(account.getEmail()))
+                .toList();
+        if (members.isEmpty()) return false;
+        return true;
     }
 }
