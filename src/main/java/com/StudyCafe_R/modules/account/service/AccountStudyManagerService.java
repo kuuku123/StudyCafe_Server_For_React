@@ -28,8 +28,8 @@ public class AccountStudyManagerService {
     private final AccountService accountService;
 
     @Transactional(readOnly = true)
-    public List<AccountDto> getStudyMembers(Account account, Study study) {
-        List<Account> studyMembers = accountStudyMembersRepository.findStudyMembers(account.getId(), study.getId());
+    public List<AccountDto> getStudyMembers(Study study) {
+        List<Account> studyMembers = accountStudyMembersRepository.findStudyMembers(study.getId());
         List<AccountDto> accountDtoList = new ArrayList<>();
         for (Account studyMember : studyMembers) {
             AccountDto accountDto = new AccountDto();

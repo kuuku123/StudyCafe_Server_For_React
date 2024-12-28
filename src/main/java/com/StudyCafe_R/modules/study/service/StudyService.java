@@ -1,8 +1,6 @@
 package com.StudyCafe_R.modules.study.service;
 
-import com.StudyCafe_R.modules.account.form.Profile;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
-import com.StudyCafe_R.modules.study.domain.QStudy;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -19,16 +17,9 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
-
-import static com.StudyCafe_R.modules.study.domain.QStudy.study;
 
 @Service
 @RequiredArgsConstructor

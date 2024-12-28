@@ -34,9 +34,9 @@ public class AccountStudyManagerController {
     }
 
     @GetMapping("/{path}/study-members")
-    public ResponseEntity<String> getStudyMembers(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> getStudyMembers(@PathVariable String path) {
         Study study = studyService.getStudy(path);
-        List<AccountDto> studyMembers = accountStudyManagerService.getStudyMembers(account, study);
+        List<AccountDto> studyMembers = accountStudyManagerService.getStudyMembers(study);
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyMembers);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }

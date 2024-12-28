@@ -92,11 +92,12 @@ public class StudyController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/study/{path}/leave")
-    public String leaveStudy(@CurrentAccount Account account, @PathVariable String path) {
+    @PostMapping("/study/{path}/leave")
+    public ResponseEntity<String> leaveStudy(@CurrentAccount Account account, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
         studyService.removeMember(study, account);
-        return "redirect:/study/" + study.getEncodedPath() + "/members";
+        ApiResponse<String> apiResponse = new ApiResponse<>("study leave succeeded", HttpStatus.OK, null);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/study/data")
