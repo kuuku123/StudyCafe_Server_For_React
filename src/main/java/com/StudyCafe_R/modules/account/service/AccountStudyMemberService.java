@@ -2,13 +2,11 @@ package com.StudyCafe_R.modules.account.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
-import com.StudyCafe_R.modules.account.repository.AccountStudyManagerRepository;
 import com.StudyCafe_R.modules.account.repository.AccountStudyMembersRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,12 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@RequiredArgsConstructor
 @Service
-public class AccountStudyManagerService {
+@RequiredArgsConstructor
+public class AccountStudyMemberService {
 
-    private final AccountStudyManagerRepository accountStudyManagerRepository;
     private final AccountStudyMembersRepository accountStudyMembersRepository;
     private final ModelMapper modelMapper;
     private final AccountService accountService;
@@ -55,16 +51,16 @@ public class AccountStudyManagerService {
 
     @Transactional(readOnly = true)
     public List<StudyDto> getStudyList(Account account) {
-        List<Study> studiesByAccountId = accountStudyManagerRepository.findStudiesByAccountId(account.getId());
+        List<Study> studiesByAccountId = accountStudyMembersRepository.findStudiesByAccountId(account.getId());
         List<StudyDto> studyDtoList = new ArrayList<>();
         for (Study study : studiesByAccountId) {
-            StudyDto accountStudyManagerDto = mapStudyToStudyDto(study);
+            StudyDto accountStudyManagerDto = mapStudytoStudyDto(study);
             studyDtoList.add(accountStudyManagerDto);
         }
         return studyDtoList;
     }
 
-    private StudyDto mapStudyToStudyDto(Study study) {
+    private StudyDto mapStudytoStudyDto(Study study) {
         StudyDto studyDto = new StudyDto();
         studyDto.setTitle(study.getTitle());
         studyDto.setPath(study.getPath());
