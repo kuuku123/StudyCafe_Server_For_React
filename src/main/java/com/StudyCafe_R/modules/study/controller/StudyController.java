@@ -76,13 +76,14 @@ public class StudyController {
         return "study/view";
     }
 
-    @GetMapping("/study/{path}/members")
-    public String viewStudyMembers(@CurrentAccount Account account, @PathVariable String path, Model model) {
-        model.addAttribute(account);
-        Study study = studyService.getStudy(path);
-        model.addAttribute(study);
-        return "study/members";
+    @GetMapping("/study/{path}/checkJoined")
+    public ResponseEntity<String> checkJoinedStudy(@CurrentAccount Account account, @PathVariable String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        boolean joined = studyService.checkIfJoined(study, account);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("study join succeeded", HttpStatus.OK, joined);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
+
 
     @PostMapping("/study/{path}/join")
     public ResponseEntity<String> joinStudy(@CurrentAccount Account account, @PathVariable String path) {
