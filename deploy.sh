@@ -15,9 +15,13 @@ docker build -t studycafe_server_for_react .
 echo "Tagging Docker image..."
 docker tag studycafe_server_for_react:latest kuuku123/studycafe_server_for_react:latest
 
-# Step 4: Push the Docker image to Docker Hub
-echo "Pushing Docker image to Docker Hub..."
-docker push kuuku123/studycafe_server_for_react:latest
+# Step 4: Push the Docker image to Docker Hub (if logged in)
+if docker info | grep -q "Username"; then
+  echo "Pushing Docker image to Docker Hub..."
+  docker push kuuku123/studycafe_server_for_react:latest
+else
+  echo "Not logged into Docker. Skipping Docker image push."
+fi
 
 # Step 5: Bring down any existing Docker Compose services
 echo "Stopping and removing existing Docker containers..."
@@ -28,3 +32,4 @@ echo "Starting Docker Compose services..."
 docker-compose -f deploy.yml up
 
 echo "Deployment complete!"
+
