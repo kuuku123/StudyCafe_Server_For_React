@@ -3,19 +3,19 @@
 <body>
 <div>
     <div th:if="${error != null}">
-        <p >StudyCafe 가입</p>
+        <p >StudyCafe Enrollment</p>
         <div th:text="${error}"></div>
         <p th:text="${email}">your@email.com</p>
     </div>
 
     <div th:if="${error == null}">
-        <p >스터디올래 가입</p>
+        <p >StudyCafe Enrollment</p>
 
-        <h2>스터디올레 서비스를 사용하려면 인증 이메일을 확인하세요.</h2>
+        <h2>To use StudyCafe check your email verification.</h2>
 
         <div>
             <p th:text="${email}">your@email.com</p>
-            <a th:href="@{/resend-confirm-email}">인증 이메일 다시 보내기</a>
+            <a th:href="@{/resend-confirm-email}">Resend verification email</a>
         </div>
     </div>
 </div>
