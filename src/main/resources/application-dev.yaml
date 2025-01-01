@@ -40,6 +40,8 @@ spring:
             client-secret: ENC(peUYU35cbfi4UxhQjHvS7jJAIWdJ62XzoZ6XnYOSatkKFa4iiYFFoa/q6ur4aqYt)
             scope: email,profile
 
+cors:
+  allowed-origin: http://localhost:3000
 
 logging:
   level:
@@ -70,3 +72,5 @@ server:
   redis:
     host: localhost
     port: 16379
+app:
+  host: http://localhost:8081

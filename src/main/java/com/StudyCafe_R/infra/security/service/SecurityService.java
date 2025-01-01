@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ import java.math.BigInteger;
 @Service
 @RequiredArgsConstructor
 public class SecurityService {
+
+    @Value("${cors.allowed-origin}")
+    private String allowedOrigin;
 
     private final AccountService accountService;
     private final ModelMapper modelMapper;
@@ -36,11 +40,11 @@ public class SecurityService {
                 for (String provider : providers) {
                     if (provider.equals(principalUser.providerUser().getProvider())) {
                         accountService.saveAuthentication(request, response, account, account.getPassword(), true);
-                        return "redirect:http://localhost:3000/already-merged-account";
+                        return "redirect:" + allowedOrigin + "/already-merged-account";
                     }
                 }
             }
-            return "redirect:http://localhost:3000/merge-account";
+            return "redirect:" + allowedOrigin + "/merge-account";
         } else {
             SignUpForm signUpForm = new SignUpForm();
             signUpForm.setNickname(principalUser.getAttribute("name"));
@@ -52,7 +56,7 @@ public class SecurityService {
             createdAccount.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
             accountService.saveAuthentication(request, response, createdAccount, createdAccount.getPassword(), true);
 
-            return "redirect:http://localhost:3000/social-account-setPassword";
+            return "redirect:" + allowedOrigin + "/social-account-setPassword";
         }
     }
 

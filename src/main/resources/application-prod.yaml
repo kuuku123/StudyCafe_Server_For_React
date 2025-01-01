@@ -39,6 +39,11 @@ spring:
             client-id: 742031203215-3ki2goqrmvc6qh6gpe6c6js3d5ve39qu.apps.googleusercontent.com
             client-secret: ENC(peUYU35cbfi4UxhQjHvS7jJAIWdJ62XzoZ6XnYOSatkKFa4iiYFFoa/q6ur4aqYt)
             scope: email,profile
+
+
+cors:
+  allowed-origin: http://tonylimtest123.duckdns.org #duckdns
+
 logging:
   level:
     org:
@@ -68,3 +73,6 @@ server:
   redis:
     host: redis-test
     port: 6379
+
+app:
+  host: http://tonylimtest123.duckdns.org:8081

@@ -5,6 +5,7 @@ import com.StudyCafe_R.infra.security.service.CustomOAuth2UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value("${cors.allowed-origin}")
+    private String allowedOrigin;
     private final UserDetailsService userDetailsService;
     private final DataSource dataSource;
     private final HandlerMappingIntrospector handlerMappingIntrospector;
@@ -145,7 +148,7 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // React dev server
+        configuration.addAllowedOrigin(allowedOrigin); // React dev server
         configuration.addAllowedMethod("*"); // Allow all HTTP methods
         configuration.addAllowedHeader("*"); // Allow all headers
         configuration.setAllowCredentials(true); // Allow cookies or authentication

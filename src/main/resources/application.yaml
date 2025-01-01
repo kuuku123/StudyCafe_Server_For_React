@@ -17,8 +17,7 @@ spring:
 
   thymeleaf:
     cache: false
-app:
-  host: http://localhost:8081
+
 
 
 logging:
