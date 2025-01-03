@@ -16,6 +16,7 @@ it is a website that is used for creating study , and let other people join stud
 ## Installation
 
 currently no deployment pipe line
+- deployed at [tonylimtest123.duckdns.org](http://tonylimtest123.duckdns.org/)
 
 - **manual way**
     - docker need to be installed
