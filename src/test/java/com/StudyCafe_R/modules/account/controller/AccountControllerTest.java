@@ -6,12 +6,26 @@ import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpSession;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.session.data.redis.RedisSessionRepository;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Enumeration;
+import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -21,6 +35,7 @@ import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,7 +51,8 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     EmailService emailService;
 
 
-    @DisplayName("인증 메일 확인 - 입력값 오류")
+
+    @DisplayName("check verification email - invalid token case")
     @Test
     void checkEmailToken_with_wrong_input() throws Exception {
         mockMvc.perform(get("/check-email-token")
@@ -48,27 +64,49 @@ class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(unauthenticated());
     }
 
-    @DisplayName("인증 메일 확인 - 입력값 정상")
+    @DisplayName("check verification email - valid token case")
     @Test
     @Transactional
-    void checkEmailToken() throws Exception {
+    void checkEmailToken_withTwoRequests() throws Exception {
+
+        /*
+         * Issue: `andExpect(authenticated())` in MockMvc does not interact with Redis for session management.
+         * Solution:
+         * - Manually retrieve the session cookie after login.
+         * - Use the retrieved session cookie to call an API that requires authentication.
+         */
+        // 1) Create a test account with an email token
         Account account = Account.builder()
                 .email("test@email.com")
                 .password("12345678")
                 .nickname("tony")
                 .build();
         account.generateEmailCheckToken();
-        Account newAccount = accountRepository.save(account);
-        mockMvc.perform(get("/check-email-token")
-                        .param("token",newAccount.getEmailCheckToken())
-                        .param("email",newAccount.getEmail()))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attributeDoesNotExist("error"))
-//                .andExpect(model().attributeExists("nickname"))
-//                .andExpect(model().attributeExists("numberOfUser"))
-//                .andExpect(view().name("email/checked-email"));
-                .andExpect(authenticated().withUsername("tony"));
+        accountRepository.save(account);
+
+        // 2) Perform the first request (email verification)
+        MvcResult result = mockMvc.perform(get("/check-email-token")
+                        .param("token", account.getEmailCheckToken())
+                        .param("email", account.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attributeExists("nickname"))
+                .andExpect(model().attributeExists("numberOfUser"))
+                .andExpect(view().name("email/checked-email"))
+                // Don't check authenticated() here, it won't be recognized in the same request
+                .andReturn();
+
+        // 3) Extract the session cookie from the first response
+        MockHttpServletResponse response = result.getResponse();
+        Cookie sessionCookie = response.getCookie("SESSION");
+
+        // 4) Perform a second request that requires authentication
+        mockMvc.perform(get("/check-email").cookie(sessionCookie))
+                .andExpect(status().isOk());
     }
+
+//        RedisSessionRepository sessionRepo = (RedisSessionRepository) request.getAttribute("org.springframework.session.SessionRepository");
+//org.springframework.session.web.http.CookieHttpSessionIdResolver.WRITTEN_SESSION_ID_ATTR
 
     @DisplayName("회원 가입 화면 보이는지 테스트")
     @Test
