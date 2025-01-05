@@ -15,6 +15,17 @@ spring:
       host: localhost
       port: 16379
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 742031203215-3ki2goqrmvc6qh6gpe6c6js3d5ve39qu.apps.googleusercontent.com
+            client-secret: ENC(peUYU35cbfi4UxhQjHvS7jJAIWdJ62XzoZ6XnYOSatkKFa4iiYFFoa/q6ur4aqYt)
+            scope: email,profile
+
+cors:
+  allowed-origin: http://localhost:3000
 
 logging:
   level:
