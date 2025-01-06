@@ -78,7 +78,7 @@ public class AccountController {
             for (FieldError error : errors.getFieldErrors()) {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
-            ApiResponse<Map<String, String>> signupFailed = new ApiResponse<>("signup Failed", HttpStatus.BAD_REQUEST, errorMap);
+            ApiResponse<Map<String, String>> signupFailed = new ApiResponse<>("signup failed", HttpStatus.BAD_REQUEST, errorMap);
             return new ResponseEntity<>(new Gson().toJson(signupFailed), HttpStatus.BAD_REQUEST);
         }
 

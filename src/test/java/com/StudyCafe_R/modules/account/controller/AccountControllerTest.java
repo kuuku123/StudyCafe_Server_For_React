@@ -5,7 +5,9 @@ import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
+import com.google.gson.Gson;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpSession;
 import org.junit.Before;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.session.data.redis.RedisSessionRepository;
@@ -50,7 +53,12 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     @MockBean
     EmailService emailService;
 
-
+    Cookie xsrfCookie;
+    @BeforeEach
+    void getXsrfToken() throws Exception {
+        MockHttpServletResponse response = mockMvc.perform(get("/xsrf-token")).andReturn().getResponse();
+        xsrfCookie = response.getCookie("XSRF-TOKEN");
+    }
 
     @DisplayName("check verification email - invalid token case")
     @Test
@@ -96,6 +104,10 @@ class AccountControllerTest extends AbstractContainerBaseTest {
                 // Don't check authenticated() here, it won't be recognized in the same request
                 .andReturn();
 
+        checkAuthentication(result);
+    }
+
+    private void checkAuthentication(MvcResult result) throws Exception {
         // 3) Extract the session cookie from the first response
         MockHttpServletResponse response = result.getResponse();
         Cookie sessionCookie = response.getCookie("SESSION");
@@ -108,47 +120,43 @@ class AccountControllerTest extends AbstractContainerBaseTest {
 //        RedisSessionRepository sessionRepo = (RedisSessionRepository) request.getAttribute("org.springframework.session.SessionRepository");
 //org.springframework.session.web.http.CookieHttpSessionIdResolver.WRITTEN_SESSION_ID_ATTR
 
-    @DisplayName("회원 가입 화면 보이는지 테스트")
-    @Test
-    void signUpForm() throws Exception {
-        mockMvc.perform(get("/sign-up"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"))
-                .andExpect(model().attributeExists("signUpForm"))
-                .andExpect(unauthenticated());
-    }
 
-    @DisplayName("회원 가입처리 - 입력값 오류")
-    @Test
-    void signUpSubmit_with_wrong_input() throws Exception {
-        mockMvc.perform(post("/sign-up")
-                .param("nickname","tony")
-                .param("email","wrongEmail")
-                .param("password","1234")
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"))
-                .andExpect(unauthenticated());
-    }
 
-    @DisplayName("회원 가입처리 - 입력값 정상")
+    @DisplayName("sign up - valid input")
     @Test
-    void signUpSubmit_with_correct_input() throws Exception {
-        mockMvc.perform(post("/sign-up")
-                        .param("nickname","tony")
-                        .param("email","tony@gmail.com")
-                        .param("password","12345678")
-                        .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"))
-                .andExpect(authenticated().withUsername("tony"));
+    void signUpSubmit_Success() throws Exception {
+        SignUpForm validSignUpForm = new SignUpForm();
+        validSignUpForm.setEmail("tony@gmail.com");
+        validSignUpForm.setPassword("password123");
+        validSignUpForm.setNickname("tony");
+
+        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(validSignUpForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("sign up succeed"));
 
         Account account = accountRepository.findByEmail("tony@gmail.com");
         assertNotNull(account);
-        assertNotEquals(account.getPassword(),"12345678");
+        assertNotEquals(account.getPassword(),"password123");
         assertNotNull(account.getEmailCheckToken());
 
         then(emailService).should().sendEmail(any(EmailMessage.class));
+    }
+
+    @DisplayName("sign up - invalid input")
+    @Test
+    void signUpSubmit_with_wrong_input() throws Exception {
+        SignUpForm validSignUpForm = new SignUpForm();
+        validSignUpForm.setEmail("invalid email");
+        validSignUpForm.setPassword("password123");
+        validSignUpForm.setNickname("tony");
+
+        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(validSignUpForm)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("signup failed"));
     }
 
     @DisplayName("프로필뷰 테스트 예외")
