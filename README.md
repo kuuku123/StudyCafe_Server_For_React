@@ -17,8 +17,9 @@ it is a website that is used for creating study , and let other people join stud
 
 currently no deployment pipe line
 - deployed at [tonylimtest123.duckdns.org](http://tonylimtest123.duckdns.org/)
+- react (apache web server) + [spring+redis+mysql] (docker-compose)  
 
-- **manual way**
+- **manual way** (currently doesn't work, url not for local, only for production)
     - docker need to be installed
     - deploy server with following commands
       ```bash
