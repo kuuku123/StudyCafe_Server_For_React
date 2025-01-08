@@ -84,8 +84,9 @@ public class AccountController {
 
         Account account = accountService.processNewAccount(signUpForm);
         accountService.signUp(account, request, response);
+        AccountDto accountDto = accountService.getAccountDto(account);
 
-        ApiResponse<String> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, null);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, accountDto);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 

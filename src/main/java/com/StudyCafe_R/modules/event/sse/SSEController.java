@@ -45,18 +45,11 @@ public class SSEController {
 
     public void notifyClientsStudyCreate(Notification notification , Study study) {
         Account account = notification.getAccount();
-        String eventName = "";
-        switch(notification.getNotificationType()) {
-            case STUDY_CREATED:
-                eventName = "StudyCreated";
-                break;
-            case EVENT_ENROLLMENT:
-                eventName = "EventEnrollment";
-                break;
-            case STUDY_UPDATED:
-                eventName = "StudyUpdated";
-                break;
-        }
+        String eventName = switch (notification.getNotificationType()) {
+            case STUDY_CREATED -> "StudyCreated";
+            case EVENT_ENROLLMENT -> "EventEnrollment";
+            case STUDY_UPDATED -> "StudyUpdated";
+        };
 
         SseEmitter sseEmitter = clients.get(account.getEmail());
         if (sseEmitter != null) {
