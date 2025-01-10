@@ -1,4 +1,4 @@
-package com.StudyCafe_R.StudyCafe_R.modules.event.form;
+package com.StudyCafe_R.modules.event.form;
 
 import com.StudyCafe_R.StudyCafe_R.modules.event.domain.EventType;
 import jakarta.validation.constraints.Min;

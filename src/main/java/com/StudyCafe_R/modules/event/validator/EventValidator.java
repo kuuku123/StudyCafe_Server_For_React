@@ -1,6 +1,6 @@
 package com.StudyCafe_R.modules.event.validator;
 
-import com.StudyCafe_R.StudyCafe_R.modules.event.form.EventForm;
+import com.StudyCafe_R.modules.event.form.EventForm;
 import com.StudyCafe_R.modules.event.domain.Event;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
