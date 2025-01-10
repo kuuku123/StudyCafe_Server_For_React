@@ -31,6 +31,12 @@ spring:
         enabled: true
   thymeleaf:
     cache: false
+
+  data:
+    redis:
+      host: redis-test
+      port: 6379
+
   security:
     oauth2:
       client:
@@ -70,9 +76,6 @@ server:
   session:
     store-type: redis
 
-  redis:
-    host: redis-test
-    port: 6379
 
 app:
   host: http://tonylimtest123.duckdns.org:8081
