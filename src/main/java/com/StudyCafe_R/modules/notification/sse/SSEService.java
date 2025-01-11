@@ -1,31 +1,23 @@
-package com.StudyCafe_R.modules.event.sse;
+package com.StudyCafe_R.modules.notification.sse;
 
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.notification.Notification;
-import com.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@Controller
-@RequestMapping("/sse")
-public class SSEController {
+@Service
+public class SSEService {
 
     private final Map<String, SseEmitter> clients = new ConcurrentHashMap<>();
 
-    @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@CurrentAccount Account account) {
+    public SseEmitter getConnection(Account account) {
         SseEmitter sseEmitter = clients.get(account.getEmail());
         if (sseEmitter == null) {
             sseEmitter = new SseEmitter(600000L);
@@ -63,4 +55,5 @@ public class SSEController {
             }
         }
     }
+
 }

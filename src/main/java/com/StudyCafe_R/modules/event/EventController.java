@@ -1,6 +1,6 @@
 package com.StudyCafe_R.modules.event;
 
-import com.StudyCafe_R.StudyCafe_R.modules.event.form.EventForm;
+import com.StudyCafe_R.modules.event.form.EventForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.event.domain.Enrollment;
