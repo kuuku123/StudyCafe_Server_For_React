@@ -50,4 +50,12 @@ public class AccountStudyMemberController {
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyManagers);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
+
+    @GetMapping("/{path}/isMember")
+    public ResponseEntity<String> isMember (@CurrentAccount Account account ,@PathVariable String path) {
+        Study study = studyService.getStudy(path);
+        boolean isMember = accountStudyMemberService.isMember(study, account);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("isMember", HttpStatus.OK, isMember);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
 }

@@ -64,6 +64,14 @@ public class AccountStudyManagerService {
         return studyDtoList;
     }
 
+    @Transactional(readOnly = true)
+    public boolean isManager(Study study, Account account) {
+        List<Account> studyManagers = study.getManagers().stream().map(AccountStudyManager::getAccount).toList();
+        return studyManagers.stream()
+                .anyMatch(manager -> manager.getEmail().equals(account.getEmail()));
+    }
+
+
     private StudyDto mapStudyToStudyDto(Study study) {
         StudyDto studyDto = new StudyDto();
         studyDto.setTitle(study.getTitle());

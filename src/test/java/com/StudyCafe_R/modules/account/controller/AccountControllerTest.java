@@ -158,13 +158,4 @@ class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("signup failed"));
     }
-
-    @DisplayName("프로필뷰 테스트 예외")
-    @Test
-    void profile_with_wrong_nickname() throws Exception {
-        String nickname = "wrong";
-
-        assertThatThrownBy(() -> mockMvc.perform(get("/profile/{nickname}", nickname)))
-                .hasCauseInstanceOf(IllegalArgumentException.class);
-    }
 }

@@ -2,6 +2,7 @@ package com.StudyCafe_R.modules.account.service;
 
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
+import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
 import com.StudyCafe_R.modules.account.repository.AccountStudyMembersRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
@@ -58,6 +59,13 @@ public class AccountStudyMemberService {
             studyDtoList.add(accountStudyManagerDto);
         }
         return studyDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isMember (Study study, Account account) {
+        List<Account> studyManagers = study.getMembers().stream().map(AccountStudyMembers::getAccount).toList();
+        return studyManagers.stream()
+                .anyMatch(memeber-> memeber.getEmail().equals(account.getEmail()));
     }
 
     private StudyDto mapStudytoStudyDto(Study study) {

@@ -44,10 +44,17 @@ public class AccountStudyManagerController {
     }
 
     @GetMapping("/{path}/study-managers")
-    public ResponseEntity<String> getStudyManager(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> getStudyManager(@PathVariable String path) {
         Study study = studyService.getStudy(path);
         List<AccountDto> studyManagers = accountStudyManagerService.getStudyManagers(study);
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyManagers);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+    @GetMapping("/{path}/isManager")
+    public ResponseEntity<String> isManager(@CurrentAccount Account account ,@PathVariable String path) {
+        Study study = studyService.getStudy(path);
+        boolean isManager= accountStudyManagerService.isManager(study, account);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("isManager", HttpStatus.OK, isManager);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 }

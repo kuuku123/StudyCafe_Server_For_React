@@ -68,7 +68,7 @@ public class StudyEventListener {
         Study study = studyRepository.findStudyWithTagsAndZoneById(studyCreatedEvent.getStudy().getId());
         Set<Tag> tags = study.getTags().stream().map(StudyTag::getTag).collect(Collectors.toSet());
         Set<Zone> zones = study.getZones().stream().map(StudyZone::getZone).collect(Collectors.toSet());
-        Iterable<Account> accounts = accountRepository.findAll(AccountPredicates.findByTagsAndZones(tags, zones));
+        Iterable<Account> accounts = accountRepository.findAll(AccountPredicates.findByTagsOrZones(tags, zones));
         accounts.forEach(account -> {
             if (account.isStudyCreatedByEmail()) {
                 sendStudyCreatedEmail(study, account, "새로운 스터디가 생겼습니다.", "스터디카페, '" + study.getTitle() + "' 스터디가 생겼습니다.");

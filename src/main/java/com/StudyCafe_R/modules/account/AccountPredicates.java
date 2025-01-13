@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class AccountPredicates {
 
-    public static Predicate findByTagsAndZones(Set<Tag> tags, Set<Zone> zones) {
+    public static Predicate findByTagsOrZones(Set<Tag> tags, Set<Zone> zones) {
         QAccount account = QAccount.account;
         return account.accountZoneSet.any().zone.in(zones).or(account.accountTagSet.any().tag.in(tags));
     }
