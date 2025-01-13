@@ -190,11 +190,8 @@ public class StudyService {
     }
 
     public boolean checkIfJoined(Study study, Account account) {
-        List<Account> members = study.getMembers().stream()
+        return study.getMembers().stream()
                 .map(AccountStudyMembers::getAccount)
-                .filter(account1 -> account.getEmail().equals(account.getEmail()))
-                .toList();
-        if (members.isEmpty()) return false;
-        return true;
+                .anyMatch(account1 -> account.getEmail().equals(account.getEmail()));
     }
 }
