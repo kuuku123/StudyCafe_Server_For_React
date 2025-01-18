@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaNotificationProducer {
 
-    private final KafkaTemplate<String, Notification> kafkaTemplate;
+    private final KafkaTemplate<String, NotificationDto> kafkaTemplate;
+    private final NotificationService notificationService;
 
     @Value("${kafka.topic.notification}")
     private String topic;
 
     public void sendNotification(Notification notification) {
-        kafkaTemplate.send(topic, notification);
+        NotificationDto notificationDto = notificationService.getNotificationDto(notification);
+        kafkaTemplate.send(topic, notificationDto);
         System.out.println("Sent notification: " + notification);
     }
 }

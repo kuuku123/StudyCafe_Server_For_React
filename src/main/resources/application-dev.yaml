@@ -34,7 +34,7 @@ spring:
       host: localhost
       port: 16379
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:19092
 
   thymeleaf:
     cache: false

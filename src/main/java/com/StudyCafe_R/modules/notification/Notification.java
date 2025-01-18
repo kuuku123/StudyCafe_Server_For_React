@@ -1,6 +1,8 @@
 package com.StudyCafe_R.modules.notification;
 
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -34,6 +36,4 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-
-
 }

@@ -1,6 +1,7 @@
 package com.StudyCafe_R.infra.config;
 
 import com.StudyCafe_R.modules.notification.Notification;
+import com.StudyCafe_R.modules.notification.NotificationDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, Notification> producerFactory() {
+    public ProducerFactory<String, NotificationDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -30,7 +31,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, Notification> kafkaTemplate() {
+    public KafkaTemplate<String, NotificationDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }
