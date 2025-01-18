@@ -33,6 +33,9 @@ spring:
     redis:
       host: localhost
       port: 16379
+  kafka:
+    bootstrap-servers: localhost:9092
+
   thymeleaf:
     cache: false
   security:
@@ -75,3 +78,6 @@ server:
 
 app:
   host: http://localhost:8081
+kafka:
+  topic:
+    notification: notification_topic

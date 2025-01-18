@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.study.event;
 
+import com.StudyCafe_R.modules.notification.KafkaNotificationProducer;
 import com.StudyCafe_R.modules.notification.sse.SSEService;
 import com.StudyCafe_R.modules.notification.NotificationType;
 import com.StudyCafe_R.infra.config.AppProperties;
@@ -45,6 +46,7 @@ public class StudyEventListener {
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
     private final NotificationRepository notificationRepository;
+    private final KafkaNotificationProducer kafkaNotificationProducer;
     private final SSEService sseService;
 
     @EventListener
@@ -91,6 +93,7 @@ public class StudyEventListener {
         notification.setNotificationType(notificationType);
         notificationRepository.save(notification);
         sseService.notifyClientsStudyCreate(notification, study);
+        kafkaNotificationProducer.sendNotification(notification);
     }
 
     private void sendStudyCreatedEmail(Study study, Account account, String contextMessage, String emailSubject) {
