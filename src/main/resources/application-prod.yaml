@@ -37,6 +37,9 @@ spring:
       host: redis-test
       port: 6379
 
+  kafka:
+    bootstrap-servers: broker-1:9093
+
   security:
     oauth2:
       client:

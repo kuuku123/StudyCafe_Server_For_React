@@ -33,6 +33,7 @@ spring:
     redis:
       host: localhost
       port: 16379
+
   kafka:
     bootstrap-servers: localhost:19092
 
@@ -78,6 +79,3 @@ server:
 
 app:
   host: http://localhost:8081
-kafka:
-  topic:
-    notification: notification_topic

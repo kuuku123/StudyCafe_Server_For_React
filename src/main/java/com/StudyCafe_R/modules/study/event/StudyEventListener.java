@@ -93,7 +93,7 @@ public class StudyEventListener {
         notification.setNotificationType(notificationType);
         notificationRepository.save(notification);
         sseService.notifyClientsStudyCreate(notification, study);
-        kafkaNotificationProducer.sendNotification(notification);
+        kafkaNotificationProducer.sendNotification(notification, study);
     }
 
     private void sendStudyCreatedEmail(Study study, Account account, String contextMessage, String emailSubject) {

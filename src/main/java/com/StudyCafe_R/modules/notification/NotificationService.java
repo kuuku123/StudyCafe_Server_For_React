@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.notification;
 
+import com.StudyCafe_R.modules.study.domain.Study;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Not;
@@ -23,9 +24,10 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
-    public NotificationDto getNotificationDto(Notification notification) {
+    public NotificationDto getNotificationDto(Notification notification, Study study) {
         NotificationDto notificationDto = modelMapper.map(notification, NotificationDto.class);
-        notificationDto.setAccountId(notification.getAccount().getId());
+        notificationDto.setAccountEmail(notification.getAccount().getEmail());
+        notificationDto.setStudyPath(study.getEncodedPath());
         return notificationDto;
     }
 }

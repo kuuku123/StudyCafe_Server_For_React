@@ -13,12 +13,12 @@ docker build -t studycafe_server_for_react .
 
 # Step 3: Tag the Docker image
 echo "Tagging Docker image..."
-docker tag studycafe_server_for_react:latest kuuku123/studycafe_server_for_react:latest
+docker tag studycafe_server_for_react:latest kuuku123/studycafe_server_for_react:test
 
 # Step 4: Push the Docker image to Docker Hub (if logged in)
 if docker info | grep -q "Username"; then
   echo "Pushing Docker image to Docker Hub..."
-  docker push kuuku123/studycafe_server_for_react:latest
+  docker push kuuku123/studycafe_server_for_react:test
 else
   echo "Not logged into Docker. Skipping Docker image push."
 fi

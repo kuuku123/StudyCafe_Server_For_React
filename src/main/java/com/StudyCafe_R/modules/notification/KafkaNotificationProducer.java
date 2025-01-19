@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.notification;
 
+import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,8 +16,8 @@ public class KafkaNotificationProducer {
     @Value("${kafka.topic.notification}")
     private String topic;
 
-    public void sendNotification(Notification notification) {
-        NotificationDto notificationDto = notificationService.getNotificationDto(notification);
+    public void sendNotification(Notification notification, Study study) {
+        NotificationDto notificationDto = notificationService.getNotificationDto(notification, study);
         kafkaTemplate.send(topic, notificationDto);
         System.out.println("Sent notification: " + notification);
     }

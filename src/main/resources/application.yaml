@@ -15,10 +15,13 @@ spring:
       hibernate:
         format_sql: true
 
+
   thymeleaf:
     cache: false
 
-
+kafka:
+  topic:
+    notification: notification_topic
 
 logging:
   level:

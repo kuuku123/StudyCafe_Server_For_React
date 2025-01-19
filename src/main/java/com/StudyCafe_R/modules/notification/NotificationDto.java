@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.notification;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,11 +19,12 @@ public class NotificationDto {
 
     private boolean checked;
 
-    private Long accountId;
+    private String accountEmail;
+
+    private String studyPath;
 
     private LocalDateTime createdDateTime;
 
-    @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 }
 
