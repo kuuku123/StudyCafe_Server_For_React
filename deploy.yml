@@ -77,7 +77,7 @@ services:
 
 
   spring-app:
-    image: kuuku123/studycafe_server_for_react:test
+    image: kuuku123/studycafe_server_for_react:latest
     container_name: spring-app
     depends_on:
       mysql-test:
