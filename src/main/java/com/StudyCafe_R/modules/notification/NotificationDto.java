@@ -23,8 +23,6 @@ public class NotificationDto {
 
     private String studyPath;
 
-    private LocalDateTime createdDateTime;
-
     private NotificationType notificationType;
 }
 

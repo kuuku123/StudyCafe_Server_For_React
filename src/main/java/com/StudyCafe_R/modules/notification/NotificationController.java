@@ -2,11 +2,16 @@ package com.StudyCafe_R.modules.notification;
 
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,43 +20,50 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
 
     @GetMapping("/notifications")
-    public String getNotifications(@CurrentAccount Account account, Model model ) {
-        List<Notification> notifications = notificationRepository.findByAccountAndCheckedOrderByCreatedDateTimeDesc(account, false);
-        long numberOfChecked = notificationRepository.countByAccountAndChecked(account, true);
-        putCategorizedNotifications(model, notifications, numberOfChecked, notifications.size());
-        model.addAttribute("isNew",true);
-        notificationService.markAsRead(notifications);
-        return "notification/list";
+    public ResponseEntity<String> getNotifications(@CurrentAccount Account account) {
+        List<NotificationDto> unReadNotification = notificationService.getUnReadNotification(account);
+        ApiResponse<List<NotificationDto>> apiResponse = new ApiResponse<>("mark as read succeed", HttpStatus.OK, unReadNotification);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/notifications/old")
-    public String getOldNotifications(@CurrentAccount Account account, Model model) {
-        List<Notification> notifications = notificationRepository.findByAccountAndCheckedOrderByCreatedDateTimeDesc(account, true);
-        long numberOfNotChecked = notificationRepository.countByAccountAndChecked(account, false);
-        putCategorizedNotifications(model, notifications, notifications.size(), numberOfNotChecked);
-        model.addAttribute("isNew", false);
-        return "notification/list";
+    @PostMapping("/mark-notification-checked")
+    public ResponseEntity<String> markNotificationChecked(@RequestParam Long notificationId) {
+        boolean success = notificationService.markAsChecked(notificationId);
+        if (success) {
+            ApiResponse<String> apiResponse = new ApiResponse<>("mark as check succeed", HttpStatus.OK, null);
+            return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+        } else {
+            ApiResponse<String> apiResponse = new ApiResponse<>("notification doesn't exist", HttpStatus.BAD_REQUEST, null);
+            return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @DeleteMapping("/notifications")
-    public String deleteNotifications(@CurrentAccount Account account) {
-        notificationRepository.deleteByAccountAndChecked(account, true);
-        return "redirect:/notifications";
-    }
-
+//    @GetMapping("/notifications/old")
+//    public String getOldNotifications(@CurrentAccount Account account, Model model) {
+//        List<Notification> notifications = notificationRepository.findByAccountAndCheckedOrderByCreatedDateTimeDesc(account, true);
+//        long numberOfNotChecked = notificationRepository.countByAccountAndChecked(account, false);
+//        putCategorizedNotifications(model, notifications, notifications.size(), numberOfNotChecked);
+//        model.addAttribute("isNew", false);
+//        return "notification/list";
+//    }
+//
+//    @DeleteMapping("/notifications")
+//    public String deleteNotifications(@CurrentAccount Account account) {
+//        notificationRepository.deleteByAccountAndChecked(account, true);
+//        return "redirect:/notifications";
+//    }
 
 
     private void putCategorizedNotifications(Model model, List<Notification> notifications, long numberOfChecked, long numberOfNotChecked) {
-         List<Notification> newStudyNotifications = new ArrayList<>();
-         List<Notification> eventEnrollmentNotifications = new ArrayList<>();
-         List<Notification> watchingStudyNotifications = new ArrayList<>();
+        List<Notification> newStudyNotifications = new ArrayList<>();
+        List<Notification> eventEnrollmentNotifications = new ArrayList<>();
+        List<Notification> watchingStudyNotifications = new ArrayList<>();
 
         for (Notification notification : notifications) {
-            switch(notification.getNotificationType()) {
+            switch (notification.getNotificationType()) {
                 case STUDY_CREATED:
                     newStudyNotifications.add(notification);
                     break;

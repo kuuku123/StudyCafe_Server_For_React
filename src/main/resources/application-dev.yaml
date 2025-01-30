@@ -6,7 +6,7 @@ spring:
     password: ENC(k+QRlojJ5PRJcIcwoBZGhA==)
   jpa:
     hibernate:
-      #      ddl-auto: create
+#     ddl-auto: create
       ddl-auto: update
     #    show-sql: true
     properties:

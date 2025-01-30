@@ -17,7 +17,7 @@ public class KafkaNotificationProducer {
     private String topic;
 
     public void sendNotification(Notification notification, Study study) {
-        NotificationDto notificationDto = notificationService.getNotificationDto(notification, study);
+        NotificationDto notificationDto = notificationService.getNotificationDto(notification, study.getEncodedPath());
         kafkaTemplate.send(topic, notificationDto);
         System.out.println("Sent notification: " + notification);
     }

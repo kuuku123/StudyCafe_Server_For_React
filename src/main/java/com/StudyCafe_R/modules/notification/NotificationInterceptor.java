@@ -2,6 +2,7 @@ package com.StudyCafe_R.modules.notification;
 
 import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
+import com.StudyCafe_R.modules.notification.repository.NotificationRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

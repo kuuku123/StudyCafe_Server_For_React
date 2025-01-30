@@ -8,7 +8,7 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.event.domain.Enrollment;
 import com.StudyCafe_R.modules.event.domain.Event;
 import com.StudyCafe_R.modules.notification.Notification;
-import com.StudyCafe_R.modules.notification.NotificationRepository;
+import com.StudyCafe_R.modules.notification.repository.NotificationRepository;
 import com.StudyCafe_R.modules.study.domain.Study;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,7 @@ public class EnrollmentEventListener {
     private void createNotification(EnrollmentEvent enrollmentEvent, Account account, Event event, Study study) {
         Notification notification = new Notification();
         notification.setTitle(study.getTitle() + " / " + event.getTitle());
-        notification.setLink("/study/" + study.getEncodedPath() + "/events/" + event.getId());
+        notification.setStudyPath(study.getEncodedPath());
         notification.setChecked(false);
         notification.setCreatedDateTime(LocalDateTime.now());
         notification.setMessage(enrollmentEvent.getMessage());

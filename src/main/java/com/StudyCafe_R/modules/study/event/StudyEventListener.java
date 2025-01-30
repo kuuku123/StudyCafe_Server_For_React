@@ -12,7 +12,7 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
 import com.StudyCafe_R.modules.notification.Notification;
-import com.StudyCafe_R.modules.notification.NotificationRepository;
+import com.StudyCafe_R.modules.notification.repository.NotificationRepository;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.domain.StudyTag;
@@ -85,7 +85,7 @@ public class StudyEventListener {
     private void createNotification(Study study, Account account, String message, NotificationType notificationType) {
         Notification notification = new Notification();
         notification.setTitle(study.getTitle());
-        notification.setLink("/study/" + study.getEncodedPath());
+        notification.setStudyPath(study.getEncodedPath());
         notification.setChecked(false);
         notification.setCreatedDateTime(LocalDateTime.now());
         notification.setMessage(message);

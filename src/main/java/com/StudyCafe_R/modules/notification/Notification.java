@@ -22,7 +22,7 @@ public class Notification {
 
     private String title;
 
-    private String link;
+    private String studyPath;
 
     private String message;
 
