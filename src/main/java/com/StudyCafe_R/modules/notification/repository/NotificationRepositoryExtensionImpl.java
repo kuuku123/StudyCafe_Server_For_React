@@ -4,17 +4,15 @@ import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.notification.Notification;
 import com.StudyCafe_R.modules.notification.QNotification;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class NotificationRepositoryCustomImpl extends QuerydslRepositorySupport implements NotificationRepositoryExtension {
+public class NotificationRepositoryExtensionImpl extends QuerydslRepositorySupport implements NotificationRepositoryExtension {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public NotificationRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
+    public NotificationRepositoryExtensionImpl(JPAQueryFactory jpaQueryFactory) {
         super(Notification.class);
         this.jpaQueryFactory = jpaQueryFactory;
     }
@@ -23,7 +21,7 @@ public class NotificationRepositoryCustomImpl extends QuerydslRepositorySupport 
     public List<Notification> findByAccountAndChecked(Account account,  boolean checked) {
         QNotification notification = QNotification.notification; // Q-Class for Notification entity
 
-        return jpaQueryFactory
+        List<Notification> result = jpaQueryFactory
                 .selectFrom(notification)
                 .where(
                         notification.account.eq(account),
@@ -31,6 +29,7 @@ public class NotificationRepositoryCustomImpl extends QuerydslRepositorySupport 
                 )
                 .orderBy(notification.createdDateTime.desc())
                 .fetch();
+        return result;
     }
 
 }
