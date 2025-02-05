@@ -38,7 +38,7 @@ class MainControllerTest extends AbstractContainerBaseTest {
         signUpForm.setNickname("tony");
         signUpForm.setEmail("tony@email.com");
         signUpForm.setPassword("12345678");
-        accountService.processNewAccount(signUpForm);
+        accountService.processNewAccount("");
     }
 
     @AfterEach

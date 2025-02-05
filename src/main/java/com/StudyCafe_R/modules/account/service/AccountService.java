@@ -3,6 +3,7 @@ package com.StudyCafe_R.modules.account.service;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
+import com.StudyCafe_R.infra.security.JwtUtils;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -15,6 +16,7 @@ import com.StudyCafe_R.modules.tag.TagRepository;
 import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,22 +67,27 @@ public class AccountService {
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final JwtUtils jwtUtils;
 
     @PostConstruct
     public void init() {
         authenticationProvider.setUserDetailsService(userDetailsService);
     }
 
-    public Account processNewAccount(SignUpForm signUpForm) {
-        Account newAccount = saveNewAccount(signUpForm);
+    public Account processNewAccount(String jwt) {
+        Claims claims = jwtUtils.parseClaims(jwt);
+        String email = (String)claims.get("email");
+        String nickname = (String)claims.get("nickname");
+        Account newAccount = saveNewAccount(email, nickname);
         sendSignupConfirmEmail(newAccount);
         return newAccount;
     }
 
-    private Account saveNewAccount(SignUpForm signUpForm) {
+    private Account saveNewAccount(String email, String nickname) {
 
-        signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
-        Account account = modelMapper.map(signUpForm, Account.class);
+        Account account = new Account();
+        account.setEmail(email);
+        account.setNickname(nickname);
         account.generateEmailCheckToken();
 
         ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");

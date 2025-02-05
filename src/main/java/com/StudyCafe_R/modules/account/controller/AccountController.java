@@ -72,18 +72,9 @@ public class AccountController {
 
     @ResponseBody
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUpSubmit(@Valid @RequestBody SignUpForm signUpForm, Errors errors, HttpServletRequest request, HttpServletResponse response) {
-        if (errors.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (FieldError error : errors.getFieldErrors()) {
-                errorMap.put(error.getField(), error.getDefaultMessage());
-            }
-            ApiResponse<Map<String, String>> signupFailed = new ApiResponse<>("signup failed", HttpStatus.BAD_REQUEST, errorMap);
-            return new ResponseEntity<>(new Gson().toJson(signupFailed), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> signUpSubmit(@RequestBody String jwt,  HttpServletRequest request, HttpServletResponse response) {
 
-        Account account = accountService.processNewAccount(signUpForm);
-        accountService.signUp(account, request, response);
+        Account account = accountService.processNewAccount(jwt);
         AccountDto accountDto = accountService.getAccountDto(account);
 
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, accountDto);

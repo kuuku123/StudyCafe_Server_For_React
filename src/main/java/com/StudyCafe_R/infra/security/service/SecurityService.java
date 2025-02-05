@@ -50,7 +50,7 @@ public class SecurityService {
             signUpForm.setNickname(principalUser.getAttribute("name"));
             signUpForm.setEmail(principalUser.getAttribute("email"));
             signUpForm.setPassword(principalUser.getPassword());
-            Account createdAccount = accountService.processNewAccount(signUpForm);
+            Account createdAccount = accountService.processNewAccount("");
             String createdOrMergedSocialProviders = createdAccount.getCreatedOrMergedSocialProviders();
             createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
             createdAccount.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
