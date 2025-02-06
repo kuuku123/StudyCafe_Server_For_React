@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.account.controller;
 
+import com.StudyCafe_R.infra.security.JwtUtils;
 import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -35,6 +36,7 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final JwtUtils jwtUtils;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder) {
@@ -56,7 +58,8 @@ public class AccountController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<String> profile(@CurrentAccount Account account) {
+    public ResponseEntity<String> profile(@RequestHeader("Authorization") String authHeader) {
+        Account account = accountService.getAccountFromAuthHeader(authHeader);
         AccountDto accountDto = accountService.getAccountDto(account);
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("profile", HttpStatus.OK, accountDto);
 
@@ -73,7 +76,6 @@ public class AccountController {
     @ResponseBody
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUpSubmit(@RequestBody String jwt,  HttpServletRequest request, HttpServletResponse response) {
-
         Account account = accountService.processNewAccount(jwt);
         AccountDto accountDto = accountService.getAccountDto(account);
 

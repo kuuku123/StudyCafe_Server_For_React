@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
@@ -51,40 +52,40 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        CookieCsrfTokenRequestAttributeHandler cookeCsrfTokenRequestAttributeHandler = new CookieCsrfTokenRequestAttributeHandler();
-        cookeCsrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
-
+//        CookieCsrfTokenRequestAttributeHandler cookeCsrfTokenRequestAttributeHandler = new CookieCsrfTokenRequestAttributeHandler();
+//        cookeCsrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
+        http.csrf(AbstractHttpConfigurer::disable);
         http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()));
-        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(new CookieCsrfTokenRepository())
-                .csrfTokenRequestHandler(cookeCsrfTokenRequestAttributeHandler)
-                .ignoringRequestMatchers(new SingUpRequestMatchers()));
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**", "/static/**", "/dist/**", "/*.css", "/*.js").permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/sign-up")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/check-email-token")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/email-login")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login-by-email")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/search/study")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/profile/*")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/xsrf-token")).permitAll()
-                        .anyRequest().authenticated());
+//        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.csrfTokenRepository(new CookieCsrfTokenRepository())
+//                .csrfTokenRequestHandler(cookeCsrfTokenRequestAttributeHandler)
+//                .ignoringRequestMatchers(new SingUpRequestMatchers()));
+//        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+//                authorizationManagerRequestMatcherRegistry
+//                        .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**", "/static/**", "/dist/**", "/*.css", "/*.js").permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/sign-up")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/check-email-token")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/email-login")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/login-by-email")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/search/study")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/profile/*")).permitAll()
+//                        .requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/xsrf-token")).permitAll()
+//                        .anyRequest().authenticated());
 
 
-        http.rememberMe(httpSecurityRememberMeConfigurer ->
-                httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)
-                        .tokenRepository(tokenRepository()));
-
-        http.oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(
-                        userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                .authorizationEndpoint(authEndpoint -> authEndpoint.authorizationRequestResolver(new CustomAuthorizationRequestResolver(clientRegistrationRepository)))
-                .successHandler((request, response, authentication) -> {
-                    response.sendRedirect("/on-oauth-success");
-                }));  // OAuth2
+//        http.rememberMe(httpSecurityRememberMeConfigurer ->
+//                httpSecurityRememberMeConfigurer.userDetailsService(userDetailsService)
+//                        .tokenRepository(tokenRepository()));
+//
+//        http.oauth2Login(oauth2 -> oauth2
+//                .userInfoEndpoint(
+//                        userInfoEndpointConfig -> userInfoEndpointConfig
+//                                .userService(customOAuth2UserService))
+//                .authorizationEndpoint(authEndpoint -> authEndpoint.authorizationRequestResolver(new CustomAuthorizationRequestResolver(clientRegistrationRepository)))
+//                .successHandler((request, response, authentication) -> {
+//                    response.sendRedirect("/on-oauth-success");
+//                }));  // OAuth2
 
         return http.build();
     }

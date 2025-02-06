@@ -333,4 +333,13 @@ public class AccountService {
 
         return accountDto;
     }
+
+    public Account getAccountFromAuthHeader(String authHeader) {
+        String jwt = jwtUtils.getJWT(authHeader);
+        Claims claims = jwtUtils.parseClaims(jwt);
+        String email = (String)claims.get("email");
+
+        Account account = getAccount(email);
+        return account;
+    }
 }

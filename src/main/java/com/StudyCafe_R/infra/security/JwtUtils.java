@@ -72,5 +72,13 @@ public class JwtUtils {
         return payload;
     }
 
+    public String getJWT(String authHeader) {
+        String jwt = "";
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+        }
+        return jwt;
+    }
+
 
 }

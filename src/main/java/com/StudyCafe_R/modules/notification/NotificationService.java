@@ -36,7 +36,7 @@ public class NotificationService {
     }
 
 
-    public List<NotificationDto> getUnReadNotification(Account account ) {
+    public List<NotificationDto> getUnReadNotification(Account account) {
         List<Notification> notifications = notificationRepository.findByAccountAndChecked(account,  false);
         List<NotificationDto> notificationDtos = new ArrayList<>();
         for (Notification notification : notifications) {

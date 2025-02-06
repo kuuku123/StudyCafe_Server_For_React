@@ -3,6 +3,7 @@ package com.StudyCafe_R.modules.notification;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.account.service.AccountService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -21,9 +23,11 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final AccountService accountService;
 
     @GetMapping("/notifications")
-    public ResponseEntity<String> getNotifications(@CurrentAccount Account account) {
+    public ResponseEntity<String> getNotifications(@RequestHeader("Authorization") String authHeader) {
+        Account account = accountService.getAccountFromAuthHeader(authHeader);
         List<NotificationDto> unReadNotification = notificationService.getUnReadNotification(account);
         ApiResponse<List<NotificationDto>> apiResponse = new ApiResponse<>("mark as read succeed", HttpStatus.OK, unReadNotification);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
