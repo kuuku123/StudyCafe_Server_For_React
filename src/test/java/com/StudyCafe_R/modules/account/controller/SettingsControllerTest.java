@@ -3,7 +3,7 @@ package com.StudyCafe_R.modules.account.controller;
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.tag.Tag;
@@ -56,11 +56,11 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     private Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
     @BeforeEach
     void beforeEach() {
-        SignUpForm signUpForm = new SignUpForm();
-        signUpForm.setNickname("tony");
-        signUpForm.setEmail("tony@email.com");
-        signUpForm.setPassword("12345678");
-        accountService.processNewAccount("");
+        SignUpRequest signUpRequest = new SignUpRequest();
+        signUpRequest.setNickname("tony");
+        signUpRequest.setEmail("tony@email.com");
+        signUpRequest.setPassword("12345678");
+        accountService.processNewAccount(signUpRequest);
         zoneRepository.save(testZone);
 
     }

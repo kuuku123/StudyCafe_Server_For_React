@@ -1,7 +1,7 @@
 package com.StudyCafe_R.modules.account.validator;
 
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -15,12 +15,12 @@ public class SignUpFormValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(SignUpForm.class);
+        return clazz.isAssignableFrom(SignUpRequest.class);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        SignUpForm signUpForm = (SignUpForm) target;
+        SignUpRequest signUpForm = (SignUpRequest) target;
         if (accountRepository.existsByEmail(signUpForm.getEmail())) {
             errors.rejectValue("email","invalid.email",new Object[]{signUpForm.getEmail()},"이미 사용중인 이메일입니다.");
         }

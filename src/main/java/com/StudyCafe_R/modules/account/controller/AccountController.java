@@ -1,11 +1,10 @@
 package com.StudyCafe_R.modules.account.controller;
 
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.infra.security.JwtUtils;
-import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.form.LoginForm;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -14,20 +13,13 @@ import com.StudyCafe_R.modules.account.validator.SignUpFormValidator;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,7 +28,6 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
-    private final JwtUtils jwtUtils;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder) {
@@ -58,8 +49,8 @@ public class AccountController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<String> profile(@RequestHeader("Authorization") String authHeader) {
-        Account account = accountService.getAccountFromAuthHeader(authHeader);
+    public ResponseEntity<String> profile(@RequestHeader("X-User-Email") String email) {
+        Account account = accountService.getAccount(email);
         AccountDto accountDto = accountService.getAccountDto(account);
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("profile", HttpStatus.OK, accountDto);
 
@@ -75,8 +66,8 @@ public class AccountController {
 
     @ResponseBody
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUpSubmit(@RequestBody String jwt,  HttpServletRequest request, HttpServletResponse response) {
-        Account account = accountService.processNewAccount(jwt);
+    public ResponseEntity<String> signUpSubmit(@RequestBody SignUpRequest signUpRequest, HttpServletRequest request, HttpServletResponse response) {
+        Account account = accountService.processNewAccount(signUpRequest);
         AccountDto accountDto = accountService.getAccountDto(account);
 
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, accountDto);

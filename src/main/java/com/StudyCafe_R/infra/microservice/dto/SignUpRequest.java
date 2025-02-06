@@ -1,4 +1,4 @@
-package com.StudyCafe_R.modules.account.form;
+package com.StudyCafe_R.infra.microservice.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class SignUpForm {
+public class SignUpRequest {
 
     @NotBlank
     @Length(min = 3, max = 20)

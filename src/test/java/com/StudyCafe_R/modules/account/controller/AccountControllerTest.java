@@ -5,38 +5,26 @@ import com.StudyCafe_R.infra.MockMvcTest;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.google.gson.Gson;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpSession;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.session.data.redis.RedisSessionRepository;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Enumeration;
-import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -125,7 +113,7 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     @DisplayName("sign up - valid input")
     @Test
     void signUpSubmit_Success() throws Exception {
-        SignUpForm validSignUpForm = new SignUpForm();
+        SignUpRequest validSignUpForm = new SignUpRequest();
         validSignUpForm.setEmail("tony@gmail.com");
         validSignUpForm.setPassword("password123");
         validSignUpForm.setNickname("tony");
@@ -147,7 +135,7 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     @DisplayName("sign up - invalid input")
     @Test
     void signUpSubmit_with_wrong_input() throws Exception {
-        SignUpForm validSignUpForm = new SignUpForm();
+        SignUpRequest validSignUpForm = new SignUpRequest();
         validSignUpForm.setEmail("invalid email");
         validSignUpForm.setPassword("password123");
         validSignUpForm.setNickname("tony");

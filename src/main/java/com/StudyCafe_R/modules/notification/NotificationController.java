@@ -26,8 +26,8 @@ public class NotificationController {
     private final AccountService accountService;
 
     @GetMapping("/notifications")
-    public ResponseEntity<String> getNotifications(@RequestHeader("Authorization") String authHeader) {
-        Account account = accountService.getAccountFromAuthHeader(authHeader);
+    public ResponseEntity<String> getNotifications(@RequestHeader("X-User-Email") String email) {
+        Account account = accountService.getAccount(email);
         List<NotificationDto> unReadNotification = notificationService.getUnReadNotification(account);
         ApiResponse<List<NotificationDto>> apiResponse = new ApiResponse<>("mark as read succeed", HttpStatus.OK, unReadNotification);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);

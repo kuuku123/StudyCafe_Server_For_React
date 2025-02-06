@@ -2,8 +2,7 @@ package com.StudyCafe_R.infra.security.service;
 
 import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.form.LoginForm;
-import com.StudyCafe_R.modules.account.form.SignUpForm;
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,11 +45,11 @@ public class SecurityService {
             }
             return "redirect:" + allowedOrigin + "/merge-account";
         } else {
-            SignUpForm signUpForm = new SignUpForm();
-            signUpForm.setNickname(principalUser.getAttribute("name"));
-            signUpForm.setEmail(principalUser.getAttribute("email"));
-            signUpForm.setPassword(principalUser.getPassword());
-            Account createdAccount = accountService.processNewAccount("");
+            SignUpRequest signUpRequest = new SignUpRequest();
+            signUpRequest.setNickname(principalUser.getAttribute("name"));
+            signUpRequest.setEmail(principalUser.getAttribute("email"));
+            signUpRequest.setPassword(principalUser.getPassword());
+            Account createdAccount = accountService.processNewAccount(signUpRequest);
             String createdOrMergedSocialProviders = createdAccount.getCreatedOrMergedSocialProviders();
             createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
             createdAccount.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);

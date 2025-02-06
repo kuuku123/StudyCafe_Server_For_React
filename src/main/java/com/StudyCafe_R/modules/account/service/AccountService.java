@@ -3,6 +3,7 @@ package com.StudyCafe_R.modules.account.service;
 import com.StudyCafe_R.infra.config.AppProperties;
 import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
+import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.infra.security.JwtUtils;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.UserAccount;
@@ -74,20 +75,15 @@ public class AccountService {
         authenticationProvider.setUserDetailsService(userDetailsService);
     }
 
-    public Account processNewAccount(String jwt) {
-        Claims claims = jwtUtils.parseClaims(jwt);
-        String email = (String)claims.get("email");
-        String nickname = (String)claims.get("nickname");
-        Account newAccount = saveNewAccount(email, nickname);
+    public Account processNewAccount(SignUpRequest signUpRequest) {
+        Account newAccount = saveNewAccount(signUpRequest);
         sendSignupConfirmEmail(newAccount);
         return newAccount;
     }
 
-    private Account saveNewAccount(String email, String nickname) {
-
-        Account account = new Account();
-        account.setEmail(email);
-        account.setNickname(nickname);
+    private Account saveNewAccount(SignUpRequest signUpRequest) {
+        signUpRequest.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        Account account = modelMapper.map(signUpRequest, Account.class);
         account.generateEmailCheckToken();
 
         ClassPathResource imgFile = new ClassPathResource("static/images/anonymous.JPG");
