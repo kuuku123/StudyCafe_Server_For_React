@@ -1,10 +1,9 @@
 package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
-import com.StudyCafe_R.infra.security.JwtUtils;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.form.LoginForm;
+import com.StudyCafe_R.modules.account.dto.LoginForm;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;

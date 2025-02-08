@@ -3,6 +3,7 @@ package com.StudyCafe_R.infra.security.service;
 import com.StudyCafe_R.infra.security.PrincipalUser;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
+import com.StudyCafe_R.modules.account.dto.OAuth2Dto;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,55 +20,56 @@ import java.math.BigInteger;
 @RequiredArgsConstructor
 public class SecurityService {
 
-    @Value("${cors.allowed-origin}")
-    private String allowedOrigin;
+    @Value("${front.redirectUrl}")
+    private String redirectUrl;
 
     private final AccountService accountService;
     private final ModelMapper modelMapper;
 
     @Transactional
-    public String chooseOptioncreateAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
+    public String chooseOptioncreateAccount(OAuth2Dto oAuth2Dto, HttpServletRequest request, HttpServletResponse response) {
         Account account = null;
         try {
-            account = accountService.getAccount(principalUser.getAttribute("email"));
+            account = accountService.getAccount(oAuth2Dto.getAttribute("email"));
         } catch (Exception e) {
+            e.printStackTrace();
         }
         if (account != null) {
             String mergedSocialProviders = account.getCreatedOrMergedSocialProviders();
             if (mergedSocialProviders != null) {
                 String[] providers = mergedSocialProviders.split(",");
                 for (String provider : providers) {
-                    if (provider.equals(principalUser.providerUser().getProvider())) {
-                        accountService.saveAuthentication(request, response, account, account.getPassword(), true);
-                        return "redirect:" + allowedOrigin + "/already-merged-account";
+                    if (provider.equals(oAuth2Dto.getProvider())){
+//                        accountService.saveAuthentication(request, response, account, account.getPassword(), true);
+                        return "redirect:" + redirectUrl + "/already-merged-account";
                     }
                 }
             }
-            return "redirect:" + allowedOrigin + "/merge-account";
+            return "redirect:" + redirectUrl + "/merge-account";
         } else {
             SignUpRequest signUpRequest = new SignUpRequest();
-            signUpRequest.setNickname(principalUser.getAttribute("name"));
-            signUpRequest.setEmail(principalUser.getAttribute("email"));
-            signUpRequest.setPassword(principalUser.getPassword());
+            signUpRequest.setNickname(oAuth2Dto.getAttribute("name"));
+            signUpRequest.setEmail(oAuth2Dto.getAttribute("email"));
+            signUpRequest.setPassword("");
             Account createdAccount = accountService.processNewAccount(signUpRequest);
             String createdOrMergedSocialProviders = createdAccount.getCreatedOrMergedSocialProviders();
-            createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
+            createdOrMergedSocialProviders += "," + oAuth2Dto.getProvider();
             createdAccount.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
-            accountService.saveAuthentication(request, response, createdAccount, createdAccount.getPassword(), true);
+//            accountService.saveAuthentication(request, response, createdAccount, createdAccount.getPassword(), true);
 
-            return "redirect:" + allowedOrigin + "/social-account-setPassword";
+            return "redirect:" + redirectUrl + "/social-account-setPassword";
         }
     }
 
     @Transactional
-    public AccountDto mergeAccount(PrincipalUser principalUser, HttpServletRequest request, HttpServletResponse response) {
-        String sub = principalUser.getAttribute("sub");
-        Account account = accountService.getAccount(principalUser.getAttribute("email"));
+    public AccountDto mergeAccount(OAuth2Dto oAuth2Dto, HttpServletRequest request, HttpServletResponse response) {
+        String sub = oAuth2Dto.getAttribute("sub");
+        Account account = accountService.getAccount(oAuth2Dto.getAttribute("email"));
         BigInteger subSocialIdentifier = new BigInteger(sub);
         account.setSubSocialIdentifier(subSocialIdentifier);
 
         String createdOrMergedSocialProviders = account.getCreatedOrMergedSocialProviders();
-        createdOrMergedSocialProviders += "," + principalUser.providerUser().getProvider();
+        createdOrMergedSocialProviders += "," + oAuth2Dto.getProvider();
         account.setCreatedOrMergedSocialProviders(createdOrMergedSocialProviders);
         account.setEmailVerified(true);
 

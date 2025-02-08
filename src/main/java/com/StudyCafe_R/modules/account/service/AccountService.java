@@ -10,7 +10,7 @@ import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountTag;
 import com.StudyCafe_R.modules.account.domain.AccountZone;
-import com.StudyCafe_R.modules.account.form.*;
+import com.StudyCafe_R.modules.account.dto.*;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagRepository;

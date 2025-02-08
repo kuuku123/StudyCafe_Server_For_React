@@ -50,6 +50,8 @@ spring:
 
 cors:
   allowed-origin: http://localhost:8083
+front:
+  redirectUrl: http://localhost:3000
 
 logging:
   level:

@@ -1,4 +1,4 @@
-package com.StudyCafe_R.modules.account.form;
+package com.StudyCafe_R.modules.account.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

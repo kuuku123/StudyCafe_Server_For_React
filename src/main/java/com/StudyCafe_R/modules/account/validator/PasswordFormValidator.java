@@ -1,6 +1,6 @@
 package com.StudyCafe_R.modules.account.validator;
 
-import com.StudyCafe_R.modules.account.form.PasswordForm;
+import com.StudyCafe_R.modules.account.dto.PasswordForm;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
