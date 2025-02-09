@@ -1,6 +1,5 @@
 package com.StudyCafe_R.infra.config;
 
-import com.StudyCafe_R.infra.security.CustomAuthorizationRequestResolver;
 import com.StudyCafe_R.infra.security.service.CustomOAuth2UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,19 +12,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -44,7 +38,7 @@ public class SecurityConfig {
 
     @Value("${cors.allowed-origin}")
     private String allowedOrigin;
-    private final UserDetailsService userDetailsService;
+//    private final UserDetailsService userDetailsService;
     private final DataSource dataSource;
     private final HandlerMappingIntrospector handlerMappingIntrospector;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -90,18 +84,18 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public RememberMeServices rememberMeServices() {
-        PersistentTokenBasedRememberMeServices rememberMeServices =
-                new PersistentTokenBasedRememberMeServices(
-                        "remember-me-key-encryption",
-                        userDetailsService,
-                        tokenRepository()
-                );
-        rememberMeServices.setTokenValiditySeconds(1209600); // 14 days
-        rememberMeServices.setAlwaysRemember(true); // Set to true if you want to always remember
-        return rememberMeServices;
-    }
+//    @Bean
+//    public RememberMeServices rememberMeServices() {
+//        PersistentTokenBasedRememberMeServices rememberMeServices =
+//                new PersistentTokenBasedRememberMeServices(
+//                        "remember-me-key-encryption",
+//                        userDetailsService,
+//                        tokenRepository()
+//                );
+//        rememberMeServices.setTokenValiditySeconds(1209600); // 14 days
+//        rememberMeServices.setAlwaysRemember(true); // Set to true if you want to always remember
+//        return rememberMeServices;
+//    }
 
     @Bean
     public PersistentTokenRepository tokenRepository() {

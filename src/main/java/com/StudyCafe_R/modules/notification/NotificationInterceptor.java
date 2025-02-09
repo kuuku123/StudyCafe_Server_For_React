@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.notification;
 
-import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.notification.repository.NotificationRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,15 +18,15 @@ public class NotificationInterceptor implements HandlerInterceptor {
 
     private final NotificationRepository notificationRepository;
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (modelAndView != null && !isRedirectView(modelAndView) && authentication != null && authentication.getPrincipal() instanceof UserAccount) {
-            Account account = ((UserAccount) authentication.getPrincipal()).getAccount();
-            long count = notificationRepository.countByAccountAndChecked(account,false);
-            modelAndView.addObject("hasNotification",count > 0); // inserting true
-        }
-    }
+//    @Override
+//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (modelAndView != null && !isRedirectView(modelAndView) && authentication != null && authentication.getPrincipal() instanceof UserAccount) {
+//            Account account = ((UserAccount) authentication.getPrincipal()).getAccount();
+//            long count = notificationRepository.countByAccountAndChecked(account,false);
+//            modelAndView.addObject("hasNotification",count > 0); // inserting true
+//        }
+//    }
 
     private boolean isRedirectView(ModelAndView modelAndView) {
         return modelAndView.getViewName().startsWith("redirect:") || modelAndView.getView() instanceof RedirectView;

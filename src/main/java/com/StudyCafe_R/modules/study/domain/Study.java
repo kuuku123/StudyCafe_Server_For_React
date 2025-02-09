@@ -1,6 +1,5 @@
 package com.StudyCafe_R.modules.study.domain;
 
-import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.domain.AccountStudyMembers;
@@ -133,20 +132,20 @@ public class Study {
         return image != null ? image : "/images/1.jpg";
     }
 
-    public boolean isJoinable(UserAccount userAccount) {
-        return this.isPublished() && this.isRecruiting() && !this.members.stream()
-                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
-    }
-
-    public boolean isMember(UserAccount userAccount) {
-        return this.members.stream()
-                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
-    }
-
-    public boolean isManager(UserAccount userAccount) {
-        return this.managers.stream()
-                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
-    }
+//    public boolean isJoinable(UserAccount userAccount) {
+//        return this.isPublished() && this.isRecruiting() && !this.members.stream()
+//                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
+//    }
+//
+//    public boolean isMember(UserAccount userAccount) {
+//        return this.members.stream()
+//                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
+//    }
+//
+//    public boolean isManager(UserAccount userAccount) {
+//        return this.managers.stream()
+//                .anyMatch(accountStudyManager -> doesAccountExist(accountStudyManager.getAccount(), userAccount.getAccount()));
+//    }
     private boolean doesAccountExist(Account accountStudy, Account userAccount) {
         return accountStudy.getNickname().equals(userAccount.getNickname());
     }

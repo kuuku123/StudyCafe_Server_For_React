@@ -101,21 +101,21 @@ public class SettingsController {
         return SETTINGS + PASSWORD;
     }
 
-    @PostMapping(PASSWORD)
-    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid @RequestBody PasswordForm passwordForm, Errors errors) {
-        if (errors.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (FieldError error : errors.getFieldErrors()) {
-                errorMap.put(error.getField(), error.getDefaultMessage());
-            }
-            ApiResponse<Map<String, String>> passwordUpdateFailed = new ApiResponse<>("password update failed", HttpStatus.BAD_REQUEST, errorMap);
-            return new ResponseEntity<>(new Gson().toJson(passwordUpdateFailed), HttpStatus.BAD_REQUEST);
-        }
-
-        AccountDto accountDto = accountService.updatePassword(account, passwordForm.getNewPassword());
-        ApiResponse<AccountDto> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, accountDto);
-        return new ResponseEntity<>(new Gson().toJson(passwordUpdateSucceed), HttpStatus.OK);
-    }
+//    @PostMapping(PASSWORD)
+//    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid @RequestBody PasswordForm passwordForm, Errors errors) {
+//        if (errors.hasErrors()) {
+//            Map<String, String> errorMap = new HashMap<>();
+//            for (FieldError error : errors.getFieldErrors()) {
+//                errorMap.put(error.getField(), error.getDefaultMessage());
+//            }
+//            ApiResponse<Map<String, String>> passwordUpdateFailed = new ApiResponse<>("password update failed", HttpStatus.BAD_REQUEST, errorMap);
+//            return new ResponseEntity<>(new Gson().toJson(passwordUpdateFailed), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        AccountDto accountDto = accountService.updatePassword(account, passwordForm.getNewPassword());
+//        ApiResponse<AccountDto> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, accountDto);
+//        return new ResponseEntity<>(new Gson().toJson(passwordUpdateSucceed), HttpStatus.OK);
+//    }
 
     @GetMapping(NOTIFICATIONS)
     public String updateNotificationsForm(@CurrentAccount Account account, Model model) {
@@ -145,18 +145,18 @@ public class SettingsController {
         return SETTINGS + ACCOUNT;
     }
 
-    @PostMapping(ACCOUNT)
-    public String updateAccount(@CurrentAccount Account account, @Valid NicknameForm nicknameForm, Errors errors
-            , Model model, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
-        if (errors.hasErrors()) {
-            model.addAttribute(account);
-            return SETTINGS + ACCOUNT;
-        }
-
-        accountService.updateNickname(account, nicknameForm.getNickname(), request, response);
-        redirectAttributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
-        return "redirect:/" + SETTINGS + ACCOUNT;
-    }
+//    @PostMapping(ACCOUNT)
+//    public String updateAccount(@CurrentAccount Account account, @Valid NicknameForm nicknameForm, Errors errors
+//            , Model model, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
+//        if (errors.hasErrors()) {
+//            model.addAttribute(account);
+//            return SETTINGS + ACCOUNT;
+//        }
+//
+//        accountService.updateNickname(account, nicknameForm.getNickname(), request, response);
+//        redirectAttributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+//        return "redirect:/" + SETTINGS + ACCOUNT;
+//    }
 
     @GetMapping(TAGS)
     public ResponseEntity<String> getTags(@CurrentAccount Account account) {

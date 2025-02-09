@@ -1,7 +1,6 @@
 package com.StudyCafe_R.modules.event.domain;
 
 import com.StudyCafe_R.StudyCafe_R.modules.event.domain.EventType;
-import com.StudyCafe_R.modules.account.UserAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
 import jakarta.persistence.*;
@@ -64,43 +63,43 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventType eventType;
 
-    public boolean isEnrollPossibleFor(UserAccount userAccount) {
-        return isNotClosed() && !isAttended(userAccount) &&
-                !isAlreadyEnrolled(userAccount);
-    }
-
-    public boolean isDisEnrollPossibleFor(UserAccount userAccount) {
-        return isNotClosed() && !isAttended(userAccount) &&
-                isAlreadyEnrolled(userAccount);
-    }
+//    public boolean isEnrollPossibleFor(UserAccount userAccount) {
+//        return isNotClosed() && !isAttended(userAccount) &&
+//                !isAlreadyEnrolled(userAccount);
+//    }
+//
+//    public boolean isDisEnrollPossibleFor(UserAccount userAccount) {
+//        return isNotClosed() && !isAttended(userAccount) &&
+//                isAlreadyEnrolled(userAccount);
+//    }
 
     public boolean isNotClosed() {
         return this.endEnrollmentDateTime.isAfter(LocalDateTime.now());
     }
 
-    public boolean isAttended(UserAccount userAccount) {
-        Account account = userAccount.getAccount();
-        for (Enrollment enrollment : enrollments) {
-            if(enrollment.getAccount().equals(account) && enrollment.isAttended()) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean isAttended(UserAccount userAccount) {
+//        Account account = userAccount.getAccount();
+//        for (Enrollment enrollment : enrollments) {
+//            if(enrollment.getAccount().equals(account) && enrollment.isAttended()) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public int numberOfRemainSpots() {
         return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
 
-    public boolean isAlreadyEnrolled(UserAccount userAccount) {
-        Account account = userAccount.getAccount();
-        for (Enrollment enrollment : enrollments) {
-            if(enrollment.getAccount().equals(account)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean isAlreadyEnrolled(UserAccount userAccount) {
+//        Account account = userAccount.getAccount();
+//        for (Enrollment enrollment : enrollments) {
+//            if(enrollment.getAccount().equals(account)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public long getNumberOfAcceptedEnrollments() {
         return this.enrollments.stream()

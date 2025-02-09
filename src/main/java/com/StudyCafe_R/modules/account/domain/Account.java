@@ -27,21 +27,10 @@ public class Account implements Serializable {
     private Long id;
 
     @Column(unique = true)
-    private BigInteger subSocialIdentifier;
-
-    @Column(unique = true)
     private String email;
 
     @Column(unique = true)
     private String nickname;
-
-    private String password;
-
-    private boolean emailVerified; // check if current account is verified with email account
-
-    private String emailCheckToken; // token used for email verification
-
-    private LocalDateTime joinedAt; // specific time when email verification succeed and consider this user is signed in
 
     //client's extra info
 
@@ -68,8 +57,6 @@ public class Account implements Serializable {
     private boolean studyEnrollmentResultByWeb = true;
 
     private boolean studyUpdatedByEmail;
-
-    private String createdOrMergedSocialProviders = "";
 
     @Builder.Default
     private boolean studyUpdatedByWeb = true;
@@ -101,24 +88,24 @@ public class Account implements Serializable {
     private Set<Enrollment> enrollments = new HashSet<>();
 
 
-    public void generateEmailCheckToken() {
-        this.emailCheckToken = UUID.randomUUID().toString();
-        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
-    }
-
-    public void completeSignUp() {
-        this.emailVerified = true;
-        this.joinedAt = LocalDateTime.now();
-    }
-
-    public boolean isValidToken(String token) {
-        return this.emailCheckToken.equals(token);
-    }
-
-    public boolean canSendConfirmationEmail() {
-//        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
-        return true;
-    }
+//    public void generateEmailCheckToken() {
+//        this.emailCheckToken = UUID.randomUUID().toString();
+//        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
+//    }
+//
+//    public void completeSignUp() {
+//        this.emailVerified = true;
+//        this.joinedAt = LocalDateTime.now();
+//    }
+//
+//    public boolean isValidToken(String token) {
+//        return this.emailCheckToken.equals(token);
+//    }
+//
+//    public boolean canSendConfirmationEmail() {
+////        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+//        return true;
+//    }
 
     public void addAccountTag(AccountTag accountTag) {
         this.accountTagSet.add(accountTag);
