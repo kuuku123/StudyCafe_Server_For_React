@@ -1,9 +1,7 @@
 package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.util.MyConstants;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;

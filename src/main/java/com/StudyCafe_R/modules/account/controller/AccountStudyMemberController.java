@@ -1,13 +1,11 @@
 package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.util.MyConstants;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.account.service.AccountService;
-import com.StudyCafe_R.modules.account.service.AccountStudyManagerService;
 import com.StudyCafe_R.modules.account.service.AccountStudyMemberService;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.service.StudyService;
@@ -49,7 +47,7 @@ public class AccountStudyMemberController {
     }
 
     @GetMapping("/{path}/study-managers")
-    public ResponseEntity<String> getStudyManager(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> getStudyManager(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @PathVariable String path) {
         Study study = studyService.getStudy(path);
         List<AccountDto> studyManagers = accountStudyMemberService.getStudyManagers(study);
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyManagers);

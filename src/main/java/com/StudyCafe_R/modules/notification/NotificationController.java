@@ -1,7 +1,6 @@
 package com.StudyCafe_R.modules.notification;
 
 import com.StudyCafe_R.infra.util.MyConstants;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;

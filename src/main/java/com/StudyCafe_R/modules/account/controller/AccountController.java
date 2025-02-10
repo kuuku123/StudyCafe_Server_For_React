@@ -2,9 +2,7 @@ package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.infra.util.MyConstants;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
-import com.StudyCafe_R.modules.account.dto.LoginForm;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -16,10 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -62,13 +58,5 @@ public class AccountController {
 //        return "email/check-email";
 //    }
 //
-
-    @GetMapping("/profile/{nickname}")
-    public String viewProfile(@PathVariable String nickname, Model model, @CurrentAccount Account account) {
-        Account byNickname = accountService.getAccount(nickname);
-        model.addAttribute("account", byNickname);
-        model.addAttribute("isOwner", byNickname.equals(account));
-        return "account/profile";
-    }
 
 }

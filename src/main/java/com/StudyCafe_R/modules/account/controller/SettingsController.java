@@ -1,7 +1,6 @@
 package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.util.MyConstants;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.dto.*;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
@@ -22,8 +21,6 @@ import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -79,15 +76,6 @@ public class SettingsController {
         webDataBinder.addValidators(nicknameValidator);
     }
 
-    @GetMapping(PROFILE)
-    public String updateProfileForm(@CurrentAccount Account account, Model model) {
-
-        model.addAttribute(account);
-        model.addAttribute(modelMapper.map(account, Profile.class));
-
-        return SETTINGS + PROFILE;
-    }
-
     @PostMapping(PROFILE)
     public ResponseEntity<String> updateProfile(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @Valid @RequestBody Profile profile) {
         Account account = accountService.getAccount(email);
@@ -96,12 +84,6 @@ public class SettingsController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping(PASSWORD)
-    public String updatePasswordForm(@CurrentAccount Account account, Model model) {
-        model.addAttribute(account);
-        model.addAttribute(new PasswordForm());
-        return SETTINGS + PASSWORD;
-    }
 
 //    @PostMapping(PASSWORD)
 //    public ResponseEntity<String> updatePassword(@CurrentAccount Account account, @Valid @RequestBody PasswordForm passwordForm, Errors errors) {
@@ -118,34 +100,6 @@ public class SettingsController {
 //        ApiResponse<AccountDto> passwordUpdateSucceed = new ApiResponse<>("password update succeed", HttpStatus.OK, accountDto);
 //        return new ResponseEntity<>(new Gson().toJson(passwordUpdateSucceed), HttpStatus.OK);
 //    }
-
-    @GetMapping(NOTIFICATIONS)
-    public String updateNotificationsForm(@CurrentAccount Account account, Model model) {
-        model.addAttribute(account);
-        model.addAttribute(modelMapper.map(account, Notifications.class));
-        return SETTINGS + NOTIFICATIONS;
-    }
-
-    @PostMapping(NOTIFICATIONS)
-    public String updateNotifications(@CurrentAccount Account account, @Valid Notifications notifications, Errors errors,
-                                      Model model, RedirectAttributes attributes) {
-        if (errors.hasErrors()) {
-            model.addAttribute(account);
-            return SETTINGS + NOTIFICATIONS;
-        }
-
-        accountService.updateNotifications(account, notifications);
-        attributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
-        return "redirect:/" + SETTINGS + NOTIFICATIONS;
-    }
-
-
-    @GetMapping(ACCOUNT)
-    public String updateAccountForm(@CurrentAccount Account account, Model model) {
-        model.addAttribute(account);
-        model.addAttribute(modelMapper.map(account, NicknameForm.class));
-        return SETTINGS + ACCOUNT;
-    }
 
 //    @PostMapping(ACCOUNT)
 //    public String updateAccount(@CurrentAccount Account account, @Valid NicknameForm nicknameForm, Errors errors

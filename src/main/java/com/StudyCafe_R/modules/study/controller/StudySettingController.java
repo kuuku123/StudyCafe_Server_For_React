@@ -6,19 +6,14 @@ import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
-import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.study.domain.Study;
 import com.StudyCafe_R.modules.study.form.StudyForm;
 import com.StudyCafe_R.modules.study.service.StudyConfigService;
-import com.StudyCafe_R.modules.tag.Tag;
 import com.StudyCafe_R.modules.tag.TagForm;
-import com.StudyCafe_R.modules.tag.TagService;
 import com.StudyCafe_R.modules.tag.dto.TagDto;
-import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import com.StudyCafe_R.modules.zone.dto.ZoneForm;
-import com.StudyCafe_R.modules.zone.ZoneRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,7 +33,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/study/{path}/settings")
@@ -54,7 +48,7 @@ public class StudySettingController {
     private final AccountService accountService;
 
     @GetMapping("/description")
-    public String viewStudySetting(@CurrentAccount Account account, @PathVariable String path, Model model) {
+    public String viewStudySetting(Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
@@ -147,7 +141,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/study/close")
-    public String closeStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
+    public String closeStudy(Account account, @PathVariable String path, RedirectAttributes redirectAttributes) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.close(study);
         redirectAttributes.addFlashAttribute("message", "스터디를 종료했습니다.");
@@ -155,7 +149,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/recruit/start")
-    public String startRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+    public String startRecruit(Account account, @PathVariable String path, Model model,
                                RedirectAttributes attributes) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         if (!study.canUpdateRecruiting()) {
@@ -169,7 +163,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/recruit/stop")
-    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+    public String stopRecruit(Account account, @PathVariable String path, Model model,
                               RedirectAttributes attributes) {
         Study study = studyService.getStudyToUpdate(account, path);
         if (!study.canUpdateRecruiting()) {
@@ -183,7 +177,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/study/path")
-    public String updateStudyPath(@CurrentAccount Account account, @PathVariable String path, String newPath,
+    public String updateStudyPath(Account account, @PathVariable String path, String newPath,
                                   Model model, RedirectAttributes attributes) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         if (!studyService.isValidPath(newPath)) {
@@ -199,7 +193,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/study/title")
-    public String updateStudyTitle(@CurrentAccount Account account, @PathVariable String path, String newTitle,
+    public String updateStudyTitle(Account account, @PathVariable String path, String newTitle,
                                    Model model, RedirectAttributes attributes) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         if (!studyService.isValidTitle(newTitle)) {
@@ -215,7 +209,7 @@ public class StudySettingController {
     }
 
     @PostMapping("/study/remove")
-    public String removeStudy(@CurrentAccount Account account, @PathVariable String path, Model model) {
+    public String removeStudy(Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.remove(study);
         return "redirect:/";

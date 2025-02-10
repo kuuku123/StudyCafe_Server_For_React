@@ -1,9 +1,8 @@
 package com.StudyCafe_R.infra.config;
 
-import com.StudyCafe_R.modules.notification.NotificationInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,16 +16,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final NotificationInterceptor notificationInterceptor;
+    @Value("${cors.allowed-origin}")
+    private String allowedOrigin;
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        List<String> staticResourcePath = Arrays.stream(StaticResourceLocation.values())
-                .flatMap(StaticResourceLocation::getPatterns)
-                .collect(Collectors.toList());
-        staticResourcePath.add("/node_modules/**");
-
-        registry.addInterceptor(notificationInterceptor)
-                .excludePathPatterns(staticResourcePath);
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(allowedOrigin)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

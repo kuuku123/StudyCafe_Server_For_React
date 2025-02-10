@@ -1,6 +1,7 @@
 package com.StudyCafe_R.modules.study.service;
 
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
+import com.StudyCafe_R.modules.study.exceptions.NotManagerException;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.domain.Account;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +73,7 @@ public class StudyService {
 
     private void checkIfManager(Account account, Study study) {
         if (!study.isManagedby(account)) {
-            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
+            throw new NotManagerException("해당 기능을 사용할 수 없습니다.");
         }
     }
 
