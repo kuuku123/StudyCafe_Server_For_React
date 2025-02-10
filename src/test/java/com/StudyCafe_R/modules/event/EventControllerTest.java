@@ -54,7 +54,6 @@ class EventControllerTest extends AbstractContainerBaseTest {
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.setNickname("tony");
         signUpRequest.setEmail("tony@email.com");
-        signUpRequest.setPassword("12345678");
         accountService.processNewAccount(signUpRequest);
 
     }

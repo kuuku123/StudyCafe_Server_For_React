@@ -59,7 +59,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.setNickname("tony");
         signUpRequest.setEmail("tony@email.com");
-        signUpRequest.setPassword("12345678");
         accountService.processNewAccount(signUpRequest);
         zoneRepository.save(testZone);
 
@@ -235,7 +234,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(flash().attributeExists("message"));
 
         Account tony = accountRepository.findByNickname("tony");
-        assertTrue(passwordEncoder.matches("12345678", tony.getPassword()));
     }
 
     @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)

@@ -74,15 +74,12 @@ class AccountControllerTest extends AbstractContainerBaseTest {
         // 1) Create a test account with an email token
         Account account = Account.builder()
                 .email("test@email.com")
-                .password("12345678")
                 .nickname("tony")
                 .build();
-        account.generateEmailCheckToken();
         accountRepository.save(account);
 
         // 2) Perform the first request (email verification)
         MvcResult result = mockMvc.perform(get("/check-email-token")
-                        .param("token", account.getEmailCheckToken())
                         .param("email", account.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
@@ -115,7 +112,6 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     void signUpSubmit_Success() throws Exception {
         SignUpRequest validSignUpForm = new SignUpRequest();
         validSignUpForm.setEmail("tony@gmail.com");
-        validSignUpForm.setPassword("password123");
         validSignUpForm.setNickname("tony");
 
         mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
@@ -126,8 +122,6 @@ class AccountControllerTest extends AbstractContainerBaseTest {
 
         Account account = accountRepository.findByEmail("tony@gmail.com");
         assertNotNull(account);
-        assertNotEquals(account.getPassword(),"password123");
-        assertNotNull(account.getEmailCheckToken());
 
         then(emailService).should().sendEmail(any(EmailMessage.class));
     }
@@ -137,7 +131,6 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     void signUpSubmit_with_wrong_input() throws Exception {
         SignUpRequest validSignUpForm = new SignUpRequest();
         validSignUpForm.setEmail("invalid email");
-        validSignUpForm.setPassword("password123");
         validSignUpForm.setNickname("tony");
 
         mockMvc.perform(post("/sign-up").cookie(xsrfCookie)

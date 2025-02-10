@@ -1,9 +1,11 @@
 package com.StudyCafe_R.modules.study.controller;
 
+import com.StudyCafe_R.infra.util.MyConstants;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
+import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.study.repository.StudyRepository;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.domain.Study;
@@ -35,6 +37,7 @@ public class StudyController {
     private final ModelMapper modelMapper;
     private final StudyFormValidator studyFormValidator;
     private final StudyRepository studyRepository;
+    private final AccountService accountService;
 
     @InitBinder("studyForm")
     public void studyFormInitBinder(WebDataBinder webDataBinder) {
@@ -43,14 +46,14 @@ public class StudyController {
 
 
     @GetMapping("/get-study/{path}")
-    public ResponseEntity<String> getStudy(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> getStudy(@PathVariable String path) {
         StudyDto studyDto = studyService.getStudyDto(path);
         ApiResponse<StudyDto> apiResponse = new ApiResponse<>("get study succeeded", HttpStatus.OK, studyDto);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/new-study")
-    public ResponseEntity<String> newStudySubmit(@CurrentAccount Account account, @RequestBody @Valid StudyForm studyForm, Errors errors, Model model) {
+    public ResponseEntity<String> newStudySubmit(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @RequestBody @Valid StudyForm studyForm, Errors errors, Model model) {
         if (errors.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
             for (FieldError error : errors.getFieldErrors()) {
@@ -60,6 +63,7 @@ public class StudyController {
             return new ResponseEntity<>(new Gson().toJson(createStudyFailed), HttpStatus.BAD_REQUEST);
         }
 
+        Account account = accountService.getAccount(email);
         Study newStudy = studyService.createNewStudy(studyForm, account);
 
         ApiResponse<StudyForm> apiResponse = new ApiResponse<>("create study succeeded", HttpStatus.OK, studyForm);
@@ -67,18 +71,10 @@ public class StudyController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/study/{path}")
-    public String viewStudy(@CurrentAccount Account account, @PathVariable String path, Model model) {
-        model.addAttribute(account);
-        Study study = studyService.getStudy(path);
-        model.addAttribute(study);
-
-        return "study/view";
-    }
-
     @GetMapping("/study/{path}/checkJoined")
-    public ResponseEntity<String> checkJoinedStudy(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> checkJoinedStudy(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
+        Account account = accountService.getAccount(email);
         boolean joined = studyService.checkIfJoined(study, account);
         ApiResponse<Boolean> apiResponse = new ApiResponse<>("study join succeeded", HttpStatus.OK, joined);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
@@ -86,16 +82,18 @@ public class StudyController {
 
 
     @PostMapping("/study/{path}/join")
-    public ResponseEntity<String> joinStudy(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> joinStudy(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
+        Account account = accountService.getAccount(email);
         studyService.addMember(study, account);
         ApiResponse<String> apiResponse = new ApiResponse<>("study join succeeded", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
     @PostMapping("/study/{path}/leave")
-    public ResponseEntity<String> leaveStudy(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> leaveStudy(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @PathVariable String path) {
         Study study = studyRepository.findStudyWithMembersByPath(path);
+        Account account = accountService.getAccount(email);
         studyService.removeMember(study, account);
         ApiResponse<String> apiResponse = new ApiResponse<>("study leave succeeded", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);

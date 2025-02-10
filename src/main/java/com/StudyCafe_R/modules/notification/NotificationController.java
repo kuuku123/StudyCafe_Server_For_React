@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.notification;
 
+import com.StudyCafe_R.infra.util.MyConstants;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
@@ -26,7 +27,7 @@ public class NotificationController {
     private final AccountService accountService;
 
     @GetMapping("/notifications")
-    public ResponseEntity<String> getNotifications(@RequestHeader("X-User-Email") String email) {
+    public ResponseEntity<String> getNotifications(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email) {
         Account account = accountService.getAccount(email);
         List<NotificationDto> unReadNotification = notificationService.getUnReadNotification(account);
         ApiResponse<List<NotificationDto>> apiResponse = new ApiResponse<>("mark as read succeed", HttpStatus.OK, unReadNotification);

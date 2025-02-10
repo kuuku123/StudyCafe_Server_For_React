@@ -1,11 +1,13 @@
 package com.StudyCafe_R.modules.account.controller;
 
+import com.StudyCafe_R.infra.util.MyConstants;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.domain.AccountStudyManager;
 import com.StudyCafe_R.modules.account.responseDto.AccountDto;
 import com.StudyCafe_R.modules.account.responseDto.StudyDto;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.account.service.AccountStudyManagerService;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.domain.Study;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -27,9 +30,11 @@ public class AccountStudyManagerController {
 
     private final AccountStudyManagerService accountStudyManagerService;
     private final StudyService studyService;
+    private final AccountService accountService;
 
     @GetMapping("/study-list")
-    public ResponseEntity<String> getStudyList(@CurrentAccount Account account) {
+    public ResponseEntity<String> getStudyList(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email) {
+        Account account = accountService.getAccount(email);
         List<StudyDto> studyList = accountStudyManagerService.getStudyList(account);
         ApiResponse<List<StudyDto>> apiResponse = new ApiResponse<>("studyList", HttpStatus.OK, studyList);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
@@ -51,8 +56,9 @@ public class AccountStudyManagerController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
     @GetMapping("/{path}/isManager")
-    public ResponseEntity<String> isManager(@CurrentAccount Account account ,@PathVariable String path) {
+    public ResponseEntity<String> isManager(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email ,@PathVariable String path) {
         Study study = studyService.getStudy(path);
+        Account account = accountService.getAccount(email);
         boolean isManager= accountStudyManagerService.isManager(study, account);
         ApiResponse<Boolean> apiResponse = new ApiResponse<>("isManager", HttpStatus.OK, isManager);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);

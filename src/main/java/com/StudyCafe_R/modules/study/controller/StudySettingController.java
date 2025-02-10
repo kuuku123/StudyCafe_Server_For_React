@@ -1,7 +1,9 @@
 package com.StudyCafe_R.modules.study.controller;
 
 import com.StudyCafe_R.infra.config.converter.LocalDateTimeAdapter;
+import com.StudyCafe_R.infra.util.MyConstants;
 import com.StudyCafe_R.modules.account.responseDto.ApiResponse;
+import com.StudyCafe_R.modules.account.service.AccountService;
 import com.StudyCafe_R.modules.study.service.StudyService;
 import com.StudyCafe_R.modules.study.form.StudyDescriptionForm;
 import com.StudyCafe_R.modules.account.CurrentAccount;
@@ -49,6 +51,7 @@ public class StudySettingController {
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
+    private final AccountService accountService;
 
     @GetMapping("/description")
     public String viewStudySetting(@CurrentAccount Account account, @PathVariable String path, Model model) {
@@ -61,7 +64,7 @@ public class StudySettingController {
 
 
     @PostMapping("/update-study")
-    public ResponseEntity<String> newStudySubmit(@CurrentAccount Account account, @RequestBody @Valid StudyForm studyForm, Errors errors, Model model) {
+    public ResponseEntity<String> newStudySubmit(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @RequestBody @Valid StudyForm studyForm, Errors errors, Model model) {
         if (errors.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
             for (FieldError error : errors.getFieldErrors()) {
@@ -70,25 +73,11 @@ public class StudySettingController {
             ApiResponse<Map<String, String>> createStudyFailed = new ApiResponse<>("update Study Failed", HttpStatus.BAD_REQUEST, errorMap);
             return new ResponseEntity<>(new Gson().toJson(createStudyFailed), HttpStatus.BAD_REQUEST);
         }
+        Account account = accountService.getAccount(email);
         Study study = studyConfigService.updateStudyInfo(account, studyForm);
 
         ApiResponse<StudyForm> apiResponse = new ApiResponse<>("study update succeeded", HttpStatus.OK, studyForm);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
-    }
-
-    @PostMapping("/description")
-    public String updateStudyInfo(@CurrentAccount Account account, @PathVariable String path, @Valid StudyDescriptionForm studyDescriptionForm,
-                                  Errors errors, Model model, RedirectAttributes redirectAttributes) {
-        Study study = studyService.getStudyToUpdate(account, path);
-
-        if (errors.hasErrors()) {
-            model.addAttribute(account);
-            model.addAttribute(study);
-            return "study/settings/description";
-        }
-        studyService.updateStudyDescription(study, studyDescriptionForm);
-        redirectAttributes.addFlashAttribute("message", "스터디 소개를 수정했습니다.");
-        return "redirect:/study/" + study.getEncodedPath() + "/settings/description";
     }
 
     @GetMapping(value = "/study-image")
@@ -98,39 +87,9 @@ public class StudySettingController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/banner")
-    public String studyImageForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-        return "study/settings/banner";
-    }
-
-    @PostMapping("/banner")
-    public String studyImageSubmit(@CurrentAccount Account account, @PathVariable String path, String image, RedirectAttributes redirectAttributes) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        studyService.updateStudyImage(study, image);
-        redirectAttributes.addFlashAttribute("message", "스터디 이미지를 수정했습니다.");
-
-        return "redirect:/study/" + study.getEncodedPath() + "/settings/banner";
-    }
-
-    @PostMapping("/banner/enable")
-    public String enableStudyBanner(@CurrentAccount Account account, @PathVariable String path) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        studyService.enableStudyBanner(study);
-        return "redirect:/study/" + study.getEncodedPath() + "/settings/banner";
-    }
-
-    @PostMapping("/banner/disable")
-    public String disableStudyBanner(@CurrentAccount Account account, @PathVariable String path) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        studyService.disableStudyBanner(study);
-        return "redirect:/study/" + study.getEncodedPath() + "/settings/banner";
-    }
 
     @GetMapping("/tags")
-    public ResponseEntity<String> studyTagsForm(@CurrentAccount Account account, @PathVariable String path) throws JsonProcessingException {
+    public ResponseEntity<String> studyTagsForm(@PathVariable String path) throws JsonProcessingException {
         List<TagDto> studyTagDtoList = studyConfigService.getStudyTags(path);
         ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, studyTagDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -138,7 +97,7 @@ public class StudySettingController {
 
     @PostMapping(value = "/tags/add")
     @ResponseBody
-    public ResponseEntity<String> addTag(@CurrentAccount Account account, @PathVariable String path,
+    public ResponseEntity<String> addTag(@PathVariable String path,
                                          @RequestBody List<TagForm> tagFormList) {
         studyConfigService.addTag(path, tagFormList);
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, null);
@@ -147,14 +106,14 @@ public class StudySettingController {
 
     @PostMapping("/tags/remove")
     @ResponseBody
-    public ResponseEntity<String> removeTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
+    public ResponseEntity<String> removeTag(@PathVariable String path, @RequestBody TagForm tagForm) {
         studyConfigService.removeTag(path, tagForm);
         ApiResponse<Object> apiResponse = new ApiResponse<>("tag removed", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
     @GetMapping("/zones")
-    public ResponseEntity<String> studyZonesForm(@CurrentAccount Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+    public ResponseEntity<String> studyZonesForm(@PathVariable String path, Model model) throws JsonProcessingException {
         List<ZoneDto> zoneDtoList = studyConfigService.getStudyZones(path);
         ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("tag added", HttpStatus.OK, zoneDtoList);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
@@ -162,7 +121,7 @@ public class StudySettingController {
 
     @PostMapping("/zones/add")
     @ResponseBody
-    public ResponseEntity<String> addZone(@CurrentAccount Account account, @PathVariable String path,
+    public ResponseEntity<String> addZone(@PathVariable String path,
                                           @RequestBody List<ZoneForm> zoneFormList) {
         studyConfigService.addZone(path, zoneFormList);
         ApiResponse<Object> apiResponse = new ApiResponse<>("zone added", HttpStatus.OK, null);
@@ -171,23 +130,16 @@ public class StudySettingController {
 
     @PostMapping("/zones/remove")
     @ResponseBody
-    public ResponseEntity<String> removeZone(@CurrentAccount Account account, @PathVariable String path,
+    public ResponseEntity<String> removeZone(@PathVariable String path,
                                              @RequestBody ZoneForm zoneForm) {
         studyConfigService.removeZone(path, zoneForm);
         ApiResponse<Object> apiResponse = new ApiResponse<>("zone removed", HttpStatus.OK, null);
         return new ResponseEntity<>(gson.toJson(apiResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/study")
-    public String studySettingForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-        return "study/settings/study";
-    }
-
     @PostMapping("/publish")
-    public ResponseEntity<String> publishStudy(@CurrentAccount Account account, @PathVariable String path) {
+    public ResponseEntity<String> publishStudy(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @PathVariable String path) {
+        Account account = accountService.getAccount(email);
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
         ApiResponse<Boolean> apiResponse = new ApiResponse<>("study published", HttpStatus.OK, study.isPublished());

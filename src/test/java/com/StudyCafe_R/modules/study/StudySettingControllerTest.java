@@ -43,7 +43,6 @@ class StudySettingControllerTest extends AbstractContainerBaseTest {
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.setNickname("tony");
         signUpRequest.setEmail("tony@email.com");
-        signUpRequest.setPassword("12345678");
         accountService.processNewAccount(signUpRequest);
 
     }

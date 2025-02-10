@@ -1,5 +1,6 @@
 package com.StudyCafe_R.modules.account.controller;
 
+import com.StudyCafe_R.infra.util.MyConstants;
 import com.StudyCafe_R.modules.account.CurrentAccount;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.modules.account.dto.*;
@@ -88,7 +89,8 @@ public class SettingsController {
     }
 
     @PostMapping(PROFILE)
-    public ResponseEntity<String> updateProfile(@CurrentAccount Account account, @Valid @RequestBody Profile profile) {
+    public ResponseEntity<String> updateProfile(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @Valid @RequestBody Profile profile) {
+        Account account = accountService.getAccount(email);
         accountService.updateProfile(account, profile);
         ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
@@ -159,7 +161,8 @@ public class SettingsController {
 //    }
 
     @GetMapping(TAGS)
-    public ResponseEntity<String> getTags(@CurrentAccount Account account) {
+    public ResponseEntity<String> getTags(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email) {
+        Account account = accountService.getAccount(email);
         List<TagDto> tagDtos = accountService.getTags(account);
         ApiResponse<List<TagDto>> apiResponse = new ApiResponse<>("get tags complete", HttpStatus.OK, tagDtos);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
@@ -167,7 +170,8 @@ public class SettingsController {
 
     @PostMapping(TAGS + "/add")
     @ResponseBody
-    public ResponseEntity<String> addTag(@CurrentAccount Account account, Model model, @RequestBody List<TagForm> tagFormList) {
+    public ResponseEntity<String> addTag(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, Model model, @RequestBody List<TagForm> tagFormList) {
+        Account account = accountService.getAccount(email);
         List<TagDto> tagDtos = new ArrayList<>();
         for (TagForm tagForm : tagFormList) {
             Tag tag = tagService.findOrCreateNew(tagForm.getTitle());
@@ -183,7 +187,8 @@ public class SettingsController {
 
     @PostMapping(TAGS + "/remove")
     @ResponseBody
-    public ResponseEntity removeTag(@CurrentAccount Account account, Model model, @RequestBody TagForm tagForm) {
+    public ResponseEntity removeTag(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, Model model, @RequestBody TagForm tagForm) {
+        Account account = accountService.getAccount(email);
         String title = tagForm.getTitle();
         Optional<Tag> tag = tagRepository.findByTitle(title);
         if (tag.isEmpty()) {
@@ -196,7 +201,8 @@ public class SettingsController {
     }
 
     @GetMapping(ZONES)
-    public ResponseEntity<String> getZones(@CurrentAccount Account account) throws JsonProcessingException {
+    public ResponseEntity<String> getZones(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email) throws JsonProcessingException {
+        Account account = accountService.getAccount(email);
         List<ZoneDto> accountZones = accountService.getZones(account);
         ApiResponse<List<ZoneDto>> apiResponse = new ApiResponse<>("get tags complete", HttpStatus.OK, accountZones);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
@@ -204,7 +210,8 @@ public class SettingsController {
 
     @PostMapping(ZONES + "/add")
     @ResponseBody
-    public ResponseEntity addZone(@CurrentAccount Account account, @RequestBody List<ZoneForm> zoneFormList) {
+    public ResponseEntity addZone(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @RequestBody List<ZoneForm> zoneFormList) {
+        Account account = accountService.getAccount(email);
         List<ZoneDto> zoneDtos = new ArrayList<>();
         for (ZoneForm zoneForm : zoneFormList) {
             Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
@@ -220,7 +227,8 @@ public class SettingsController {
 
     @PostMapping(ZONES + "/remove")
     @ResponseBody
-    public ResponseEntity removeZone(@CurrentAccount Account account, @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity removeZone(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @RequestBody ZoneForm zoneForm) {
+        Account account = accountService.getAccount(email);
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if (zone == null) {
             return ResponseEntity.badRequest().build();
@@ -230,6 +238,4 @@ public class SettingsController {
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("zone remove complete", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
-
-
 }
