@@ -9,16 +9,16 @@ mvn clean package -DskipTests
 
 # Step 2: Build the Docker image
 echo "Building Docker image..."
-docker build -t studycafe_server_for_react .
+docker build -t study-service .
 
 # Step 3: Tag the Docker image
 echo "Tagging Docker image..."
-docker tag studycafe_server_for_react:latest kuuku123/studycafe_server_for_react:latest
+docker tag study-service:latest kuuku123/study-service:latest
 
 # Step 4: Push the Docker image to Docker Hub (if logged in)
 if docker info | grep -q "Username"; then
   echo "Pushing Docker image to Docker Hub..."
-  docker push kuuku123/studycafe_server_for_react:latest
+  docker push kuuku123/study-service:latest
 else
   echo "Not logged into Docker. Skipping Docker image push."
 fi

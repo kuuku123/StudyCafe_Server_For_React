@@ -15,12 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,7 +55,6 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 폼 조회")
     void createStudyForm() throws Exception {
         mockMvc.perform(get("/new-study"))
@@ -69,15 +65,13 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 - 완료")
     void createStudy_success() throws Exception {
         mockMvc.perform(post("/new-study")
                         .param("path", "test-path")
                         .param("title", "study title")
                         .param("shortDescription", "short description of a study")
-                        .param("fullDescription", "full description of a study")
-                        .with(csrf()))
+                        .param("fullDescription", "full description of a study"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/study/test-path"));
 
@@ -89,15 +83,13 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 개설 - 실패")
     void createStudy_fail() throws Exception {
         mockMvc.perform(post("/new-study")
                         .param("path", "wrong path")
                         .param("title", "study title")
                         .param("shortDescription", "short description of a study")
-                        .param("fullDescription", "full description of a study")
-                        .with(csrf()))
+                        .param("fullDescription", "full description of a study"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("study/form"))
                 .andExpect(model().hasErrors())
@@ -109,7 +101,6 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 조회")
     void viewStudy() throws Exception {
         Study study = new Study();
@@ -128,7 +119,6 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 가입")
     void joinStudy() throws Exception {
         Account tony = accountFactory.createAccount("tony-test");
@@ -144,7 +134,6 @@ public class StudyControllerTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    @WithUserDetails(value = "tony", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("스터디 탈퇴")
     void leaveStudy() throws Exception {
         Account tony = accountFactory.createAccount("tony-test");

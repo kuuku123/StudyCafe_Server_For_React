@@ -19,16 +19,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
 import static com.StudyCafe_R.modules.account.controller.SettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,8 +38,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     AccountService accountService;
     @Autowired
     AccountRepository accountRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
     @Autowired
     ObjectMapper objectMapper;
 
@@ -70,7 +64,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     }
 
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("태그 수정 폼")
     @Test
     void updateTagForm() throws Exception {
@@ -82,7 +75,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     }
 
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("계정에 태그 추가")
     @Test
     void addTag() throws Exception {
@@ -92,8 +84,7 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
 
         mockMvc.perform(post(ROOT + SETTINGS + TAGS +"/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tagForm))
-                .with(csrf()))
+                .content(objectMapper.writeValueAsString(tagForm)))
                 .andExpect(status().isOk());
 
         Optional<Tag> newTag = tagRepository.findByTitle("newTag");
@@ -103,7 +94,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     }
 
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("계정에 태그 삭제")
     @Test
     void removeTag() throws Exception {
@@ -119,14 +109,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
 
         mockMvc.perform(post(ROOT + SETTINGS + TAGS +"/remove")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tagForm))
-                        .with(csrf()))
+                        .content(objectMapper.writeValueAsString(tagForm)))
                 .andExpect(status().isOk());
 
         assertFalse(tony.getAccountTagSet().stream().anyMatch(ac -> ac.getTag() == newTag));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("닉네임 수정 폼")
     @Test
     void updateAccountForm() throws Exception {
@@ -136,14 +124,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("nicknameForm"));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("닉네임 수정하기 - 입력값 정상")
     @Test
     void updateAccount_success() throws Exception {
         String newNickname = "whiteship";
         mockMvc.perform(post(ROOT + SETTINGS + ACCOUNT)
-                        .param("nickname", newNickname)
-                        .with(csrf()))
+                        .param("nickname", newNickname))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl( ROOT+SETTINGS + ACCOUNT))
                 .andExpect(flash().attributeExists("message"));
@@ -151,21 +137,18 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         assertNotNull(accountRepository.findByNickname("whiteship"));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("닉네임 수정하기 - 입력값 에러")
     @Test
     void updateAccount_failure() throws Exception {
         String newNickname = "¯\\_(ツ)_/¯";
         mockMvc.perform(post(ROOT + SETTINGS + ACCOUNT)
-                        .param("nickname", newNickname)
-                        .with(csrf()))
+                        .param("nickname", newNickname))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS + ACCOUNT))
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attributeExists("nicknameForm"));
     }
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("프로필 수정 폼 요청")
     @Test
     void updateProfileForm() throws Exception {
@@ -177,14 +160,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
     }
 
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("프로필 수정 하기 - 입력값 정상")
     @Test
     void updateProfile() throws Exception {
         String bio = "짧은 소개를 수정하는 경우";
         mockMvc.perform(post(ROOT + SETTINGS + PROFILE)
-                .param("bio",  bio)
-                        .with(csrf()))
+                .param("bio",  bio))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(ROOT+SETTINGS + PROFILE))
                 .andExpect(flash().attributeExists("message"));
@@ -193,14 +174,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         assertEquals(bio,tony.getBio());
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("프로필 수정 하기 - 입력값 에러")
     @Test
     void updateProfile_error() throws Exception {
         String bio = "짧은짧은 소개를 수정하는 경우짧은 소개를 수정하는 경우짧은 소개를 수정하는 경우짧은 소개를 수정하는 경우짧은 소개를 수정하는 경우 소개를 수정하는 경우";
         mockMvc.perform(post(ROOT + SETTINGS + PROFILE)
-                        .param("bio",  bio)
-                        .with(csrf()))
+                        .param("bio",  bio))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS + PROFILE))
                 .andExpect(model().attributeExists("account"))
@@ -211,7 +190,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         assertNotEquals(bio,tony.getBio());
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("패스워드 수정 폼")
     @Test
     void updatePassword_form() throws Exception {
@@ -221,14 +199,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("passwordForm"));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("패스워드 수정 - 입력값 정상")
     @Test
     void updatePassword_success() throws Exception {
         mockMvc.perform(post(ROOT + SETTINGS + PASSWORD)
                         .param("newPassword", "12345678")
-                        .param("newPasswordConfirm", "12345678")
-                        .with(csrf()))
+                        .param("newPasswordConfirm", "12345678"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(ROOT+SETTINGS+PASSWORD))
                 .andExpect(flash().attributeExists("message"));
@@ -236,14 +212,12 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
         Account tony = accountRepository.findByNickname("tony");
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("패스워드 수정 - 입력값 에러 - 패스워드 불일치")
     @Test
     void updatePassword_fail() throws Exception {
         mockMvc.perform(post(ROOT + SETTINGS + PASSWORD)
                         .param("newPassword", "12345678")
-                        .param("newPasswordConfirm", "11111111")
-                        .with(csrf()))
+                        .param("newPasswordConfirm", "11111111"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS + PASSWORD))
                 .andExpect(model().hasErrors())
@@ -251,7 +225,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("account"));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("계정의 지역 정보 수정 폼")
     @Test
     void updateZonesForm() throws Exception {
@@ -262,7 +235,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("zones"));
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("계정의 지역 정보 추가")
     @Test
     void addZone() throws Exception {
@@ -272,8 +244,7 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
 
         mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/add")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(zoneForm))
-                        .with(csrf()))
+                        .content(objectMapper.writeValueAsString(zoneForm)))
                 .andExpect(status().isOk());
 
         Account tony = accountRepository.findByNickname("tony");
@@ -283,7 +254,6 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
 
     }
 
-    @WithUserDetails(value = "tony",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("계정의 지역 정보 추가")
     @Test
     void removeZone() throws Exception {
@@ -297,8 +267,7 @@ class SettingsControllerTest extends AbstractContainerBaseTest {
 
         mockMvc.perform(post(ROOT + SETTINGS + ZONES + "/remove")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(zoneForm))
-                        .with(csrf()))
+                        .content(objectMapper.writeValueAsString(zoneForm)))
                 .andExpect(status().isOk());
 
         assertFalse(tony.getAccountZoneSet().stream().anyMatch(accountZone -> accountZone.getZone() == zone));
