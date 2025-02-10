@@ -21,21 +21,6 @@ services:
     networks:
       - test_network
 
-  redis-test:
-    image: "redis:alpine"
-    container_name: redis-test 
-    ports:
-      - "16379:6379"
-    volumes:
-      - ~/data/redis:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - test_network
-
   controller-1:
     image: apache/kafka:latest
     container_name: controller-1
@@ -81,8 +66,6 @@ services:
     container_name: spring-app
     depends_on:
       mysql-test:
-        condition: service_healthy
-      redis-test:
         condition: service_healthy
       broker-1:
         condition: service_healthy

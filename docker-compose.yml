@@ -15,15 +15,6 @@ services:
     volumes:
       - ~/data/mysql-test:/var/lib/mysql
 
-  redis:
-    image: "redis:alpine"
-    container_name: redis-test 
-    ports:
-      - "16379:6379"
-    restart: always
-    volumes:
-      - ~/data/redis:/data
-
   controller-1:
     image: apache/kafka:latest
     container_name: controller-1
