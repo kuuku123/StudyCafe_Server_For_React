@@ -29,10 +29,6 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-  data:
-    redis:
-      host: localhost
-      port: 16379
 
   kafka:
     bootstrap-servers: localhost:19092
@@ -76,12 +72,6 @@ server:
         http-only: false
         name: StudyCafe_Session_Cookie
       timeout: 30m
-  session:
-    store-type: redis
 
 app:
   host: http://localhost:8081
-
-jwt:
-  secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
-  expiration_time: 1000000
