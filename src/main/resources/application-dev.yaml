@@ -11,7 +11,7 @@ spring:
     #    show-sql: true
     properties:
       hibernate:
-        format_sql: true
+#        format_sql: true
     open-in-view: true
   mail:
     host: smtp.gmail.com
@@ -52,14 +52,12 @@ front:
 logging:
   level:
     org:
-      springframework:
-        security: DEBUG
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
 
 jasypt:
   encryptor:

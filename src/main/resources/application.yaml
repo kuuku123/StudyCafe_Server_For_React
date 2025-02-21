@@ -1,4 +1,3 @@
-
 server:
   tomcat:
     max-http-form-post-size: 5MB
@@ -7,28 +6,10 @@ spring:
   profiles:
     active: local
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-#    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
-
   thymeleaf:
     cache: false
 
 kafka:
   topic:
     notification: notification_topic
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    chat: chat_topic
