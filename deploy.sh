@@ -9,7 +9,7 @@ mvn clean package -DskipTests
 
 # Step 2: Build the Docker image
 echo "Building Docker image..."
-docker build -t study-service .
+docker buildx build --platform linux/amd64,linux/arm64 --load -t study-service .
 
 # Step 3: Tag the Docker image
 echo "Tagging Docker image..."
