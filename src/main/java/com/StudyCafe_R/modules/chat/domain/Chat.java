@@ -17,6 +17,7 @@ public class Chat {
     @Id
     private String id;
     private String studyPath;
+    private String nickname;
     private String email;
     private String text;
     private LocalDateTime createdAt;

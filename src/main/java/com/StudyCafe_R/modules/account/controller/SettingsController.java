@@ -80,7 +80,7 @@ public class SettingsController {
     public ResponseEntity<String> updateProfile(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email, @Valid @RequestBody Profile profile) {
         Account account = accountService.getAccount(email);
         accountService.updateProfile(account, profile);
-        ApiResponse<ByteArrayResource> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK, null);
+        ApiResponse<String> apiResponse = new ApiResponse<>("update complete", HttpStatus.OK, null);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
