@@ -40,6 +40,15 @@ public class AccountController {
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
 
+    @GetMapping("/profile/{email}")
+    public ResponseEntity<String> otherProfile(@PathVariable("email") String email) {
+        Account account = accountService.getAccount(email);
+        AccountDto accountDto = accountService.getAccountDto(account);
+        ApiResponse<AccountDto> apiResponse = new ApiResponse<>("profile", HttpStatus.OK, accountDto);
+
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
     @ResponseBody
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUpSubmit(@RequestBody SignUpRequest signUpRequest, HttpServletRequest request, HttpServletResponse response) {

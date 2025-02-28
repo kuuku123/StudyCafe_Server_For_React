@@ -53,8 +53,18 @@ public class AccountStudyManagerController {
         ApiResponse<List<AccountDto>> apiResponse = new ApiResponse<>("studyMembers", HttpStatus.OK, studyManagers);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
-    @GetMapping("/{path}/isManager")
-    public ResponseEntity<String> isManager(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email ,@PathVariable String path) {
+
+    @GetMapping("/{path}/amiManager")
+    public ResponseEntity<String> amiManager(@RequestHeader(MyConstants.HEADER_USER_EMAIL) String email ,@PathVariable String path) {
+        Study study = studyService.getStudy(path);
+        Account account = accountService.getAccount(email);
+        boolean isManager= accountStudyManagerService.isManager(study, account);
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("isManager", HttpStatus.OK, isManager);
+        return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/{path}/isManager/{email}")
+    public ResponseEntity<String> isManager(@PathVariable String path , @PathVariable String email) {
         Study study = studyService.getStudy(path);
         Account account = accountService.getAccount(email);
         boolean isManager= accountStudyManagerService.isManager(study, account);
