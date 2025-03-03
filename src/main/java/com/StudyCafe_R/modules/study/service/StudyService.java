@@ -129,10 +129,6 @@ public class StudyService {
     }
 
     public boolean isValidPath(String newPath) {
-        if (!newPath.matches(StudyForm.VALID_PATH_PATTERN)) {
-            return false;
-        }
-
         return !studyRepository.existsByPath(newPath);
     }
 
