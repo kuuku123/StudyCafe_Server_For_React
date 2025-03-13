@@ -6,7 +6,8 @@ class JasyptConfigTest {
 
     @Test
     void jasycrpt() {
-        String url = "jdbc:mysql://mysql-test:3306/test?serverTimezone=UTC&characterEncoding=UTF-8";
+//        String url = "jdbc:mysql://mysql-test:3306/test?serverTimezone=UTC&characterEncoding=UTF-8";
+        String url = "jdbc:mysql://localhost:13306/test?serverTimezone=UTC&characterEncoding=UTF-8";
         String username = "root";
         String password = "1234";
         String mail = "tonydevpc123@gmail.com";
