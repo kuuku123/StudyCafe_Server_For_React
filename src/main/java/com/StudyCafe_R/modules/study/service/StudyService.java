@@ -95,10 +95,6 @@ public class StudyService {
         eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디 소개를 수정했습니다."));
     }
 
-    public void updateStudyImage(Study study, String image) {
-        study.setImage(image);
-    }
-
     public void enableStudyBanner(Study study) {
         study.setUseBanner(true);
     }

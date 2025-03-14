@@ -11,6 +11,7 @@ import com.StudyCafe_R.modules.tag.dto.TagDto;
 import com.StudyCafe_R.modules.zone.Zone;
 import com.StudyCafe_R.modules.zone.dto.ZoneDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -64,6 +65,10 @@ public class StudyJoinService {
         studyJoinDto.setShortDescription(study.getShortDescription());
         studyJoinDto.setTagDtoList(tagDtoList);
         studyJoinDto.setZoneDtoList(zoneDtoList);
+        byte[] studyImage = study.getStudyImage();
+        String encodedImage = Base64.encodeBase64String(studyImage);
+        studyJoinDto.setStudyImage(encodedImage);
+        studyJoinDto.setPublished(study.isPublished());
 
         return studyJoinDto;
     }

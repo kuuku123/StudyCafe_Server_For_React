@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudyDto {
 
+    private Long id;
     private String title;
     private String path;
     private String shortDescription;

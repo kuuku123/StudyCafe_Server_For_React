@@ -94,7 +94,9 @@ public class StudyJoinController {
         }
         for (ZoneForm zoneForm : zoneFormList) {
             Zone byCityAndProvince = zoneService.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
-            zoneList.add(byCityAndProvince);
+            if (byCityAndProvince != null) {
+                zoneList.add(byCityAndProvince);
+            }
         }
         Result result = new Result(pageRequestDto, tagList, zoneList);
         return result;

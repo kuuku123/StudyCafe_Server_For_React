@@ -49,8 +49,7 @@ public class Study {
     @Column(columnDefinition = "TEXT")
     private String fullDescriptionText;
 
-    @Lob @Basic(fetch = FetchType.EAGER)
-    private String image;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "study",cascade = CascadeType.ALL)
     @Builder.Default
@@ -128,9 +127,6 @@ public class Study {
         zones.removeIf(sz -> sz.getZone().equals(zone));
     }
 
-    public String getImage() {
-        return image != null ? image : "/images/1.jpg";
-    }
 
 //    public boolean isJoinable(UserAccount userAccount) {
 //        return this.isPublished() && this.isRecruiting() && !this.members.stream()
