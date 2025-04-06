@@ -58,14 +58,4 @@ public class AccountController {
         ApiResponse<AccountDto> apiResponse = new ApiResponse<>("sign up succeed", HttpStatus.OK, accountDto);
         return new ResponseEntity<>(new Gson().toJson(apiResponse), HttpStatus.OK);
     }
-
-
-//
-//    @GetMapping("/check-email")
-//    public String checkEmail(@CurrentAccount Account account, Model model) {
-//        model.addAttribute("email", account.getEmail());
-//        return "email/check-email";
-//    }
-//
-
 }

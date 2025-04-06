@@ -62,9 +62,6 @@ public class SettingsController {
     private final TagRepository tagRepository;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
-    private final ObjectMapper objectMapper;
-    private final ZoneService zoneService;
-
 
     @InitBinder("passwordForm")
     public void passwordFormInitBinder(WebDataBinder webDataBinder) {
