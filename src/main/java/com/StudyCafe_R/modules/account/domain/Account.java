@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -59,7 +58,6 @@ public class Account implements Serializable {
 
     @Builder.Default
     private boolean studyUpdatedByWeb = true;
-    private LocalDateTime emailCheckTokenGeneratedAt;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -85,26 +83,6 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<Enrollment> enrollments = new HashSet<>();
-
-
-//    public void generateEmailCheckToken() {
-//        this.emailCheckToken = UUID.randomUUID().toString();
-//        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
-//    }
-//
-//    public void completeSignUp() {
-//        this.emailVerified = true;
-//        this.joinedAt = LocalDateTime.now();
-//    }
-//
-//    public boolean isValidToken(String token) {
-//        return this.emailCheckToken.equals(token);
-//    }
-//
-//    public boolean canSendConfirmationEmail() {
-////        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
-//        return true;
-//    }
 
     public void addAccountTag(AccountTag accountTag) {
         this.accountTagSet.add(accountTag);
