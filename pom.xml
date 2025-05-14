@@ -12,6 +12,11 @@
     <groupId>com.StudyCafe_R</groupId>
     <artifactId>StudyCafe_Server_For_React</artifactId>
     <version>1.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>StudyCafeDomain</module>
+        <module>InfraStructure</module>
+    </modules>
 
     <properties>
         <java.version>21</java.version>
