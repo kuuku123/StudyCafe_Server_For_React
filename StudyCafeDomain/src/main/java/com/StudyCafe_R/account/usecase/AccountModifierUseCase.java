@@ -2,10 +2,12 @@ package com.StudyCafe_R.account.usecase;
 
 import com.StudyCafe_R.account.domain.Account;
 import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
+import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
+import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
+import com.StudyCafe_R.account.usecase.command.UpdateProfileCommand;
+import com.StudyCafe_R.util.ImageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONUtil;
-import org.modelmapper.ModelMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,15 +20,18 @@ public class AccountModifierUseCase implements AccountModifierInputPort{
 
     private final AccountModifierPresenterOutputPort presenter;
     private final AccountPersistenceOperationsOutputPort persistenceOps;
-    private final ModelMapper modelMapper;
+    private final ImageProvider imageProvider;
 
 
     @Override
     public void registerAccount(CreateAccountCommand command) {
-        Account account = modelMapper.map(command, Account.class);
+        Account account = Account.builder()
+                .nickname(command.getNickname())
+                .email(command.getEmail())
+                .build();
 
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/images/anonymous.JPG")) {
-            byte[] anonymousProfileJpg = inputStream.readAllBytes();
+        try {
+            byte[] anonymousProfileJpg = imageProvider.load();
             account.updateProfileImage(anonymousProfileJpg);
         } catch (IOException e) {
             throw new RuntimeException(e);

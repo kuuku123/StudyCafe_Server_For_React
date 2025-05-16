@@ -1,20 +1,21 @@
 package com.StudyCafe_R.account.usecase;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.lenient;
 
 import com.StudyCafe_R.account.domain.Account;
 import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
+
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
+import com.StudyCafe_R.util.ClasspathAnonymousImageProvider;
+import com.StudyCafe_R.util.ImageProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import static org.mockito.Mockito.*;
 
@@ -27,80 +28,75 @@ class AccountModifierUseCaseTest {
   @Mock
   private AccountPersistenceOperationsOutputPort persistenceOps;
 
-  @Mock
-  private ModelMapper modelMapper;
+  @Spy
+  private ClasspathAnonymousImageProvider imageProvider
+          = new ClasspathAnonymousImageProvider("static/images/anonymous.JPG");
 
   @InjectMocks
   private AccountModifierUseCase useCase;
 
+  @Captor
+  private ArgumentCaptor<Account> accountCaptor;
+
   private Account dummyAccount;
-  private byte[] anonymousBytes;
 
   @BeforeEach
-  void setUp() throws Exception {
-    // Initialize mocks
-    MockitoAnnotations.openMocks(this);
-
+  void setUp() {
     // Prepare a dummy domain account instance
-    dummyAccount = new Account(/* supply required ctor args if any */);
-    // lenient stub so that unused stubbings don't fail
-    lenient().when(modelMapper.map(any(CreateAccountCommand.class), eq(Account.class)))
-      .thenReturn(dummyAccount);
-
-    // Pre-load the same anonymous image bytes that the use case will load
-    try (InputStream is =
-      getClass().getClassLoader().getResourceAsStream("static/images/anonymous.JPG")) {
-      assertNotNull(is, "Test resource not found: static/images/anonymous.JPG");
-      anonymousBytes = is.readAllBytes();
-    }
+    dummyAccount = Account.builder()
+            .id(1L)
+            .bio("default")
+            .email("tony@example.com")
+            .nickname("tony")
+            .build();
   }
 
   @Test
-  void whenRegisterAccount_thenAccountIsMappedAndSavedWithAnonymousImage() {
+  void whenRegisterAccount_thenAccountIsSavedWithAnonymousImage() throws Exception {
     // given
-    CreateAccountCommand cmd = new CreateAccountCommand(/* populate fields */);
+    byte[] anonymousBytes;
+    CreateAccountCommand cmd = new CreateAccountCommand("tony", "tony@example.com");
+
+    try {
+      anonymousBytes = imageProvider.load();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 
     // when
     useCase.registerAccount(cmd);
 
     // then
-    // 1. modelMapper should have been called to map the command
-    verify(modelMapper).map(cmd, Account.class);
+    // capture the Account passed to save(...)
+    verify(persistenceOps,times(1)).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
 
-    // 2. the account’s profile image bytes should match the anonymous JPG
-    assertArrayEquals(anonymousBytes, dummyAccount.getProfileImage(),
-      "Profile image bytes should be set from anonymous.JPG");
-
-    // 3. persistenceOps.save must be invoked with the same domain object
-    verify(persistenceOps).save(dummyAccount);
+    // assert that the captured account’s profileImage is the anonymous JPG
+    assertArrayEquals(
+            anonymousBytes,
+            savedAccount.getProfileImage(),
+            "Profile image bytes should be set from anonymous.JPG"
+    );
   }
 
   @Test
-  void whenResourceLoadFails_thenRuntimeExceptionIsThrown() throws Exception {
-    // given: spy on the use case class to throw IOException
-    AccountModifierUseCase spyUseCase = spy(useCase);
-    doThrow(new IOException("oops"))
-      .when(spyUseCase)
-      .getClassLoaderStream(eq("static/images/anonymous.JPG"));
+  void whenRegisterAccount_andAnonymousImageMissing_thenExceptionIsThrown() throws Exception {
+    // simulate load failure stub
+    when(imageProvider.load()).thenThrow(new IOException("not there"));
 
-    CreateAccountCommand cmd = new CreateAccountCommand(/* fields */);
+    CreateAccountCommand cmd = new CreateAccountCommand("tony", "tony@example.com");
+    RuntimeException ex = assertThrows(
+            RuntimeException.class,
+            () -> useCase.registerAccount(cmd),
+            "Expected a RuntimeException when image loading fails"
+    );
 
-    // when / then
-    RuntimeException ex = assertThrows(RuntimeException.class,
-      () -> spyUseCase.registerAccount(cmd));
+    assertTrue(
+            ex.getMessage().contains("not there"),
+            "Exception message should mention default image load failure"
+    );
 
-    assertTrue(ex.getCause() instanceof IOException);
-    assertEquals("oops", ex.getCause().getMessage());
+    // and nothing should have been saved
+    verifyNoInteractions(persistenceOps);
   }
-
-// Helper in the UseCase to ease stubbing classloader in tests
-// You’ll need to add this to your AccountModifierUseCase for the second test:
-//
-// protected InputStream getClassLoaderStream(String path) throws IOException {
-//     InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-//     if (is == null) {
-//         throw new IOException("Resource not found: " + path);
-//     }
-//     return is;
-// }
 }

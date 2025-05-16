@@ -81,6 +81,12 @@ public class Account {
         this.studyUpdatedByEmail  = studyUpdatedByEmail;
         this.studyUpdatedByWeb    = studyUpdatedByWeb;
     }
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
     // add and remove tag from account
     // add and remove zone from account
+
 }
