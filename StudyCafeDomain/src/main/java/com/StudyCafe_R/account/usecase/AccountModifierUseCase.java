@@ -63,8 +63,14 @@ public class AccountModifierUseCase implements AccountModifierInputPort{
 
     @Override
     public void updateNotifications(UpdateNotificationCommand command) {
-
-
+        Long accountId = command.getAccountId();
+        Optional<Account> optionalAccount= persistenceOps.findById(accountId);
+        Account account = optionalAccount.orElseThrow(
+          () -> new AccountNotFoundException(accountId, "updateNotifications"));
+        account.updateNotificationDetails(command.isStudyCreatedByEmail(), command.isStudyUpdatedByEmail(),
+          command.isStudyEnrollmentResultByEmail(), command.isStudyEnrollmentResultByWeb(),
+          command.isStudyUpdatedByEmail(), command.isStudyUpdatedByWeb());
+        persistenceOps.save(account);
     }
 
     @Override

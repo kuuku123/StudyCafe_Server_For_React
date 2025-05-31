@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 //AggregateRoot
+@Getter
 public class Account {
 
     private Long id;
@@ -62,7 +63,7 @@ public class Account {
     ) {
         this.bio = bio;
         this.url = url;
-        this.occupation = url;
+        this.occupation = occupation;
         this.location = location;
     }
 

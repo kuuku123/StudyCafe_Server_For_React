@@ -1,9 +1,13 @@
 package com.StudyCafe_R.account.usecase.command;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class UpdateNotificationCommand {
+
+    private Long accountId;
 
     private boolean studyCreatedByEmail;
 

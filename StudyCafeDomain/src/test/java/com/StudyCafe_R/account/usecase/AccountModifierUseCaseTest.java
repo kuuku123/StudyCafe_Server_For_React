@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.StudyCafe_R.account.domain.Account;
 import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
 
+import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
 import java.io.IOException;
 import java.io.InputStream;
 
 import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
 import com.StudyCafe_R.util.ClasspathAnonymousImageProvider;
 import com.StudyCafe_R.util.ImageProvider;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,4 +101,47 @@ class AccountModifierUseCaseTest {
     // and nothing should have been saved
     verifyNoInteractions(persistenceOps);
   }
+
+  @Test
+  void whenUpdateNotification_thenNotificationStatusIsChanged() throws Exception {
+
+    // given
+    UpdateNotificationCommand command = new UpdateNotificationCommand(
+      1L,
+      true,   // studyCreatedByEmail
+      false,  // studyUpdatedByEmail
+      true,   // studyEnrollmentResultByEmail
+      false,  // studyEnrollmentResultByWeb
+      false,  // (duplicate) studyUpdatedByEmail
+      true    // studyUpdatedByWeb
+    );
+    when(persistenceOps.findById(1L)).thenReturn(Optional.of(dummyAccount));
+
+    // when
+    useCase.updateNotifications(command);
+
+    // then
+    verify(persistenceOps).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
+
+    assertTrue(savedAccount.isStudyCreatedByEmail(),       "Created‐by‐email flag should be true");
+    assertFalse(savedAccount.isStudyUpdatedByEmail(),      "Updated‐by‐email flag should be false");
+    assertTrue(savedAccount.isStudyEnrollmentResultByEmail(),  "Enrollment‐result‐by‐email flag should be true");
+    assertFalse(savedAccount.isStudyEnrollmentResultByWeb(),   "Enrollment‐result‐by‐web flag should be false");
+    assertFalse(savedAccount.isStudyUpdatedByEmail(),      "Duplicate updated‐by‐email flag should remain false");
+    assertTrue(savedAccount.isStudyUpdatedByWeb(),         "Updated‐by‐web flag should be true");
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 }
