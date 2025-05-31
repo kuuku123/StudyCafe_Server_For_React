@@ -7,11 +7,9 @@ import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
 
 import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
 import java.io.IOException;
-import java.io.InputStream;
 
 import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
 import com.StudyCafe_R.util.ClasspathAnonymousImageProvider;
-import com.StudyCafe_R.util.ImageProvider;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -133,15 +131,136 @@ class AccountModifierUseCaseTest {
 
   }
 
+  @Test
+  void whenAddTag_andAccountExists_thenTagIsAddedAndSaved() {
+    long accountId = dummyAccount.getId();
+    long newTagId = 42L;
 
+    when(persistenceOps.findById(accountId))
+      .thenReturn(Optional.of(dummyAccount));
 
+    useCase.addTag(accountId, newTagId);
 
+    verify(persistenceOps, times(1)).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
+    assertTrue(savedAccount.getTags().contains(newTagId));
+  }
 
+  @Test
+  void whenAddTag_andAccountNotFound_thenThrowExceptionAndNoSave() {
+    long missingAccountId = 999L;
+    long someTagId = 5L;
 
+    when(persistenceOps.findById(missingAccountId))
+      .thenReturn(Optional.empty());
 
+    AccountNotFoundException ex = assertThrows(
+      AccountNotFoundException.class,
+      () -> useCase.addTag(missingAccountId, someTagId)
+    );
+    assertTrue(ex.getMessage().contains("addTag"));
+    verify(persistenceOps, never()).save(any(Account.class));
+  }
 
+  @Test
+  void whenRemoveTag_andAccountExists_thenTagIsRemovedAndSaved() {
+    long accountId = dummyAccount.getId();
+    long existingTagId = 88L;
+    dummyAccount.addTag(existingTagId);
 
+    when(persistenceOps.findById(accountId))
+      .thenReturn(Optional.of(dummyAccount));
 
+    // Precondition: account has that tag
+    assertTrue(dummyAccount.getTags().contains(existingTagId));
+
+    useCase.removeTag(accountId, existingTagId);
+
+    verify(persistenceOps, times(1)).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
+    assertFalse(savedAccount.getTags().contains(existingTagId));
+  }
+
+  @Test
+  void whenRemoveTag_andAccountNotFound_thenThrowExceptionAndNoSave() {
+    long missingAccountId = 999L;
+    long someTagId = 5L;
+
+    when(persistenceOps.findById(missingAccountId))
+      .thenReturn(Optional.empty());
+
+    AccountNotFoundException ex = assertThrows(
+      AccountNotFoundException.class,
+      () -> useCase.removeTag(missingAccountId, someTagId)
+    );
+    assertTrue(ex.getMessage().contains("removeTag"));
+    verify(persistenceOps, never()).save(any(Account.class));
+  }
+
+  @Test
+  void whenAddZone_andAccountExists_thenZoneIsAddedAndSaved() {
+    long accountId = dummyAccount.getId();
+    long newZoneId = 100L;
+
+    when(persistenceOps.findById(accountId))
+      .thenReturn(Optional.of(dummyAccount));
+
+    useCase.addZone(accountId, newZoneId);
+
+    verify(persistenceOps, times(1)).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
+    assertTrue(savedAccount.getZones().contains(newZoneId));
+  }
+
+  @Test
+  void whenAddZone_andAccountNotFound_thenThrowExceptionAndNoSave() {
+    long missingAccountId = 999L;
+    long someZoneId = 7L;
+
+    when(persistenceOps.findById(missingAccountId))
+      .thenReturn(Optional.empty());
+
+    AccountNotFoundException ex = assertThrows(
+      AccountNotFoundException.class,
+      () -> useCase.addZone(missingAccountId, someZoneId)
+    );
+    assertTrue(ex.getMessage().contains("addZone"));
+    verify(persistenceOps, never()).save(any(Account.class));
+  }
+
+  @Test
+  void whenRemoveZone_andAccountExists_thenZoneIsRemovedAndSaved() {
+    long accountId = dummyAccount.getId();
+    long existingZoneId = 50L;
+    dummyAccount.addZone(existingZoneId);
+
+    when(persistenceOps.findById(accountId))
+      .thenReturn(Optional.of(dummyAccount));
+
+    assertTrue(dummyAccount.getZones().contains(existingZoneId));
+
+    useCase.removeZone(accountId, existingZoneId);
+
+    verify(persistenceOps, times(1)).save(accountCaptor.capture());
+    Account savedAccount = accountCaptor.getValue();
+    assertFalse(savedAccount.getZones().contains(existingZoneId));
+  }
+
+  @Test
+  void whenRemoveZone_andAccountNotFound_thenThrowExceptionAndNoSave() {
+    long missingAccountId = 999L;
+    long someZoneId = 7L;
+
+    when(persistenceOps.findById(missingAccountId))
+      .thenReturn(Optional.empty());
+
+    AccountNotFoundException ex = assertThrows(
+      AccountNotFoundException.class,
+      () -> useCase.removeZone(missingAccountId, someZoneId)
+    );
+    assertTrue(ex.getMessage().contains("removeZone"));
+    verify(persistenceOps, never()).save(any(Account.class));
+  }
 
 
 }

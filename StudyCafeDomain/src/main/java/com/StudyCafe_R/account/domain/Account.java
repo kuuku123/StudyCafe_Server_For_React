@@ -39,6 +39,10 @@ public class Account {
 
     private Set<Long> enrollments = new HashSet<>();
 
+    private Set<Long> tags = new HashSet<>();
+
+    private Set<Long> zones = new HashSet<>();
+
 
     @Builder
     public Account(Long id, String email, String nickname, String bio, String url, String occupation, String location) {
@@ -87,7 +91,28 @@ public class Account {
         return profileImage;
     }
 
-    // add and remove tag from account
-    // add and remove zone from account
+    // Called by the use‐case to attach a tag
+    public void addTag(Long tagId) {
+        if (tagId == null) {
+            throw new IllegalArgumentException("tagId must not be null");
+        }
+        tags.add(tagId);
+    }
+
+    public void removeTag(Long tagId) {
+        tags.remove(tagId);
+    }
+
+    // Similarly for zones
+    public void addZone(Long zoneId) {
+        if (zoneId == null) {
+            throw new IllegalArgumentException("zoneId must not be null");
+        }
+        zones.add(zoneId);
+    }
+
+    public void removeZone(Long zoneId) {
+        zones.remove(zoneId);
+    }
 
 }

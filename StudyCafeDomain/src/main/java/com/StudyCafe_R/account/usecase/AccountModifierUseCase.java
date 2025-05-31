@@ -75,21 +75,33 @@ public class AccountModifierUseCase implements AccountModifierInputPort{
 
     @Override
     public void addTag(long accountId, long tagId) {
-
+        Account account = persistenceOps.findById(accountId)
+          .orElseThrow(() -> new AccountNotFoundException(accountId, "addTag"));
+        account.addTag(tagId);
+        persistenceOps.save(account);
     }
 
     @Override
     public void removeTag(long accountId, long tagId) {
-
+        Account account = persistenceOps.findById(accountId)
+          .orElseThrow(() -> new AccountNotFoundException(accountId, "removeTag"));
+        account.removeTag(tagId);
+        persistenceOps.save(account);
     }
 
     @Override
     public void addZone(long accountId, long zoneId) {
-
+        Account account = persistenceOps.findById(accountId)
+          .orElseThrow(() -> new AccountNotFoundException(accountId, "addZone"));
+        account.addZone(zoneId);
+        persistenceOps.save(account);
     }
 
     @Override
     public void removeZone(long accountId, long zoneId) {
-
+        Account account = persistenceOps.findById(accountId)
+          .orElseThrow(() -> new AccountNotFoundException(accountId, "removeZone"));
+        account.removeZone(zoneId);
+        persistenceOps.save(account);
     }
 }
