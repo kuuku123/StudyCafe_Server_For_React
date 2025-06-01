@@ -7,6 +7,7 @@
         <groupId>com.StudyCafe_R</groupId>
         <artifactId>StudyCafe_Server_For_React</artifactId>
         <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>  <!-- points at the parent POM above -->
     </parent>
 
     <artifactId>StudyCafeDomain</artifactId>
@@ -15,6 +16,54 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.dependency.version>5.12.2</junit.dependency.version>
+        <mockito.version>5.18.0</mockito.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JUnit 5 API (compile‐time for tests) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.dependency.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit 5 Engine (to run the tests) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.dependency.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito core (for Mockito annotations like @Mock, ArgumentCaptor) -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito JUnit Jupiter integration (for @ExtendWith(MockitoExtension.class)) -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>
