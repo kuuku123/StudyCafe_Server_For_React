@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.StudyCafe_R.account.domain.Account;
 import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
 
+import com.StudyCafe_R.account.port.transaction.TransactionOperationsOutputPort;
+import com.StudyCafe_R.account.port.transaction.TransactionRunnableWithoutResult;
 import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
 import java.io.IOException;
 
@@ -28,6 +30,10 @@ class AccountModifierUseCaseTest {
   @Mock
   private AccountPersistenceOperationsOutputPort persistenceOps;
 
+  @Mock
+  private TransactionOperationsOutputPort txOps;
+
+
   @Spy
   private ClasspathAnonymousImageProvider imageProvider
           = new ClasspathAnonymousImageProvider("static/images/anonymous.JPG");
@@ -49,6 +55,12 @@ class AccountModifierUseCaseTest {
             .email("tony@example.com")
             .nickname("tony")
             .build();
+
+    doAnswer(invocation -> {
+      TransactionRunnableWithoutResult unitOfWork = invocation.getArgument(0, TransactionRunnableWithoutResult.class);
+      unitOfWork.run();
+      return null;
+    }).when(txOps).doInTransaction(any(TransactionRunnableWithoutResult.class));
   }
 
   @Test
