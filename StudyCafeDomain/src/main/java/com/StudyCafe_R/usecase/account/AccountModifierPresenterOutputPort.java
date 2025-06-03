@@ -1,6 +1,4 @@
-package com.StudyCafe_R.account.usecase;
-
-import com.StudyCafe_R.account.domain.Account;
+package com.StudyCafe_R.usecase.account;
 
 public interface AccountModifierPresenterOutputPort {
 

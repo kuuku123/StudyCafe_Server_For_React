@@ -1,6 +1,6 @@
-package com.StudyCafe_R.account.port.db;
+package com.StudyCafe_R.usecase.port.db;
 
-import com.StudyCafe_R.account.domain.Account;
+import com.StudyCafe_R.domain.Account;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.usecase.command;
+package com.StudyCafe_R.usecase.account.command;
 
 
 import lombok.Data;

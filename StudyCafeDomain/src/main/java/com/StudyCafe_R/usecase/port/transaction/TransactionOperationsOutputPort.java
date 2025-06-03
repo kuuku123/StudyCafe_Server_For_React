@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.port.transaction;
+package com.StudyCafe_R.usecase.port.transaction;
 
 /**
  * Core interface for demarcation of transactional (consistency) boundary.

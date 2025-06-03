@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.port.transaction;
+package com.StudyCafe_R.usecase.port.transaction;
 
 /**
  * Functional interface which will be executed by {@linkplain TransactionOperationsOutputPort}

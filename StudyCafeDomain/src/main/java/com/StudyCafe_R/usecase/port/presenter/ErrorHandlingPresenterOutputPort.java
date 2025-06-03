@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.port;
+package com.StudyCafe_R.usecase.port.presenter;
 
 public interface ErrorHandlingPresenterOutputPort {
 

@@ -2,15 +2,18 @@ package com.StudyCafe_R.account.usecase;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.StudyCafe_R.account.domain.Account;
-import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
+import com.StudyCafe_R.domain.Account;
+import com.StudyCafe_R.usecase.port.db.AccountPersistenceOperationsOutputPort;
 
-import com.StudyCafe_R.account.port.transaction.TransactionOperationsOutputPort;
-import com.StudyCafe_R.account.port.transaction.TransactionRunnableWithoutResult;
-import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
+import com.StudyCafe_R.usecase.port.transaction.TransactionOperationsOutputPort;
+import com.StudyCafe_R.usecase.port.transaction.TransactionRunnableWithoutResult;
+import com.StudyCafe_R.usecase.account.AccountModifierPresenterOutputPort;
+import com.StudyCafe_R.usecase.account.AccountModifierUseCase;
+import com.StudyCafe_R.usecase.account.AccountNotFoundException;
+import com.StudyCafe_R.usecase.account.command.UpdateNotificationCommand;
 import java.io.IOException;
 
-import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
+import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
 import com.StudyCafe_R.util.ClasspathAnonymousImageProvider;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

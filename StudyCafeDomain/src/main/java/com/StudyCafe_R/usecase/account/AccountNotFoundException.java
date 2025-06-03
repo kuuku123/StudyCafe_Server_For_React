@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.usecase;
+package com.StudyCafe_R.usecase.account;
 
 public class AccountNotFoundException extends RuntimeException{
 

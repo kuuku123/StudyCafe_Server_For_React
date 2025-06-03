@@ -1,8 +1,7 @@
 package com.StudyCafe_R.account.domain;
 
+import com.StudyCafe_R.domain.Account;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
 

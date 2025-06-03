@@ -1,8 +1,8 @@
-package com.StudyCafe_R.account.usecase;
+package com.StudyCafe_R.usecase.account;
 
-import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
-import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
-import com.StudyCafe_R.account.usecase.command.UpdateProfileCommand;
+import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
+import com.StudyCafe_R.usecase.account.command.UpdateNotificationCommand;
+import com.StudyCafe_R.usecase.account.command.UpdateProfileCommand;
 
 public interface AccountModifierInputPort {
 

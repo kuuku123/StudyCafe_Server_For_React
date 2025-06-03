@@ -1,8 +1,8 @@
 package adapter.transaction;
 
-import com.StudyCafe_R.account.port.transaction.TransactionOperationsOutputPort;
-import com.StudyCafe_R.account.port.transaction.TransactionRunnableWithResult;
-import com.StudyCafe_R.account.port.transaction.TransactionRunnableWithoutResult;
+import com.StudyCafe_R.usecase.port.transaction.TransactionOperationsOutputPort;
+import com.StudyCafe_R.usecase.port.transaction.TransactionRunnableWithResult;
+import com.StudyCafe_R.usecase.port.transaction.TransactionRunnableWithoutResult;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

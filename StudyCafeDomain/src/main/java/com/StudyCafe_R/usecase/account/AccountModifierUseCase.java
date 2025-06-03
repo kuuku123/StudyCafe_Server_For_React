@@ -1,11 +1,11 @@
-package com.StudyCafe_R.account.usecase;
+package com.StudyCafe_R.usecase.account;
 
-import com.StudyCafe_R.account.domain.Account;
-import com.StudyCafe_R.account.port.db.AccountPersistenceOperationsOutputPort;
-import com.StudyCafe_R.account.port.transaction.TransactionOperationsOutputPort;
-import com.StudyCafe_R.account.usecase.command.CreateAccountCommand;
-import com.StudyCafe_R.account.usecase.command.UpdateNotificationCommand;
-import com.StudyCafe_R.account.usecase.command.UpdateProfileCommand;
+import com.StudyCafe_R.domain.Account;
+import com.StudyCafe_R.usecase.port.db.AccountPersistenceOperationsOutputPort;
+import com.StudyCafe_R.usecase.port.transaction.TransactionOperationsOutputPort;
+import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
+import com.StudyCafe_R.usecase.account.command.UpdateNotificationCommand;
+import com.StudyCafe_R.usecase.account.command.UpdateProfileCommand;
 import com.StudyCafe_R.util.ImageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.StudyCafe_R.account.domain;
+package com.StudyCafe_R.domain;
 
 import lombok.*;
 
