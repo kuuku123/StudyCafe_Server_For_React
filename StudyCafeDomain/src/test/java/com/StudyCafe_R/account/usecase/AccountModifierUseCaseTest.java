@@ -100,19 +100,21 @@ class AccountModifierUseCaseTest {
     when(imageProvider.load()).thenThrow(new IOException("not there"));
 
     CreateAccountCommand cmd = new CreateAccountCommand("tony", "tony@example.com");
-    RuntimeException ex = assertThrows(
-            RuntimeException.class,
-            () -> useCase.registerAccount(cmd),
-            "Expected a RuntimeException when image loading fails"
-    );
-
-    assertTrue(
-            ex.getMessage().contains("not there"),
-            "Exception message should mention default image load failure"
-    );
+    useCase.registerAccount(cmd);
 
     // and nothing should have been saved
     verifyNoInteractions(persistenceOps);
+
+    // assert: presenter.presentError(...) was called exactly once with an exception whose message contains "not there"
+    ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+    verify(presenter, times(1)).presentError(captor.capture());
+
+    Exception actual = captor.getValue();
+    assertTrue(
+            actual.getMessage().contains("not there"),
+            "presentError should be passed an Exception whose message mentions the IO failure"
+    );
+
   }
 
   @Test
@@ -164,17 +166,28 @@ class AccountModifierUseCaseTest {
   @Test
   void whenAddTag_andAccountNotFound_thenThrowExceptionAndNoSave() {
     long missingAccountId = 999L;
-    long someTagId = 5L;
+    long newTagId = 42L;
 
     when(persistenceOps.findById(missingAccountId))
       .thenReturn(Optional.empty());
 
-    AccountNotFoundException ex = assertThrows(
-      AccountNotFoundException.class,
-      () -> useCase.addTag(missingAccountId, someTagId)
-    );
-    assertTrue(ex.getMessage().contains("addTag"));
+    useCase.addTag(missingAccountId, newTagId);
+
     verify(persistenceOps, never()).save(any(Account.class));
+
+    // assert: presenter.presentError(...) was called exactly once
+    ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+    verify(presenter, times(1)).presentError(captor.capture());
+
+    Exception caught = captor.getValue();
+    assertTrue(
+            caught instanceof AccountNotFoundException,
+            "presentError should be passed an AccountNotFoundException"
+    );
+    assertTrue(
+            caught.getMessage().contains("addTag"),
+            "Exception message should mention 'addTag'"
+    );
   }
 
   @Test
@@ -199,17 +212,28 @@ class AccountModifierUseCaseTest {
   @Test
   void whenRemoveTag_andAccountNotFound_thenThrowExceptionAndNoSave() {
     long missingAccountId = 999L;
-    long someTagId = 5L;
+    long existingTagId = 88L;
 
     when(persistenceOps.findById(missingAccountId))
       .thenReturn(Optional.empty());
 
-    AccountNotFoundException ex = assertThrows(
-      AccountNotFoundException.class,
-      () -> useCase.removeTag(missingAccountId, someTagId)
-    );
-    assertTrue(ex.getMessage().contains("removeTag"));
+    useCase.removeTag(missingAccountId, existingTagId);
+
     verify(persistenceOps, never()).save(any(Account.class));
+
+    // assert: presenter.presentError(...) was called exactly once
+    ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+    verify(presenter, times(1)).presentError(captor.capture());
+
+    Exception caught = captor.getValue();
+    assertTrue(
+            caught instanceof AccountNotFoundException,
+            "presentError should be passed an AccountNotFoundException"
+    );
+    assertTrue(
+            caught.getMessage().contains("removeTag"),
+            "Exception message should mention 'removeTag'"
+    );
   }
 
   @Test
@@ -235,12 +259,23 @@ class AccountModifierUseCaseTest {
     when(persistenceOps.findById(missingAccountId))
       .thenReturn(Optional.empty());
 
-    AccountNotFoundException ex = assertThrows(
-      AccountNotFoundException.class,
-      () -> useCase.addZone(missingAccountId, someZoneId)
-    );
-    assertTrue(ex.getMessage().contains("addZone"));
+    useCase.addZone(missingAccountId, someZoneId);
+
     verify(persistenceOps, never()).save(any(Account.class));
+
+    // assert: presenter.presentError(...) was called exactly once
+    ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+    verify(presenter, times(1)).presentError(captor.capture());
+
+    Exception caught = captor.getValue();
+    assertTrue(
+            caught instanceof AccountNotFoundException,
+            "presentError should be passed an AccountNotFoundException"
+    );
+    assertTrue(
+            caught.getMessage().contains("addZone"),
+            "Exception message should mention 'addZone'"
+    );
   }
 
   @Test
@@ -269,12 +304,23 @@ class AccountModifierUseCaseTest {
     when(persistenceOps.findById(missingAccountId))
       .thenReturn(Optional.empty());
 
-    AccountNotFoundException ex = assertThrows(
-      AccountNotFoundException.class,
-      () -> useCase.removeZone(missingAccountId, someZoneId)
-    );
-    assertTrue(ex.getMessage().contains("removeZone"));
+    useCase.removeZone(missingAccountId, someZoneId);
+
     verify(persistenceOps, never()).save(any(Account.class));
+
+    // assert: presenter.presentError(...) was called exactly once
+    ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+    verify(presenter, times(1)).presentError(captor.capture());
+
+    Exception caught = captor.getValue();
+    assertTrue(
+            caught instanceof AccountNotFoundException,
+            "presentError should be passed an AccountNotFoundException"
+    );
+    assertTrue(
+            caught.getMessage().contains("removeZone"),
+            "Exception message should mention 'removeZone'"
+    );
   }
 
 

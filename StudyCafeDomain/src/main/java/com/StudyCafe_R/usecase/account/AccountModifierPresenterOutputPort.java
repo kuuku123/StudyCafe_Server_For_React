@@ -1,44 +1,22 @@
 package com.StudyCafe_R.usecase.account;
 
-public interface AccountModifierPresenterOutputPort {
+import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
+import com.StudyCafe_R.usecase.port.presenter.ErrorHandlingPresenterOutputPort;
 
-    /**
-     * Retrieve the Base64-encoded profile image for an account.
-     *
-     * @param nicknameOrEmail unique identifier
-     * @return Base64 JPEG/PNG string
-     */
-    void getProfileImage(String nicknameOrEmail);
+public interface AccountModifierPresenterOutputPort extends ErrorHandlingPresenterOutputPort {
 
-    /**
-     * List all tags on the given account, mapped into DTOs.
-     *
-     * @param accountId the PK of the account
-     * @return list of TagDto
-     */
-    void listTags(long accountId);
+    void presentMessageWhenSucceedRegisterAccount(RegisterAccountResponse registerAccountResponse);
 
-    /**
-     * List all zones on the given account, mapped into DTOs.
-     *
-     * @param accountId the PK of the account
-     * @return list of ZoneDto
-     */
-    void listZones(long accountId);
+    void presentMessageWhenSucceedUpdateProfile();
 
-    /**
-     * Fetch the raw Account aggregate by nickname or email.
-     *
-     * @param nicknameOrEmail unique identifier
-     * @return Account aggregate
-     */
-    void getAccount(String nicknameOrEmail);
+    void presentMessageWhenSucceedUpdateNotification();
 
-    /**
-     * Fetch a fully populated AccountDto (incl. tags, zones, image).
-     *
-     * @param nicknameOrEmail unique identifier
-     * @return AccountDto
-     */
-    void getAccountDto(String nicknameOrEmail);
+    void presentMessageWhenSucceedAddTag();
+
+    void presentMessageWhenSucceedRemoveTag();
+
+    void presentMessageWhenSucceedAddZone();
+
+    void presentMessageWhenSucceedRemoveZone();
+
 }

@@ -29,7 +29,7 @@ public class CommonRestPresenter implements ErrorHandlingPresenterOutputPort {
      * @param <T>     any type
      * @throws RuntimeException if {@code content} cannot be serialized
      */
-    protected <T> void presentOk(T content) {
+    public <T> void presentOk(T content) {
 
         final DelegatingServerHttpResponse httpOutputMessage =
                 new DelegatingServerHttpResponse(new ServletServerHttpResponse(httpServletResponse));

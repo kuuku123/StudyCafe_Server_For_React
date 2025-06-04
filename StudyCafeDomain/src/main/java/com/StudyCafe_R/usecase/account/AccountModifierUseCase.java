@@ -1,6 +1,7 @@
 package com.StudyCafe_R.usecase.account;
 
 import com.StudyCafe_R.domain.Account;
+import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
 import com.StudyCafe_R.usecase.port.db.AccountPersistenceOperationsOutputPort;
 import com.StudyCafe_R.usecase.port.transaction.TransactionOperationsOutputPort;
 import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
@@ -37,12 +38,12 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
                 persistenceOps.save(account);
+                txOps.doAfterCommit(() -> presenter.presentMessageWhenSucceedRegisterAccount(new RegisterAccountResponse(account.getNickname(), account.getEmail(), account.getProfileImageAsString())));
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -74,10 +75,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                 );
 
                 persistenceOps.save(account); // merge detached entity
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedUpdateProfile);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -99,10 +101,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                 );
 
                 persistenceOps.save(account);
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedUpdateNotification);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -115,10 +118,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.addTag(tagId);
                 persistenceOps.save(account);
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedAddTag);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -131,10 +135,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.removeTag(tagId);
                 persistenceOps.save(account);
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedRemoveTag);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -147,10 +152,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.addZone(zoneId);
                 persistenceOps.save(account);
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedAddZone);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 
@@ -163,10 +169,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.removeZone(zoneId);
                 persistenceOps.save(account);
+                txOps.doAfterCommit(presenter::presentMessageWhenSucceedRemoveZone);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            presenter.presentError(e);
         }
     }
 }

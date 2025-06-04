@@ -91,6 +91,10 @@ public class Account {
         return profileImage;
     }
 
+    public String getProfileImageAsString() {
+        return Base64.getEncoder().encodeToString(profileImage);
+    }
+
     // Called by the use‐case to attach a tag
     public void addTag(Long tagId) {
         if (tagId == null) {
