@@ -1,4 +1,4 @@
-package adapter.config;
+package config;
 
 import adapter.presenter.CommonRestPresenter;
 import adapter.presenter.account.AccountPresenter;
@@ -24,7 +24,7 @@ public class UseCaseConfig {
                                                            HttpServletResponse httpServletResponse,
                                                            MappingJackson2HttpMessageConverter jackson2HttpMessageConverter,
                                                            TransactionOperationsOutputPort txOps) {
-        return new AccountModifierUseCase(new AccountPresenter(new CommonRestPresenter(httpServletResponse, jackson2HttpMessageConverter)), persistenceOps, new ClasspathAnonymousImageProvider("static/images/anonymous.JPG"), txOps)
+        return new AccountModifierUseCase(new AccountPresenter(new CommonRestPresenter(httpServletResponse, jackson2HttpMessageConverter)), persistenceOps, new ClasspathAnonymousImageProvider("static/images/anonymous.JPG"), txOps);
     }
 
 
