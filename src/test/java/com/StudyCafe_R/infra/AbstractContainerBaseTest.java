@@ -22,7 +22,7 @@ public abstract class AbstractContainerBaseTest {
             // 1) Expose the default Redis port inside the container
             .withExposedPorts(CONTAINER_PORT)
 
-            // 2) Modify the container's host config to bind the container port 6379 to host port 16379
+            // 2) Modify the container's host infra.config to bind the container port 6379 to host port 16379
             .withCreateContainerCmdModifier(cmd -> {
                 HostConfig hostConfig = cmd.getHostConfig();
                 if (hostConfig == null) {

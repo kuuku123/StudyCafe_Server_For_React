@@ -1,0 +1,15 @@
+server:
+  tomcat:
+    max-http-form-post-size: 5MB
+
+spring:
+  profiles:
+    active: local
+
+  thymeleaf:
+    cache: false
+
+kafka:
+  topic:
+    notification: notification_topic
+    chat: chat_topic

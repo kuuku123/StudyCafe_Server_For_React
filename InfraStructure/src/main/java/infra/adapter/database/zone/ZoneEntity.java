@@ -1,0 +1,47 @@
+package infra.adapter.database.zone;
+
+import infra.adapter.database.account.AccountZoneEntity;
+import infra.adapter.database.study.StudyZoneEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"city", "localNameOfCity", "province"})
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"city", "province"}))
+public class ZoneEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "zone_id")
+    private Long id;
+
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String localNameOfCity;
+
+    @Column(nullable = true)
+    private String province;
+
+    @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL)
+    @Builder.Default
+    private Set<AccountZoneEntity> accountZoneSet = new HashSet<>();
+
+    @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL)
+    @Builder.Default
+    private Set<StudyZoneEntity> studyZoneSet = new HashSet<>();
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)/%s", city, localNameOfCity, province);
+    }
+}

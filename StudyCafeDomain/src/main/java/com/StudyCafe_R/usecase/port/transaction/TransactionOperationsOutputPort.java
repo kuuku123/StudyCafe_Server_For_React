@@ -4,7 +4,7 @@ package com.StudyCafe_R.usecase.port.transaction;
  * Core interface for demarcation of transactional (consistency) boundary.
  * This interface may be called through an output port by a use case which
  * needs to perform some operations within or outside a transaction.
- * May also be used by any other adapter or configuration component directly
+ * May also be used by any other infra.adapter or configuration component directly
  * for any calls which need access to transactional demarcation.
  *
  * @see TransactionRunnableWithoutResult
