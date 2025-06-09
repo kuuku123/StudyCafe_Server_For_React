@@ -1,5 +1,6 @@
 package infra.config;
 
+import com.StudyCafe_R.usecase.account.AccountModifierPresenterOutputPort;
 import infra.adapter.presenter.CommonRestPresenter;
 import infra.adapter.presenter.account.AccountPresenter;
 import com.StudyCafe_R.usecase.account.AccountModifierInputPort;
@@ -18,13 +19,10 @@ import org.springframework.web.context.WebApplicationContext;
 public class UseCaseConfig {
 
     @Bean
-    @Scope(WebApplicationContext.SCOPE_REQUEST)
-    public AccountModifierInputPort accountModifierUseCase(AccountPersistenceOperationsOutputPort persistenceOps,
-                                                           HttpServletResponse httpServletResponse,
-                                                           MappingJackson2HttpMessageConverter jackson2HttpMessageConverter,
+    public AccountModifierInputPort accountModifierUseCase( AccountModifierPresenterOutputPort accountModifierPresenterOutputPort,
+                                                            AccountPersistenceOperationsOutputPort persistenceOps,
                                                            TransactionOperationsOutputPort txOps) {
-        return new AccountModifierUseCase(new AccountPresenter(new CommonRestPresenter(httpServletResponse, jackson2HttpMessageConverter)), persistenceOps, new ClasspathAnonymousImageProvider("static/images/anonymous.JPG"), txOps);
+        return new AccountModifierUseCase(accountModifierPresenterOutputPort, persistenceOps, new ClasspathAnonymousImageProvider("static/images/anonymous.JPG"), txOps);
     }
-
 
 }

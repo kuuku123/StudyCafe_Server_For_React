@@ -2,6 +2,7 @@ package infra.adapter.database.account;
 
 
 import com.StudyCafe_R.domain.Tag;
+import infra.adapter.database.tag.TagEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,6 @@ public class AccountTagEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Tag tag;
+    private TagEntity tag;
 
 }

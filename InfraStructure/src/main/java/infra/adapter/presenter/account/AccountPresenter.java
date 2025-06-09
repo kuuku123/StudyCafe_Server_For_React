@@ -5,8 +5,13 @@ import infra.adapter.presenter.account.response.AccountDto;
 import com.StudyCafe_R.usecase.account.AccountModifierPresenterOutputPort;
 import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 @RequiredArgsConstructor
+@Component
 public class AccountPresenter implements AccountModifierPresenterOutputPort {
 
     private final CommonRestPresenter commonRestPresenter;
