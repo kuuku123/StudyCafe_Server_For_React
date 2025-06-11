@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 public interface AccountRepository extends JpaRepository<AccountEntity,Long>, QuerydslPredicateExecutor<AccountEntity> {
 
@@ -11,7 +13,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity,Long>, Qu
 
     boolean existsByNickname(String nickname);
 
-    AccountEntity findByEmail(String email);
+    Optional<AccountEntity> findByEmail(String email);
 
-    AccountEntity findByNickname(String emailOrNickname);
+    Optional<AccountEntity> findByNickname(String emailOrNickname);
 }
