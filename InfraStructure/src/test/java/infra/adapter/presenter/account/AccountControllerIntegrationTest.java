@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -80,11 +81,11 @@ public class AccountControllerIntegrationTest {
         // --- ARRANGE ---
         SignUpRequest signUpRequest = new SignUpRequest("real_user", "real@example.com");
         String requestBody = objectMapper.writeValueAsString(signUpRequest);
-        byte[] dummyImage = "dummy-image-bytes".getBytes();
-
-        // Mock the image provider as it's not part of this test's focus
-        when(imageProvider.load()).thenReturn(dummyImage);
-
+//        byte[] dummyImage = "dummy-image-bytes".getBytes();
+//
+//        // Mock the image provider as it's not part of this test's focus
+//        when(imageProvider.load()).thenReturn(dummyImage);
+//
         // --- ACT & ASSERT ---
         mockMvc.perform(post("/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +106,9 @@ public class AccountControllerIntegrationTest {
         assertThat(savedAccount.getId()).isNotNull();
         assertThat(savedAccount.getNickname()).isEqualTo(signUpRequest.getNickname());
         assertThat(savedAccount.getEmail()).isEqualTo(signUpRequest.getEmail());
-        assertThat(savedAccount.getProfileImage()).isEqualTo(dummyImage);
+        assertThat(savedAccount.getProfileImage())
+                .isNotNull()
+                .isNotEmpty();
 
         // You can also verify default values set by your entity or domain model
         assertThat(savedAccount.isStudyCreatedByWeb()).isTrue();

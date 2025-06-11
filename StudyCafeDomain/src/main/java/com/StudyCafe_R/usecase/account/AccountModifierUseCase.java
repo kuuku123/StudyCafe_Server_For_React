@@ -39,7 +39,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                     throw new RuntimeException(e);
                 }
                 persistenceOps.save(account);
-                txOps.doAfterCommit(() -> presenter.presentMessageWhenSucceedRegisterAccount(new RegisterAccountResponse(account.getNickname(), account.getEmail(), account.getProfileImageAsString())));
+
+                // This now runs synchronously within the transaction
+                presenter.presentMessageWhenSucceedRegisterAccount(new RegisterAccountResponse(account.getNickname(), account.getEmail(), account.getProfileImageAsString()));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,8 +76,10 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                         command.getLocation()
                 );
 
-                persistenceOps.save(account); // merge detached entity
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedUpdateProfile);
+                persistenceOps.save(account);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedUpdateProfile();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +105,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                 );
 
                 persistenceOps.save(account);
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedUpdateNotification);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedUpdateNotification();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +124,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.addTag(tagId);
                 persistenceOps.save(account);
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedAddTag);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedAddTag();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,7 +143,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.removeTag(tagId);
                 persistenceOps.save(account);
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedRemoveTag);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedRemoveTag();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,7 +162,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.addZone(zoneId);
                 persistenceOps.save(account);
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedAddZone);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedAddZone();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,7 +181,9 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
 
                 account.removeZone(zoneId);
                 persistenceOps.save(account);
-                txOps.doAfterCommit(presenter::presentMessageWhenSucceedRemoveZone);
+
+                // CHANGED: Moved from doAfterCommit to run synchronously
+                presenter.presentMessageWhenSucceedRemoveZone();
             });
         } catch (Exception e) {
             e.printStackTrace();
