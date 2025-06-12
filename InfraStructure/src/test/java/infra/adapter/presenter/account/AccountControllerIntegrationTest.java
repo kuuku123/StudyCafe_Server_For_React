@@ -81,10 +81,6 @@ public class AccountControllerIntegrationTest {
         // --- ARRANGE ---
         SignUpRequest signUpRequest = new SignUpRequest("real_user", "real@example.com");
         String requestBody = objectMapper.writeValueAsString(signUpRequest);
-//        byte[] dummyImage = "dummy-image-bytes".getBytes();
-//
-//        // Mock the image provider as it's not part of this test's focus
-//        when(imageProvider.load()).thenReturn(dummyImage);
 //
         // --- ACT & ASSERT ---
         mockMvc.perform(post("/sign-up")

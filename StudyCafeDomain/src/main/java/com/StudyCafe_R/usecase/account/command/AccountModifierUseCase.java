@@ -1,12 +1,10 @@
-package com.StudyCafe_R.usecase.account;
+package com.StudyCafe_R.usecase.account.command;
 
 import com.StudyCafe_R.domain.Account;
+import com.StudyCafe_R.usecase.account.AccountNotFoundException;
 import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
 import com.StudyCafe_R.usecase.port.db.AccountPersistenceOperationsOutputPort;
 import com.StudyCafe_R.usecase.port.transaction.TransactionOperationsOutputPort;
-import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
-import com.StudyCafe_R.usecase.account.command.UpdateNotificationCommand;
-import com.StudyCafe_R.usecase.account.command.UpdateProfileCommand;
 import com.StudyCafe_R.util.ImageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +26,8 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
         try {
             txOps.doInTransaction(() -> {
                 Account account = Account.builder()
-                        .nickname(command.getNickname())
-                        .email(command.getEmail())
+                        .nickname(command.nickname())
+                        .email(command.email())
                         .build();
 
                 try {
@@ -53,11 +51,11 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
     public void updateProfile(UpdateProfileCommand command) {
         try {
             txOps.doInTransaction(() -> {
-                Long accountId = command.getAccountId();
+                Long accountId = command.accountId();
                 Account account = persistenceOps.findById(accountId)
                         .orElseThrow(() -> new AccountNotFoundException(accountId, "updateProfile"));
 
-                String base64Image = command.getProfileImage();
+                String base64Image = command.profileImage();
                 if (base64Image != null) {
                     if (base64Image.startsWith("data:image/jpeg;base64,")) {
                         base64Image = base64Image.substring("data:image/jpeg;base64,".length());
@@ -70,10 +68,10 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
                 }
 
                 account.updateProfileDetails(
-                        command.getBio(),
-                        command.getUrl(),
-                        command.getOccupation(),
-                        command.getLocation()
+                        command.bio(),
+                        command.url(),
+                        command.occupation(),
+                        command.location()
                 );
 
                 persistenceOps.save(account);
@@ -91,17 +89,17 @@ public class AccountModifierUseCase implements AccountModifierInputPort {
     public void updateNotifications(UpdateNotificationCommand command) {
         try {
             txOps.doInTransaction(() -> {
-                Long accountId = command.getAccountId();
+                Long accountId = command.accountId();
                 Account account = persistenceOps.findById(accountId)
                         .orElseThrow(() -> new AccountNotFoundException(accountId, "updateNotifications"));
 
                 account.updateNotificationDetails(
-                        command.isStudyCreatedByEmail(),
-                        command.isStudyUpdatedByEmail(),
-                        command.isStudyEnrollmentResultByEmail(),
-                        command.isStudyEnrollmentResultByWeb(),
-                        command.isStudyUpdatedByEmail(),
-                        command.isStudyUpdatedByWeb()
+                        command.studyCreatedByEmail(),
+                        command.studyCreatedByWeb(),
+                        command.studyEnrollmentResultByEmail(),
+                        command.studyEnrollmentResultByWeb(),
+                        command.studyUpdatedByEmail(),
+                        command.studyUpdatedByWeb()
                 );
 
                 persistenceOps.save(account);

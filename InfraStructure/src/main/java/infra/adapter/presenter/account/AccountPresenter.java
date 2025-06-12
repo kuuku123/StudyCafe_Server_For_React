@@ -2,13 +2,10 @@ package infra.adapter.presenter.account;
 
 import infra.adapter.presenter.CommonRestPresenter;
 import infra.adapter.presenter.account.response.AccountDto;
-import com.StudyCafe_R.usecase.account.AccountModifierPresenterOutputPort;
+import com.StudyCafe_R.usecase.account.command.AccountModifierPresenterOutputPort;
 import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 @RequiredArgsConstructor
 @Component

@@ -1,4 +1,4 @@
-package com.StudyCafe_R.usecase.account;
+package com.StudyCafe_R.usecase.account.command;
 
 import com.StudyCafe_R.usecase.account.response.RegisterAccountResponse;
 import com.StudyCafe_R.usecase.port.presenter.ErrorHandlingPresenterOutputPort;
