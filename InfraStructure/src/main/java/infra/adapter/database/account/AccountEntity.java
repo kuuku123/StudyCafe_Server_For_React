@@ -2,6 +2,8 @@ package infra.adapter.database.account;
 
 import infra.adapter.database.enrollment.EnrollmentEntity;
 import infra.adapter.database.event.EventEntity;
+import infra.adapter.database.tag.TagEntity;
+import infra.adapter.database.zone.ZoneEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -82,5 +84,23 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @Builder.Default
     private Set<EnrollmentEntity> enrollments = new HashSet<>();
+
+    public void addAccountTagEntity(AccountTagEntity accountTagEntity) {
+        this.accountTagSet.add(accountTagEntity);
+        accountTagEntity.syncAccount(this);
+    }
+
+    public void removeAccountTagEntity(TagEntity tagEntity) {
+        accountTagSet.removeIf(accountTag -> accountTag.getTag().equals(tagEntity));
+    }
+
+    public void addAccountZoneEntity(AccountZoneEntity accountZoneEntity) {
+        this.accountZoneSet.add(accountZoneEntity);
+        accountZoneEntity.syncAccount(this);
+    }
+
+    public void removeAccountZoneEntity(ZoneEntity zoneEntity) {
+        accountZoneSet.removeIf(accountZone -> accountZone.getZone().equals(zoneEntity));
+    }
 
 }

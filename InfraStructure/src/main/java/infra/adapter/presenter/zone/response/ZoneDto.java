@@ -6,35 +6,10 @@ public class ZoneDto {
     private String localNameOfCity;
     private String province;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public ZoneDto(Long id, String city, String localNameOfCity, String province) {
         this.id = id;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getLocalNameOfCity() {
-        return localNameOfCity;
-    }
-
-    public void setLocalNameOfCity(String localNameOfCity) {
         this.localNameOfCity = localNameOfCity;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
         this.province = province;
     }
 }

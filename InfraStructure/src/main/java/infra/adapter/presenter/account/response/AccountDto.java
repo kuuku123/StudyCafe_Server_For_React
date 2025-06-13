@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.Builder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,8 +27,8 @@ public class AccountDto {
      * they default to empty lists (instead of null).
      */
     @Builder.Default
-    private List<TagDto> tags = new ArrayList<>();
+    private Set<TagDto> tags = new HashSet<>();
 
     @Builder.Default
-    private List<ZoneDto> zones = new ArrayList<>();
+    private Set<ZoneDto> zones = new HashSet<>();
 }

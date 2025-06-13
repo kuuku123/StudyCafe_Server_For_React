@@ -1,6 +1,9 @@
 package com.StudyCafe_R.usecase.account.query;
 
-public interface AccountQueryPresenterOutputPort {
+import com.StudyCafe_R.usecase.account.response.GetProfileResponse;
+import com.StudyCafe_R.usecase.port.presenter.ErrorHandlingPresenterOutputPort;
 
-    void presentMessageWhenSucceedGetProfile();
+public interface AccountQueryPresenterOutputPort extends ErrorHandlingPresenterOutputPort {
+
+    void presentMessageWhenSucceedGetProfile(GetProfileResponse getProfileResponse);
 }

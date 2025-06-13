@@ -11,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 public class AccountTagEntity {
 
     @Id
@@ -26,4 +25,7 @@ public class AccountTagEntity {
     @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private TagEntity tag;
 
+    public void syncAccount(AccountEntity accountEntity) {
+        this.account = accountEntity;
+    }
 }

@@ -3,7 +3,7 @@ package com.StudyCafe_R.usecase.account.response;
 import com.StudyCafe_R.usecase.tag.response.TagResponse;
 import com.StudyCafe_R.usecase.zone.response.ZoneResponse;
 
-import java.util.List;
+import java.util.Set;
 
 public record GetProfileResponse(
         Long accountId,
@@ -14,6 +14,6 @@ public record GetProfileResponse(
         String occupation,
         String location,
         String profileImage,          // base64 or URL
-        List<TagResponse> tags,
-        List<ZoneResponse> zones
+        Set<TagResponse> tags,
+        Set<ZoneResponse> zones
 ) {}

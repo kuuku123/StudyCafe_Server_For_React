@@ -4,17 +4,24 @@ package infra.adapter.database.account;
 import com.StudyCafe_R.domain.Account;
 import com.StudyCafe_R.usecase.port.db.AccountPersistenceOperationsOutputPort;
 import infra.adapter.database.account.mapper.AccountMapper;
+import infra.adapter.database.tag.TagEntity;
+import infra.adapter.database.tag.TagRepository;
+import infra.adapter.database.zone.ZoneEntity;
+import infra.adapter.database.zone.ZoneRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AccountPersistenceGateway implements AccountPersistenceOperationsOutputPort {
 
     private final AccountRepository accountRepository;
+    private final TagRepository tagRepository;
+    private final ZoneRepository zoneRepository;
     private final AccountMapper accountMapper;
 
     @Override
@@ -36,8 +43,10 @@ public class AccountPersistenceGateway implements AccountPersistenceOperationsOu
             accountMapper.updateEntityFromDomain(accountEntity, account);
         }
 
+        syncAccountZoneAndTag(account, accountEntity);
         accountRepository.save(accountEntity);
     }
+
 
     @Override
     public boolean existsByEmail(String email) {
@@ -62,5 +71,29 @@ public class AccountPersistenceGateway implements AccountPersistenceOperationsOu
     @Override
     public Optional<Account> findByNickname(String emailOrNickname) {
         return Optional.empty();
+    }
+
+    private void syncAccountZoneAndTag(Account account, AccountEntity accountEntity) {
+        accountEntity.getAccountTagSet().clear();
+        Set<Long> tags = account.getTags();
+        for (Long tag : tags) {
+            TagEntity tagEntity = tagRepository.findById(tag)
+                    .orElseThrow(() -> new EntityNotFoundException("Tag not Found: " + tag));
+            AccountTagEntity accountTagEntity= AccountTagEntity.builder()
+                    .tag(tagEntity)
+                    .build();
+            accountEntity.addAccountTagEntity(accountTagEntity);
+        }
+
+        accountEntity.getAccountZoneSet().clear();
+        Set<Long> zones = account.getZones();
+        for (Long zone : zones) {
+            ZoneEntity zoneEntity = zoneRepository.findById(zone)
+                    .orElseThrow(() -> new EntityNotFoundException("Zone not Found: " + zone));
+            AccountZoneEntity accountZoneEntity= AccountZoneEntity.builder()
+                    .zone(zoneEntity)
+                    .build();
+            accountEntity.addAccountZoneEntity(accountZoneEntity);
+        }
     }
 }

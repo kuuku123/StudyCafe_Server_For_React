@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 public class AccountZoneEntity {
 
     @Id
@@ -23,4 +22,8 @@ public class AccountZoneEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ZONE_ID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private ZoneEntity zone;
+
+    public void syncAccount(AccountEntity accountEntity) {
+        this.account = accountEntity;
+    }
 }
