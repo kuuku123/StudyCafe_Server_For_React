@@ -1,9 +1,12 @@
 package infra.adapter.presenter.account;
 
 import com.StudyCafe_R.util.ImageProvider;
+import com.fasterxml.jackson.core.type.TypeReference;
 import infra.adapter.database.account.AccountEntity;
 import infra.adapter.database.account.AccountRepository;
+import infra.adapter.presenter.ApiResponse;
 import infra.adapter.presenter.account.request.SignUpRequest;
+import infra.adapter.presenter.account.response.AccountDto;
 import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,12 +16,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -61,13 +66,6 @@ public class AccountControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // We REMOVED the @TestBean for AccountPersistenceOperationsOutputPort
-    // Spring will now create the REAL JPA implementation.
-
-    // We still might want to mock external services that are not the DB
-    @MockitoBean
-    private ImageProvider imageProvider = Mockito.mock(ImageProvider.class);
-
     // Although @Transactional handles rollback, explicitly cleaning the repository
     // can prevent side effects if you have tests that are not transactional.
     @AfterEach
@@ -83,12 +81,21 @@ public class AccountControllerIntegrationTest {
         String requestBody = objectMapper.writeValueAsString(signUpRequest);
 //
         // --- ACT & ASSERT ---
-        mockMvc.perform(post("/sign-up")
+        MvcResult result = mockMvc.perform(post("/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nickname").value(signUpRequest.getNickname()))
-                .andExpect(jsonPath("$.email").value(signUpRequest.getEmail()));
+                .andReturn();
+        // Get the raw JSON string from the response
+        String responseBody = result.getResponse().getContentAsString();
+
+        // Manually parse the JSON and assert on the object
+        // Note: Assuming your ApiResponse class has getters or is a record
+        ApiResponse<AccountDto> apiResponse = objectMapper.readValue(responseBody, new TypeReference<>() {});
+
+        assertThat(apiResponse.getMessage()).isEqualTo("sign up succeed");
+        assertThat(apiResponse.getStatus()).isEqualTo(HttpStatus.OK);
+
 
         // --- VERIFY DATABASE STATE ---
         // Use the repository to find the user that should have been created.
@@ -110,4 +117,6 @@ public class AccountControllerIntegrationTest {
         assertThat(savedAccount.isStudyCreatedByWeb()).isTrue();
         assertThat(savedAccount.isStudyEnrollmentResultByWeb()).isTrue();
     }
+
+
 }

@@ -2,16 +2,18 @@ package infra.adapter.presenter.account.response;
 
 import infra.adapter.presenter.tag.response.TagDto;
 import infra.adapter.presenter.zone.response.ZoneDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountDto {
     private String nickname;
     private String bio;
