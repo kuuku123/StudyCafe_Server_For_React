@@ -65,7 +65,8 @@ public class AccountPersistenceGateway implements AccountPersistenceOperationsOu
 
     @Override
     public Optional<Account> findByEmail(String email) {
-        return Optional.empty();
+        return accountRepository.findByEmail(email)
+                .map(accountEntity ->  accountMapper.mapToDomain(accountEntity));
     }
 
     @Override

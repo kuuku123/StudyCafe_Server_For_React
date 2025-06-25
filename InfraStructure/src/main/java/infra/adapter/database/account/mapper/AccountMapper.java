@@ -75,6 +75,7 @@ public class AccountMapper {
                 .url(entity.getUrl())
                 .occupation(entity.getOccupation())
                 .location(entity.getLocation())
+                .profileImage(entity.getProfileImage())
                 // You would map other fields and collections back here as needed.
                 .build();
     }

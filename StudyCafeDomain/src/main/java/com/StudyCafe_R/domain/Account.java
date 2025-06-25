@@ -45,7 +45,7 @@ public class Account {
 
 
     @Builder
-    public Account(Long id, String email, String nickname, String bio, String url, String occupation, String location) {
+    public Account(Long id, String email, String nickname, String bio, String url, String occupation, String location, byte[] profileImage) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
@@ -53,6 +53,7 @@ public class Account {
         this.url = url;
         this.occupation = occupation;
         this.location = location;
+        this.profileImage = profileImage;
     }
 
     public void updateProfileImage(byte[] img) {

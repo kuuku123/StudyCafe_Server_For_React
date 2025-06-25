@@ -1,4 +1,6 @@
-package com.StudyCafe_R.util;
+package infra.util;
+
+import com.StudyCafe_R.util.ImageProvider;
 
 import java.io.IOException;
 import java.io.InputStream;

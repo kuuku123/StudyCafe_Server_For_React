@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TagPersistenceGateway implements TagPersistenceOperationsOutputPort {
 
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
 
     @Override
     public void save(Tag tag) {
@@ -26,6 +28,18 @@ public class TagPersistenceGateway implements TagPersistenceOperationsOutputPort
 
     @Override
     public Optional<Set<Tag>> findAllById(Set<Long> tagIds) {
-        return Optional.empty();
+        // load all matching entities
+        Set<Tag> tags = tagRepository
+                .findAllById(tagIds)         // Iterable<TagEntity>
+                .stream()
+                .map(tagMapper::mapToDomain) // Tag
+                .collect(Collectors.toSet());
+
+        // if any IDs were missing, signal empty
+        if (tags.size() != tagIds.size()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(tags);
     }
 }

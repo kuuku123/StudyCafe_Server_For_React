@@ -14,8 +14,9 @@ import com.StudyCafe_R.usecase.account.command.UpdateNotificationCommand;
 import java.io.IOException;
 
 import com.StudyCafe_R.usecase.account.command.CreateAccountCommand;
-import com.StudyCafe_R.util.ClasspathAnonymousImageProvider;
 import java.util.Optional;
+
+import com.StudyCafe_R.util.ImageProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,9 +38,8 @@ class AccountModifierUseCaseTest {
   private TransactionOperationsOutputPort txOps;
 
 
-  @Spy
-  private ClasspathAnonymousImageProvider imageProvider
-          = new ClasspathAnonymousImageProvider("static/images/anonymous.JPG");
+  @Mock
+  private ImageProvider imageProvider;
 
   @InjectMocks
   private AccountModifierUseCase useCase;
@@ -69,14 +69,12 @@ class AccountModifierUseCaseTest {
   @Test
   void whenRegisterAccount_thenAccountIsSavedWithAnonymousImage() throws Exception {
     // given
-    byte[] anonymousBytes;
+    // given
+    byte[] fakeImage = new byte[] { 1, 2, 3, 4 };
+    when(imageProvider.load()).thenReturn(fakeImage);
+
     CreateAccountCommand cmd = new CreateAccountCommand("tony", "tony@example.com");
 
-    try {
-      anonymousBytes = imageProvider.load();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
 
     // when
     useCase.registerAccount(cmd);
@@ -88,7 +86,7 @@ class AccountModifierUseCaseTest {
 
     // assert that the captured account’s profileImage is the anonymous JPG
     assertArrayEquals(
-            anonymousBytes,
+            fakeImage,
             savedAccount.getProfileImage(),
             "Profile image bytes should be set from anonymous.JPG"
     );
