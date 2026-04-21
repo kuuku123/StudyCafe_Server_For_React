@@ -10,6 +10,8 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: true
+  kafka:
+    bootstrap-servers: localhost:9092
   data:
     redis:
       host: localhost

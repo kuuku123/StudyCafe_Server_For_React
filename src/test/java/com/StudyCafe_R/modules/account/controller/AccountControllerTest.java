@@ -133,4 +133,27 @@ class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("signup failed"));
     }
+
+    @DisplayName("sign up - duplicated email should be blocked by validator")
+    @Test
+    void signUpSubmit_with_duplicated_email() throws Exception {
+        // 1. Create an existing account
+        Account account = Account.builder()
+                .email("tony@gmail.com")
+                .nickname("tony_first")
+                .build();
+        accountRepository.save(account);
+
+        // 2. Try to sign up with the exact same email
+        SignUpRequest duplicateEmailForm = new SignUpRequest();
+        duplicateEmailForm.setEmail("tony@gmail.com");
+        duplicateEmailForm.setNickname("tony_second");
+
+        // 3. This should return 400 Bad Request because of SignUpFormValidator
+        // BUT it currently will NOT, which proves the validator is disconnected!
+        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(duplicateEmailForm)))
+                .andExpect(status().isBadRequest());
+    }
 }

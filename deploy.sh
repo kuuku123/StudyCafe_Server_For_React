@@ -5,11 +5,11 @@ set -e
 
 # Step 1: Clean and package the Maven project without running tests
 echo "Running Maven clean and package..."
-mvn clean package -DskipTests
+mvn clean package -DskipTests -U
 
 # Step 2: Build the Docker image
 echo "Building Docker image..."
-docker buildx build --platform linux/arm64 --load -t study-service .
+docker build -t study-service .
 
 # Step 3: Tag the Docker image
 echo "Tagging Docker image..."
@@ -25,11 +25,11 @@ fi
 
 # Step 5: Bring down any existing Docker Compose services
 echo "Stopping and removing existing Docker containers..."
-docker-compose -f deploy.yml down
+docker compose -f deploy.yml down
 
 # Step 6: Start Docker Compose services
 echo "Starting Docker Compose services..."
-docker-compose -f deploy.yml up
+docker compose -f deploy.yml up -d
 
 echo "Deployment complete!"
 
