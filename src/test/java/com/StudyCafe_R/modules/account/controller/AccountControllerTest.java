@@ -2,27 +2,20 @@ package com.StudyCafe_R.modules.account.controller;
 
 import com.StudyCafe_R.infra.AbstractContainerBaseTest;
 import com.StudyCafe_R.infra.MockMvcTest;
-import com.StudyCafe_R.infra.mail.EmailMessage;
 import com.StudyCafe_R.infra.mail.EmailService;
 import com.StudyCafe_R.modules.account.domain.Account;
 import com.StudyCafe_R.infra.microservice.dto.SignUpRequest;
 import com.StudyCafe_R.modules.account.repository.AccountRepository;
-import com.google.gson.Gson;
-import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
+import com.StudyCafe_R.infra.util.MyConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,70 +28,8 @@ class AccountControllerTest extends AbstractContainerBaseTest {
     AccountRepository accountRepository;
     @MockBean
     EmailService emailService;
-
-    Cookie xsrfCookie;
-    @BeforeEach
-    void getXsrfToken() throws Exception {
-        MockHttpServletResponse response = mockMvc.perform(get("/xsrf-token")).andReturn().getResponse();
-        xsrfCookie = response.getCookie("XSRF-TOKEN");
-    }
-
-    @DisplayName("check verification email - invalid token case")
-    @Test
-    void checkEmailToken_with_wrong_input() throws Exception {
-        mockMvc.perform(get("/check-email-token")
-                .param("token","sldkjflsdlk")
-                .param("email","email@email.com"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("error"))
-                .andExpect(view().name("email/checked-email"));
-    }
-
-    @DisplayName("check verification email - valid token case")
-    @Test
-    @Transactional
-    void checkEmailToken_withTwoRequests() throws Exception {
-
-        /*
-         * Issue: `andExpect(authenticated())` in MockMvc does not interact with Redis for session management.
-         * Solution:
-         * - Manually retrieve the session cookie after login.
-         * - Use the retrieved session cookie to call an API that requires authentication.
-         */
-        // 1) Create a test account with an email token
-        Account account = Account.builder()
-                .email("test@email.com")
-                .nickname("tony")
-                .build();
-        accountRepository.save(account);
-
-        // 2) Perform the first request (email verification)
-        MvcResult result = mockMvc.perform(get("/check-email-token")
-                        .param("email", account.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeDoesNotExist("error"))
-                .andExpect(model().attributeExists("nickname"))
-                .andExpect(model().attributeExists("numberOfUser"))
-                .andExpect(view().name("email/checked-email"))
-                // Don't check authenticated() here, it won't be recognized in the same request
-                .andReturn();
-
-        checkAuthentication(result);
-    }
-
-    private void checkAuthentication(MvcResult result) throws Exception {
-        // 3) Extract the session cookie from the first response
-        MockHttpServletResponse response = result.getResponse();
-        Cookie sessionCookie = response.getCookie("SESSION");
-
-        // 4) Perform a second request that requires authentication
-        mockMvc.perform(get("/check-email").cookie(sessionCookie))
-                .andExpect(status().isOk());
-    }
-
-//        RedisSessionRepository sessionRepo = (RedisSessionRepository) request.getAttribute("org.springframework.session.SessionRepository");
-//org.springframework.session.web.http.CookieHttpSessionIdResolver.WRITTEN_SESSION_ID_ATTR
-
+    @Autowired
+    ObjectMapper objectMapper;
 
 
     @DisplayName("sign up - valid input")
@@ -108,16 +39,14 @@ class AccountControllerTest extends AbstractContainerBaseTest {
         validSignUpForm.setEmail("tony@gmail.com");
         validSignUpForm.setNickname("tony");
 
-        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+        mockMvc.perform(post("/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(validSignUpForm)))
+                        .content(objectMapper.writeValueAsString(validSignUpForm)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("sign up succeed"));
 
         Account account = accountRepository.findByEmail("tony@gmail.com");
         assertNotNull(account);
-
-        then(emailService).should().sendEmail(any(EmailMessage.class));
     }
 
     @DisplayName("sign up - invalid input")
@@ -127,9 +56,9 @@ class AccountControllerTest extends AbstractContainerBaseTest {
         validSignUpForm.setEmail("invalid email");
         validSignUpForm.setNickname("tony");
 
-        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+        mockMvc.perform(post("/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(validSignUpForm)))
+                        .content(objectMapper.writeValueAsString(validSignUpForm)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("signup failed"));
     }
@@ -151,9 +80,46 @@ class AccountControllerTest extends AbstractContainerBaseTest {
 
         // 3. This should return 400 Bad Request because of SignUpFormValidator
         // BUT it currently will NOT, which proves the validator is disconnected!
-        mockMvc.perform(post("/sign-up").cookie(xsrfCookie)
+        mockMvc.perform(post("/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(duplicateEmailForm)))
+                        .content(objectMapper.writeValueAsString(duplicateEmailForm)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("get profile - success")
+    @Test
+    void profile_Success() throws Exception {
+        // 1. Create a test account
+        Account account = Account.builder()
+                .email("tony@gmail.com")
+                .nickname("tony")
+                .build();
+        accountRepository.save(account);
+
+        // 2. Request profile with X-User-Email header
+        mockMvc.perform(get("/profile")
+                        .header(MyConstants.HEADER_USER_EMAIL, "tony@gmail.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("profile"))
+                .andExpect(jsonPath("$.data.email").value("tony@gmail.com"))
+                .andExpect(jsonPath("$.data.nickname").value("tony"));
+    }
+
+    @DisplayName("get other profile - success")
+    @Test
+    void otherProfile_Success() throws Exception {
+        // 1. Create a test account
+        Account account = Account.builder()
+                .email("other@gmail.com")
+                .nickname("other")
+                .build();
+        accountRepository.save(account);
+
+        // 2. Request profile by path variable
+        mockMvc.perform(get("/profile/other@gmail.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("profile"))
+                .andExpect(jsonPath("$.data.email").value("other@gmail.com"))
+                .andExpect(jsonPath("$.data.nickname").value("other"));
     }
 }

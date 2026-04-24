@@ -35,6 +35,7 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@controller-1:9093
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CLUSTER_ID: DBwuQHeySamG6YAg1kmzcA
 
   broker-1:
     image: apache/kafka:latest
@@ -52,6 +53,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@controller-1:9093
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CLUSTER_ID: DBwuQHeySamG6YAg1kmzcA
     depends_on:
       - controller-1
 
