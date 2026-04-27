@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(6MOcv4Th3t0UbkxQ1FSpKGau/NcO4tM0Z9un8rCPfxvd/zNZkaIht3edok+23Dk5jtVQBJ7GCiYRhfXSNN647EHmJISv1TvBRfPagmzRp2OU0U1D1xFsnQ==)
+    url: ENC(WBNi+81xFjMQBIfDOARdIuvNVWyRmkJ2f+K0pH2JLoIiuqJPL4wDgbbP1XJeuKlWJ7hQsugMij6DOIRPF0J1CoocpJWp35M4M1rjH4pLArLbpq32TMqM9Q==)
     username: ENC(40DEax6Zheq0RZkYLlznAQ==)
     password: ENC(IvkhaAGOkTdaJfluLQGMEA==)
   jpa:
@@ -38,7 +38,7 @@ spring:
       port: 6379
 
   kafka:
-    bootstrap-servers: broker-1:9093
+    bootstrap-servers: broker-1:9092
 
   security:
     oauth2:
