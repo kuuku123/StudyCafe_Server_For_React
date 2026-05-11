@@ -1,0 +1,98 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(Ddl0f2f298em94WrWvJOy8xfMxqaMtbnsybQEuVO4Rmoy4SUWuKNVOjYxA6FtR8DmdMDqqekw1Ls3UhLWPjhqbdA2r4tHJHe3BWh3xnAeM06comd2P1PVA==)
+    username: ENC(40DEax6Zheq0RZkYLlznAQ==)
+    password: ENC(IvkhaAGOkTdaJfluLQGMEA==)
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(Ury0e1TSqFOpO73mRr+Ds1otgbsymbxfw4zY3vUQkKU=)
+    password: ENC(eeL/0j6MAjVPG63SjYhmrWDNLZgHt5SKN+MF9yJeX4g=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    cache: false
+
+  data:
+    redis:
+      host: redis-test
+      port: 6379
+
+  kafka:
+    bootstrap-servers: broker-1:9092
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 742031203215-3ki2goqrmvc6qh6gpe6c6js3d5ve39qu.apps.googleusercontent.com
+            client-secret: ENC(peUYU35cbfi4UxhQjHvS7jJAIWdJ62XzoZ6XnYOSatkKFa4iiYFFoa/q6ur4aqYt)
+            scope: email,profile
+
+
+cors:
+  allowed-origin: http://localhost:8080
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: study-service
+
+server:
+  port: 8081
+  servlet:
+    session:
+      cookie:
+        http-only: false
+        name: StudyCafe_Session_Cookie
+      timeout: 30m
+  session:
+    store-type: redis
+
+  redis:
+    host: redis-test
+    port: 6379
+
+app:
+  host: http://study-service:8081
